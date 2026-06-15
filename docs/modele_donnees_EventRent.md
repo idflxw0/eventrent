@@ -1,6 +1,6 @@
 # Modèle de données — EventRent
 
-*Document complémentaire au cahier des charges. Détaille chaque entité (table), ses champs, types, contraintes et relations.*
+_Document complémentaire au cahier des charges. Détaille chaque entité (table), ses champs, types, contraintes et relations._
 
 ## Légende
 
@@ -13,227 +13,230 @@
 
 ## 1. `user`
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK, auto-increment |
-| email | string(180) | unique, not null |
-| roles | json | not null, défaut `["ROLE_USER"]` |
-| password | string(255) | not null (haché via Password Hasher) |
-| nom | string(100) | not null |
-| prenom | string(100) | not null |
-| telephone | string(20) | nullable |
-| dateInscription | datetime | not null, défaut now |
-| actif | boolean | not null, défaut true |
+| Champ        | Type               | Contraintes                          |
+| ------------ | ------------------ | ------------------------------------ |
+| id           | integer            | PK, auto-incrément                   |
+| email        | string(180)        | unique, not null                     |
+| roles        | json               | not null, défaut `["ROLE_USER"]`     |
+| password     | string(255)        | not null (haché via Password Hasher) |
+| lastName     | string(100)        | not null                             |
+| firstName    | string(100)        | not null                             |
+| phone        | string(20)         | nullable                             |
+| registeredAt | datetime_immutable | not null, défaut now                 |
+| active       | boolean            | not null, défaut true                |
 
-**Relations** : 1‑N vers `Reservation`, `Avis`, `Devis`, `Notification`, `Maintenance` (en tant que technicien assigné).
+**Relations** : 1‑N vers `Reservation`, `Review`, `Quote`, `Notification`, `Maintenance` (en tant que technicien assigné).
 
 ---
 
-## 2. `equipement` (table parente — héritage Class Table Inheritance)
+## 2. `equipment` (table parente — héritage Class Table Inheritance)
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK, auto-increment |
-| reference | string(50) | unique, not null |
-| nom | string(150) | not null |
-| description | text | nullable |
-| prixJournalier | decimal(10,2) | not null, ≥ 0 |
-| statutDisponibilite | string(20) | not null, défaut `disponible` — enum: `disponible`, `maintenance`, `hors_service` |
-| photo | string(255) | nullable (chemin vers l'image) |
-| dateAjout | datetime | not null, défaut now |
-| categorie_id | integer | FK → `categorie.id`, not null |
-| fournisseur_id | integer | FK → `fournisseur.id`, not null |
-| type | string(20) | colonne discriminante de l'héritage (`audio` / `video`) |
+| Champ              | Type               | Contraintes                                                                       |
+| ------------------ | ------------------ | --------------------------------------------------------------------------------- |
+| id                 | integer            | PK, auto-incrément                                                                |
+| reference          | string(50)         | unique, not null                                                                  |
+| name               | string(150)        | not null                                                                          |
+| description        | text               | nullable                                                                          |
+| dailyPrice         | decimal(10,2)      | not null, ≥ 0                                                                     |
+| availabilityStatus | string(20)         | not null, défaut `available` — enum: `available`, `maintenance`, `out_of_service` |
+| photo              | string(255)        | nullable (chemin vers l'image)                                                    |
+| addedAt            | datetime_immutable | not null, défaut now                                                              |
+| category_id        | integer            | FK → `category.id`, not null                                                      |
+| supplier_id        | integer            | FK → `supplier.id`, not null                                                      |
+| type               | string(20)         | colonne discriminante de l'héritage (`audio` / `video`)                           |
 
 **Relations** :
-- N‑1 `Categorie`, N‑1 `Fournisseur`
-- N‑N `Accessoire` (table de jonction `equipement_accessoire`)
-- 1‑N `LigneReservation`, 1‑N `LigneDevis`, 1‑N `Avis`, 1‑N `Maintenance`
-- Héritage 1‑1 vers `MaterielAudio` ou `MaterielVideo` (même `id`, table jointe)
+
+- N‑1 `Category`, N‑1 `Supplier`
+- N‑N `Accessory` (table de jonction `equipment_accessory`)
+- 1‑N `ReservationLine`, 1‑N `QuoteLine`, 1‑N `Review`, 1‑N `Maintenance`
+- Héritage 1‑1 vers `AudioEquipment` ou `VideoEquipment` (même `id`, table jointe)
 
 ---
 
-## 3. `materiel_audio` (sous-type, table jointe)
+## 3. `audio_equipment` (sous-type, table jointe)
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK, FK → `equipement.id` |
-| puissanceWatts | integer | not null, > 0 |
-| typeConnectique | string(50) | not null (ex : XLR, Jack 6.35mm, RCA, Bluetooth) |
-| nombreCanaux | integer | not null, > 0 |
-
----
-
-## 4. `materiel_video` (sous-type, table jointe)
-
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK, FK → `equipement.id` |
-| resolution | string(20) | not null (ex : 1920x1080, 4K) |
-| luminositeLumens | integer | not null, > 0 |
-| typeProjection | string(50) | not null (ex : LCD, DLP, Laser) |
+| Champ         | Type       | Contraintes                                      |
+| ------------- | ---------- | ------------------------------------------------ |
+| id            | integer    | PK, FK → `equipment.id`                          |
+| powerWatts    | integer    | not null, > 0                                    |
+| connectorType | string(50) | not null (ex : XLR, Jack 6.35mm, RCA, Bluetooth) |
+| channelCount  | integer    | not null, > 0                                    |
 
 ---
 
-## 5. `categorie`
+## 4. `video_equipment` (sous-type, table jointe)
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| nom | string(100) | unique, not null |
-| description | text | nullable |
-
-**Relations** : 1‑N `Equipement`.
-
----
-
-## 6. `fournisseur`
-
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| nom | string(150) | not null |
-| email | string(180) | nullable |
-| telephone | string(20) | nullable |
-| adresse | string(255) | nullable |
-
-**Relations** : 1‑N `Equipement`.
+| Champ            | Type       | Contraintes                     |
+| ---------------- | ---------- | ------------------------------- |
+| id               | integer    | PK, FK → `equipment.id`         |
+| resolution       | string(20) | not null (ex : 1920x1080, 4K)   |
+| brightnessLumens | integer    | not null, > 0                   |
+| projectionType   | string(50) | not null (ex : LCD, DLP, Laser) |
 
 ---
 
-## 7. `accessoire`
+## 5. `category`
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| nom | string(150) | not null |
-| description | text | nullable |
+| Champ       | Type        | Contraintes      |
+| ----------- | ----------- | ---------------- |
+| id          | integer     | PK               |
+| name        | string(100) | unique, not null |
+| description | text        | nullable         |
 
-**Relations** : N‑N `Equipement` via `equipement_accessoire` (table de jonction sans attributs propres).
+**Relations** : 1‑N `Equipment`.
+
+---
+
+## 6. `supplier`
+
+| Champ   | Type        | Contraintes |
+| ------- | ----------- | ----------- |
+| id      | integer     | PK          |
+| name    | string(150) | not null    |
+| email   | string(180) | nullable    |
+| phone   | string(20)  | nullable    |
+| address | string(255) | nullable    |
+
+**Relations** : 1‑N `Equipment`.
+
+---
+
+## 7. `accessory`
+
+| Champ       | Type        | Contraintes |
+| ----------- | ----------- | ----------- |
+| id          | integer     | PK          |
+| name        | string(150) | not null    |
+| description | text        | nullable    |
+
+**Relations** : N‑N `Equipment` via `equipment_accessory` (table de jonction sans attributs propres).
 
 ---
 
 ## 8. `reservation`
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| user_id | integer | FK → `user.id`, not null |
-| dateDebut | date | not null |
-| dateFin | date | not null, ≥ dateDebut |
-| villeEvenement | string(100) | not null |
-| typeLieu | string(20) | not null — enum: `interieur`, `exterieur` |
-| statut | string(20) | not null, défaut `en_attente` — enum: `en_attente`, `confirmee`, `en_cours`, `terminee`, `annulee` |
-| montantTotal | decimal(10,2) | not null, défaut 0 |
-| previsionMeteo | string(255) | nullable (résumé météo enregistré au moment de la création) |
-| dateCreation | datetime | not null, défaut now |
+| Champ           | Type               | Contraintes                                                                                        |
+| --------------- | ------------------ | -------------------------------------------------------------------------------------------------- |
+| id              | integer            | PK                                                                                                 |
+| user_id         | integer            | FK → `user.id`, not null                                                                           |
+| startDate       | date_immutable     | not null                                                                                           |
+| endDate         | date_immutable     | not null, ≥ startDate                                                                              |
+| eventCity       | string(100)        | not null                                                                                           |
+| venueType       | string(20)         | not null — enum: `indoor`, `outdoor`                                                               |
+| status          | string(20)         | not null, défaut `pending` — enum: `pending`, `confirmed`, `in_progress`, `completed`, `cancelled` |
+| totalAmount     | decimal(10,2)      | not null, défaut 0                                                                                 |
+| weatherForecast | string(255)        | nullable (résumé météo enregistré au moment de la création)                                        |
+| createdAt       | datetime_immutable | not null, défaut now                                                                               |
 
-**Relations** : N‑1 `User`, 1‑N `LigneReservation`, 1‑1 `Facture`.
-
----
-
-## 9. `ligne_reservation` (table de jonction avec attributs)
-
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| reservation_id | integer | FK → `reservation.id`, not null |
-| equipement_id | integer | FK → `equipement.id`, not null |
-| quantite | integer | not null, > 0 |
-| prixUnitaireJour | decimal(10,2) | not null (copie du prix de l'équipement au moment de la réservation) |
-
-**Relations** : matérialise la relation N‑N `Reservation` ↔ `Equipement` (1er ManyToMany avec attributs).
+**Relations** : N‑1 `User`, 1‑N `ReservationLine`, 1‑1 `Invoice`.
 
 ---
 
-## 10. `devis`
+## 9. `reservation_line` (table de jonction avec attributs)
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| user_id | integer | FK → `user.id`, not null |
-| dateDebutSouhaitee | date | not null |
-| dateFinSouhaitee | date | not null, ≥ dateDebutSouhaitee |
-| villeEvenement | string(100) | nullable |
-| montantEstime | decimal(10,2) | not null, défaut 0 |
-| statut | string(20) | not null, défaut `en_attente` — enum: `en_attente`, `valide`, `refuse`, `expire` |
-| dateCreation | datetime | not null, défaut now |
-| dateValidite | date | not null (dateCreation + 15 jours) |
+| Champ           | Type          | Contraintes                                                          |
+| --------------- | ------------- | -------------------------------------------------------------------- |
+| id              | integer       | PK                                                                   |
+| reservation_id  | integer       | FK → `reservation.id`, not null                                      |
+| equipment_id    | integer       | FK → `equipment.id`, not null                                        |
+| quantity        | integer       | not null, > 0                                                        |
+| unitPricePerDay | decimal(10,2) | not null (copie du prix de l'équipement au moment de la réservation) |
 
-**Relations** : N‑1 `User`, 1‑N `LigneDevis`.
+**Relations** : matérialise la relation N‑N `Reservation` ↔ `Equipment` (1er ManyToMany avec attributs).
 
 ---
 
-## 11. `ligne_devis` (table de jonction avec attributs)
+## 10. `quote`
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| devis_id | integer | FK → `devis.id`, not null |
-| equipement_id | integer | FK → `equipement.id`, not null |
-| quantite | integer | not null, > 0 |
-| prixUnitaireJour | decimal(10,2) | not null |
+| Champ              | Type               | Contraintes                                                                     |
+| ------------------ | ------------------ | ------------------------------------------------------------------------------- |
+| id                 | integer            | PK                                                                              |
+| user_id            | integer            | FK → `user.id`, not null                                                        |
+| requestedStartDate | date_immutable     | not null                                                                        |
+| requestedEndDate   | date_immutable     | not null, ≥ requestedStartDate                                                  |
+| eventCity          | string(100)        | nullable                                                                        |
+| estimatedAmount    | decimal(10,2)      | not null, défaut 0                                                              |
+| status             | string(20)         | not null, défaut `pending` — enum: `pending`, `approved`, `rejected`, `expired` |
+| createdAt          | datetime_immutable | not null, défaut now                                                            |
+| validUntil         | date_immutable     | not null (createdAt + 15 jours)                                                 |
 
-**Relations** : matérialise la relation N‑N `Devis` ↔ `Equipement` (2e ManyToMany avec attributs — au choix, voir note ci-dessous).
+**Relations** : N‑1 `User`, 1‑N `QuoteLine`.
 
 ---
 
-## 12. `facture`
+## 11. `quote_line` (table de jonction avec attributs)
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| reservation_id | integer | FK → `reservation.id`, unique, not null |
-| numero | string(50) | unique, not null (ex : `FAC-2026-000123`) |
-| montant | decimal(10,2) | not null |
-| statutPaiement | string(20) | not null, défaut `en_attente` — enum: `en_attente`, `payee`, `en_retard` |
-| dateEmission | datetime | not null, défaut now |
-| dateEcheance | date | not null |
+| Champ           | Type          | Contraintes                   |
+| --------------- | ------------- | ----------------------------- |
+| id              | integer       | PK                            |
+| quote_id        | integer       | FK → `quote.id`, not null     |
+| equipment_id    | integer       | FK → `equipment.id`, not null |
+| quantity        | integer       | not null, > 0                 |
+| unitPricePerDay | decimal(10,2) | not null                      |
+
+**Relations** : matérialise la relation N‑N `Quote` ↔ `Equipment`.
+
+---
+
+## 12. `invoice`
+
+| Champ          | Type               | Contraintes                                                     |
+| -------------- | ------------------ | --------------------------------------------------------------- |
+| id             | integer            | PK                                                              |
+| reservation_id | integer            | FK → `reservation.id`, unique, not null                         |
+| number         | string(50)         | unique, not null (ex : `INV-2026-000123`)                       |
+| amount         | decimal(10,2)      | not null                                                        |
+| paymentStatus  | string(20)         | not null, défaut `pending` — enum: `pending`, `paid`, `overdue` |
+| issuedAt       | datetime_immutable | not null, défaut now                                            |
+| dueDate        | date_immutable     | not null                                                        |
 
 **Relations** : 1‑1 `Reservation`.
 
 ---
 
-## 13. `avis`
+## 13. `review`
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| user_id | integer | FK → `user.id`, not null |
-| equipement_id | integer | FK → `equipement.id`, not null |
-| note | integer | not null, entre 1 et 5 |
-| commentaire | text | nullable |
-| dateCreation | datetime | not null, défaut now |
+| Champ        | Type               | Contraintes                   |
+| ------------ | ------------------ | ----------------------------- |
+| id           | integer            | PK                            |
+| user_id      | integer            | FK → `user.id`, not null      |
+| equipment_id | integer            | FK → `equipment.id`, not null |
+| rating       | integer            | not null, entre 1 et 5        |
+| comment      | text               | nullable                      |
+| createdAt    | datetime_immutable | not null, défaut now          |
 
-**Relations** : N‑1 `User`, N‑1 `Equipement`.
+**Relations** : N‑1 `User`, N‑1 `Equipment`.
 
 ---
 
 ## 14. `maintenance`
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| equipement_id | integer | FK → `equipement.id`, not null |
-| technicien_id | integer | FK → `user.id`, not null |
-| typeIntervention | string(20) | not null — enum: `controle`, `reparation`, `panne` |
-| description | text | not null |
-| dateIntervention | datetime | not null, défaut now |
-| statutApresIntervention | string(20) | not null — enum: `disponible`, `maintenance`, `hors_service` |
+| Champ                   | Type               | Contraintes                                                   |
+| ----------------------- | ------------------ | ------------------------------------------------------------- |
+| id                      | integer            | PK                                                            |
+| equipment_id            | integer            | FK → `equipment.id`, not null                                 |
+| technician_id           | integer            | FK → `user.id`, not null                                      |
+| interventionType        | string(20)         | not null — enum: `inspection`, `repair`, `breakdown`          |
+| description             | text               | not null                                                      |
+| interventionDate        | datetime_immutable | not null, défaut now                                          |
+| statusAfterIntervention | string(20)         | not null — enum: `available`, `maintenance`, `out_of_service` |
 
-**Relations** : N‑1 `Equipement`, N‑1 `User` (technicien).
+**Relations** : N‑1 `Equipment`, N‑1 `User` (technicien).
 
 ---
 
 ## 15. `notification`
 
-| Champ | Type | Contraintes |
-|---|---|---|
-| id | integer | PK |
-| user_id | integer | FK → `user.id`, not null |
-| message | text | not null |
-| type | string(50) | nullable (ex : `reservation_confirmee`, `devis_valide`) |
-| lu | boolean | not null, défaut false |
+| Champ     | Type               | Contraintes                                               |
+| --------- | ------------------ | --------------------------------------------------------- |
+| id        | integer            | PK                                                        |
+| user_id   | integer            | FK → `user.id`, not null                                  |
+| message   | text               | not null                                                  |
+| type      | string(50)         | nullable (ex : `reservation_confirmed`, `quote_approved`) |
+| read      | boolean            | not null, défaut false                                    |
+| createdAt | datetime_immutable | not null, défaut now                                      |
+
 **Relations** : N‑1 `User`.
 
 **Diffusion temps réel (Mercure)** : à la création d'une `Notification`, l'entité est publiée (au format JSON, via le groupe de sérialisation `notification:read`) sur le topic Mercure `/users/{user_id}/notifications`. Aucune colonne supplémentaire n'est nécessaire — le topic est dérivé de `user_id`. Côté front, chaque utilisateur connecté ouvre une connexion `EventSource` vers ce topic, avec un token Mercure scoppé à son propre `id` pour éviter qu'un utilisateur s'abonne au topic d'un autre.
@@ -242,24 +245,22 @@
 
 ## Récapitulatif des relations et cardinalités
 
-| Relation | Type | Détail |
-|---|---|---|
-| User ↔ Reservation | 1‑N | un user a plusieurs réservations |
-| User ↔ Avis | 1‑N | un user a plusieurs avis |
-| User ↔ Devis | 1‑N | un user a plusieurs devis |
-| User ↔ Notification | 1‑N | un user a plusieurs notifications |
-| User ↔ Maintenance | 1‑N | un technicien a plusieurs interventions |
-| Equipement ↔ MaterielAudio / MaterielVideo | Héritage (CTI) | tronc commun, 2 sous-types |
-| Categorie ↔ Equipement | 1‑N | une catégorie regroupe plusieurs équipements |
-| Fournisseur ↔ Equipement | 1‑N | un fournisseur fournit plusieurs équipements |
-| **Equipement ↔ Accessoire** | **N‑N** | sans attributs (ManyToMany simple) |
-| **Reservation ↔ Equipement** (via LigneReservation) | **N‑N** | avec attributs : quantité, prix unitaire (ManyToMany avec table de jonction) |
-| Devis ↔ Equipement (via LigneDevis) | N‑N | avec attributs (optionnel si tu veux limiter à 2 ManyToMany, cf. note) |
-| Reservation ↔ Facture | 1‑1 | une réservation génère une facture |
-| Equipement ↔ Avis | 1‑N | un équipement a plusieurs avis |
-| Equipement ↔ Maintenance | 1‑N | un équipement a plusieurs interventions |
-
-**Note sur les ManyToMany** : le cahier des charges en exige 2 minimum. `Equipement ↔ Accessoire` et `Reservation ↔ Equipement` (via `LigneReservation`) suffisent largement à remplir cette exigence (un sans attributs, un avec attributs — tu couvres les deux variantes mentionnées dans le sujet). `LigneDevis` est un 3e ManyToMany — garde-le si tu veux que "transformer un devis en réservation" soit un simple copier des lignes, mais si tu cherches à réduire le périmètre, tu peux remplacer `Devis`/`LigneDevis` par un champ texte/JSON descriptif sur `Devis` et perdre une entité + une relation sans casser les minimums exigés (tu resterais à 13 entités, 2 ManyToMany, largement plus de 8 OneToMany/ManyToOne).
+| Relation                                          | Type           | Détail                                                                       |
+| ------------------------------------------------- | -------------- | ---------------------------------------------------------------------------- |
+| User ↔ Reservation                                | 1‑N            | un user a plusieurs réservations                                             |
+| User ↔ Review                                     | 1‑N            | un user a plusieurs avis                                                     |
+| User ↔ Quote                                      | 1‑N            | un user a plusieurs devis                                                    |
+| User ↔ Notification                               | 1‑N            | un user a plusieurs notifications                                            |
+| User ↔ Maintenance                                | 1‑N            | un technicien a plusieurs interventions                                      |
+| Equipment ↔ AudioEquipment / VideoEquipment       | Héritage (CTI) | tronc commun, 2 sous-types                                                   |
+| Category ↔ Equipment                              | 1‑N            | une catégorie regroupe plusieurs équipements                                 |
+| Supplier ↔ Equipment                              | 1‑N            | un fournisseur fournit plusieurs équipements                                 |
+| **Equipment ↔ Accessory**                         | **N‑N**        | sans attributs (ManyToMany simple)                                           |
+| **Reservation ↔ Equipment** (via ReservationLine) | **N‑N**        | avec attributs : quantité, prix unitaire (ManyToMany avec table de jonction) |
+| Quote ↔ Equipment (via QuoteLine)                 | N‑N            | avec attributs                                                               |
+| Reservation ↔ Invoice                             | 1‑1            | une réservation génère une facture                                           |
+| Equipment ↔ Review                                | 1‑N            | un équipement a plusieurs avis                                               |
+| Equipment ↔ Maintenance                           | 1‑N            | un équipement a plusieurs interventions                                      |
 
 ---
 
@@ -272,129 +273,129 @@ erDiagram
         string email
         json roles
         string password
-        string nom
-        string prenom
-        string telephone
-        datetime dateInscription
-        boolean actif
+        string lastName
+        string firstName
+        string phone
+        datetime registeredAt
+        boolean active
     }
 
-    EQUIPEMENT {
+    EQUIPMENT {
         int id PK
         string reference
-        string nom
+        string name
         text description
-        decimal prixJournalier
-        string statutDisponibilite
+        decimal dailyPrice
+        string availabilityStatus
         string photo
-        datetime dateAjout
+        datetime addedAt
         string type
-        int categorie_id FK
-        int fournisseur_id FK
+        int category_id FK
+        int supplier_id FK
     }
 
-    MATERIEL_AUDIO {
+    AUDIO_EQUIPMENT {
         int id PK
-        int puissanceWatts
-        string typeConnectique
-        int nombreCanaux
+        int powerWatts
+        string connectorType
+        int channelCount
     }
 
-    MATERIEL_VIDEO {
+    VIDEO_EQUIPMENT {
         int id PK
         string resolution
-        int luminositeLumens
-        string typeProjection
+        int brightnessLumens
+        string projectionType
     }
 
-    CATEGORIE {
+    CATEGORY {
         int id PK
-        string nom
+        string name
         text description
     }
 
-    FOURNISSEUR {
+    SUPPLIER {
         int id PK
-        string nom
+        string name
         string email
-        string telephone
-        string adresse
+        string phone
+        string address
     }
 
-    ACCESSOIRE {
+    ACCESSORY {
         int id PK
-        string nom
+        string name
         text description
     }
 
     RESERVATION {
         int id PK
         int user_id FK
-        date dateDebut
-        date dateFin
-        string villeEvenement
-        string typeLieu
-        string statut
-        decimal montantTotal
-        string previsionMeteo
-        datetime dateCreation
+        date startDate
+        date endDate
+        string eventCity
+        string venueType
+        string status
+        decimal totalAmount
+        string weatherForecast
+        datetime createdAt
     }
 
-    LIGNE_RESERVATION {
+    RESERVATION_LINE {
         int id PK
         int reservation_id FK
-        int equipement_id FK
-        int quantite
-        decimal prixUnitaireJour
+        int equipment_id FK
+        int quantity
+        decimal unitPricePerDay
     }
 
-    DEVIS {
+    QUOTE {
         int id PK
         int user_id FK
-        date dateDebutSouhaitee
-        date dateFinSouhaitee
-        string villeEvenement
-        decimal montantEstime
-        string statut
-        datetime dateCreation
-        date dateValidite
+        date requestedStartDate
+        date requestedEndDate
+        string eventCity
+        decimal estimatedAmount
+        string status
+        datetime createdAt
+        date validUntil
     }
 
-    LIGNE_DEVIS {
+    QUOTE_LINE {
         int id PK
-        int devis_id FK
-        int equipement_id FK
-        int quantite
-        decimal prixUnitaireJour
+        int quote_id FK
+        int equipment_id FK
+        int quantity
+        decimal unitPricePerDay
     }
 
-    FACTURE {
+    INVOICE {
         int id PK
         int reservation_id FK
-        string numero
-        decimal montant
-        string statutPaiement
-        datetime dateEmission
-        date dateEcheance
+        string number
+        decimal amount
+        string paymentStatus
+        datetime issuedAt
+        date dueDate
     }
 
-    AVIS {
+    REVIEW {
         int id PK
         int user_id FK
-        int equipement_id FK
-        int note
-        text commentaire
-        datetime dateCreation
+        int equipment_id FK
+        int rating
+        text comment
+        datetime createdAt
     }
 
     MAINTENANCE {
         int id PK
-        int equipement_id FK
-        int technicien_id FK
-        string typeIntervention
+        int equipment_id FK
+        int technician_id FK
+        string interventionType
         text description
-        datetime dateIntervention
-        string statutApresIntervention
+        datetime interventionDate
+        string statusAfterIntervention
     }
 
     NOTIFICATION {
@@ -402,29 +403,29 @@ erDiagram
         int user_id FK
         text message
         string type
-        boolean lu
-        datetime dateCreation
+        boolean read
+        datetime createdAt
     }
 
     USER ||--o{ RESERVATION : effectue
-    USER ||--o{ AVIS : redige
-    USER ||--o{ DEVIS : demande
-    USER ||--o{ NOTIFICATION : recoit
+    USER ||--o{ REVIEW : rédige
+    USER ||--o{ QUOTE : demande
+    USER ||--o{ NOTIFICATION : reçoit
     USER ||--o{ MAINTENANCE : intervient
 
-    EQUIPEMENT ||--|| MATERIEL_AUDIO : herite
-    EQUIPEMENT ||--|| MATERIEL_VIDEO : herite
-    CATEGORIE ||--o{ EQUIPEMENT : classe
-    FOURNISSEUR ||--o{ EQUIPEMENT : fournit
-    EQUIPEMENT }o--o{ ACCESSOIRE : compatible_avec
+    EQUIPMENT ||--|| AUDIO_EQUIPMENT : hérite
+    EQUIPMENT ||--|| VIDEO_EQUIPMENT : hérite
+    CATEGORY ||--o{ EQUIPMENT : classe
+    SUPPLIER ||--o{ EQUIPMENT : fournit
+    EQUIPMENT }o--o{ ACCESSORY : compatible_avec
 
-    RESERVATION ||--o{ LIGNE_RESERVATION : contient
-    EQUIPEMENT ||--o{ LIGNE_RESERVATION : concerne
-    RESERVATION ||--|| FACTURE : genere
+    RESERVATION ||--o{ RESERVATION_LINE : contient
+    EQUIPMENT ||--o{ RESERVATION_LINE : concerne
+    RESERVATION ||--|| INVOICE : génère
 
-    DEVIS ||--o{ LIGNE_DEVIS : contient
-    EQUIPEMENT ||--o{ LIGNE_DEVIS : concerne
+    QUOTE ||--o{ QUOTE_LINE : contient
+    EQUIPMENT ||--o{ QUOTE_LINE : concerne
 
-    EQUIPEMENT ||--o{ AVIS : concerne
-    EQUIPEMENT ||--o{ MAINTENANCE : subit
+    EQUIPMENT ||--o{ REVIEW : concerne
+    EQUIPMENT ||--o{ MAINTENANCE : subit
 ```

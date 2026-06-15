@@ -9,7 +9,6 @@ Ce document regroupe : la mise en place du projet (Symfony, Docker, packages), p
 ```bash
 php -v          # 8.2+
 composer -V
-symfony version  # si absent : curl -sS https://get.symfony.com/cli/installer | bash
 docker compose version
 ```
 
@@ -20,55 +19,19 @@ symfony new eventrent --version="7.2.*" --webapp
 cd eventrent
 ```
 
-## 3. docker-compose.yml (services)
-
-```yaml
-services:
-  database:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: eventrent
-      POSTGRES_USER: eventrent
-      POSTGRES_PASSWORD: eventrent
-    ports:
-      - "5432:5432"
-    volumes:
-      - database_data:/var/lib/postgresql/data
-
-  mercure:
-    image: dunglas/mercure
-    environment:
-      SERVER_NAME: ':80'
-      MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-      MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-      MERCURE_EXTRA_DIRECTIVES: |
-        cors_origins *
-    ports:
-      - "3000:80"
-
-  mailpit:
-    image: axllent/mailpit
-    ports:
-      - "8025:8025"
-      - "1025:1025"
-
-volumes:
-  database_data:
-```
-
-## 4. `.env.local`
+## 3. `.env.local`
 
 ```
-DATABASE_URL="postgresql://eventrent:eventrent@127.0.0.1:5432/eventrent?serverVersion=16&charset=utf8"
+DATABASE_URL="postgresql://eventrent:eventrent@127.0.0.1:5439/eventrent?serverVersion=16&charset=utf8"
 
-MERCURE_URL=http://127.0.0.1:3000/.well-known/mercure
-MERCURE_PUBLIC_URL=http://127.0.0.1:3000/.well-known/mercure
+MERCURE_URL=http://localhost:3000/.well-known/mercure
+MERCURE_PUBLIC_URL=http://localhost:3000/.well-known/mercure
 MERCURE_JWT_SECRET="!ChangeThisMercureHubJWTSecretKey!"
 
 MAILER_DSN=smtp://127.0.0.1:1025
 ```
 
-## 5. Lancer les services et installer les packages
+## 4. Lancer les services et installer les packages
 
 ```bash
 docker compose up -d
@@ -86,517 +49,478 @@ composer require --dev phpstan/phpstan phpstan/extension-installer phpstan/phpst
 
 ---
 
-## 6. Conventions à appliquer pendant la création des entités
+## 5. Conventions à appliquer pendant la création des entités
 
 Quelques règles transverses, à appliquer manuellement après chaque `make:entity` (le maker ne pose pas ces questions) :
 
-- **Dates** : choisis toujours `datetime_immutable` (et `date_immutable` pour les champs `date`), c'est la recommandation actuelle de Doctrine. Pour les valeurs "par défaut = maintenant", initialise-les dans le constructeur de l'entité (`$this->dateCreation = new \DateTimeImmutable();`).
-- **Champs "unique"** (`Categorie.nom`, `Equipement.reference`, `Facture.numero`...) : le maker ne demande pas l'unicité. Ajoute `unique: true` à la main dans l'attribut `#[ORM\Column(...)]` généré.
-- **Valeurs par défaut de type "statut"** (`en_attente`, `disponible`...) : initialise-les dans le constructeur plutôt que via `options: ['default' => ...]`, c'est plus lisible et testable.
+- **Dates** : choisis toujours `datetime_immutable` (et `date_immutable` pour les champs `date`), c'est la recommandation actuelle de Doctrine. Pour les valeurs "par défaut = maintenant", initialise-les dans le constructeur de l'entité (`$this->createdAt = new \DateTimeImmutable();`).
+- **Champs "unique"** (`Category.name`, `Equipment.reference`, `Invoice.number`...) : le maker ne demande pas l'unicité. Ajoute `unique: true` à la main dans l'attribut `#[ORM\Column(...)]` généré.
+- **Valeurs par défaut de type "statut"** (`pending`, `available`...) : initialise-les dans le constructeur plutôt que via `options: ['default' => ...]`, c'est plus lisible et testable.
 - **Decimal** : à chaque fois que le maker demande precision/scale pour un `decimal`, réponds `10` et `2`.
 
 ---
 
-## 7. Ordre de création des entités
+## 6. Ordre de création des entités
 
-L'ordre compte : pour créer une relation `ManyToOne` vers une entité, celle-ci doit déjà exister. Voici l'ordre qui évite les blocages :
+L'ordre compte : pour créer une relation `ManyToOne` vers une entité, celle-ci doit déjà exister.
 
 1. `User` (via `make:user`)
-2. `Categorie`
-3. `Fournisseur`
-4. `Accessoire`
-5. `Equipement` + `MaterielAudio` + `MaterielVideo` (héritage — section spéciale)
+2. `Category`
+3. `Supplier`
+4. `Accessory`
+5. `Equipment` + `AudioEquipment` + `VideoEquipment` (héritage — section spéciale)
 6. `Reservation`
-7. `LigneReservation`
-8. `Devis`
-9. `LigneDevis`
-10. `Facture`
-11. `Avis`
+7. `ReservationLine`
+8. `Quote`
+9. `QuoteLine`
+10. `Invoice`
+11. `Review`
 12. `Maintenance`
 13. `Notification`
 
 ---
 
-## 8. `User`
+## 7. `User`
 
 ```bash
-symfony console make:user
+php bin/console make:user
 ```
 
 Réponses aux prompts :
+
 - Nom de la classe : `User`
 - Stocker le mot de passe (hash) ? : `yes`
 - Champ d'unicité : `email`
 
 Cela génère `id`, `email` (string 180, unique), `roles` (json), `password` (string).
 
-Relance ensuite `symfony console make:entity User` pour ajouter les champs métier manquants :
+Relance ensuite `php bin/console make:entity User` pour ajouter les champs métier manquants :
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| nom | string | longueur 100 | non |
-| prenom | string | longueur 100 | non |
-| telephone | string | longueur 20 | oui |
-| dateInscription | datetime_immutable | — | non |
-| actif | boolean | — | non |
+| Champ        | Type à entrer      | Détails      | Nullable |
+| ------------ | ------------------ | ------------ | -------- |
+| lastName     | string             | longueur 100 | non      |
+| firstName    | string             | longueur 100 | non      |
+| phone        | string             | longueur 20  | oui      |
+| registeredAt | datetime_immutable | —            | non      |
+| active       | boolean            | —            | non      |
+
+Puis dans `src/Entity/User.php`, ajoute dans le constructeur :
+
+```php
+$this->registeredAt = new \DateTimeImmutable();
+$this->active = true;
+```
 
 ---
 
-## 9. `Categorie`
+## 8. `Category`
 
 ```bash
-symfony console make:entity Categorie
+php bin/console make:entity Category
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| nom | string | longueur 100 (+ `unique: true` à la main) | non |
-| description | text | — | oui |
+| Champ       | Type à entrer | Détails                                   | Nullable |
+| ----------- | ------------- | ----------------------------------------- | -------- |
+| name        | string        | longueur 100 (+ `unique: true` à la main) | non      |
+| description | text          | —                                         | oui      |
 
-**Relations à ajouter ici** : aucune. La relation avec `Equipement` sera créée depuis `Equipement` (étape 12) — accepte la proposition d'ajouter le côté inverse à ce moment-là.
+**Relations à ajouter ici** : aucune. La relation avec `Equipment` sera créée depuis `Equipment` (étape 11) — accepte la proposition d'ajouter le côté inverse à ce moment-là.
 
 ---
 
-## 10. `Fournisseur`
+## 9. `Supplier`
 
 ```bash
-symfony console make:entity Fournisseur
+php bin/console make:entity Supplier
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| nom | string | longueur 150 | non |
-| email | string | longueur 180 | oui |
-| telephone | string | longueur 20 | oui |
-| adresse | string | longueur 255 | oui |
+| Champ   | Type à entrer | Détails      | Nullable |
+| ------- | ------------- | ------------ | -------- |
+| name    | string        | longueur 150 | non      |
+| email   | string        | longueur 180 | oui      |
+| phone   | string        | longueur 20  | oui      |
+| address | string        | longueur 255 | oui      |
 
-**Relations à ajouter ici** : aucune (idem Categorie, côté inverse ajouté depuis `Equipement`).
+**Relations à ajouter ici** : aucune (idem Category, côté inverse ajouté depuis `Equipment`).
 
 ---
 
-## 11. `Accessoire`
+## 10. `Accessory`
 
 ```bash
-symfony console make:entity Accessoire
+php bin/console make:entity Accessory
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| nom | string | longueur 150 | non |
-| description | text | — | oui |
+| Champ       | Type à entrer | Détails      | Nullable |
+| ----------- | ------------- | ------------ | -------- |
+| name        | string        | longueur 150 | non      |
+| description | text          | —            | oui      |
 
-**Relations à ajouter ici** : aucune. Le ManyToMany avec `Equipement` sera créé depuis `Equipement` (étape 12).
+**Relations à ajouter ici** : aucune. Le ManyToMany avec `Equipment` sera créé depuis `Equipment` (étape 11).
 
 ---
 
-## 12. `Equipement` + héritage (`MaterielAudio` / `MaterielVideo`)
+## 11. `Equipment` + héritage (`AudioEquipment` / `VideoEquipment`)
 
-### 12.1 Champs propres et relations de `Equipement`
+### 11.1 Champs propres et relations de `Equipment`
 
 ```bash
-symfony console make:entity Equipement
+php bin/console make:entity Equipment
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| reference | string | longueur 50 (+ `unique: true` à la main) | non |
-| nom | string | longueur 150 | non |
-| description | text | — | oui |
-| prixJournalier | decimal | precision 10, scale 2 | non |
-| statutDisponibilite | string | longueur 20 (défaut `'disponible'` dans le constructeur) | non |
-| photo | string | longueur 255 | oui |
-| dateAjout | datetime_immutable | — | non |
+| Champ              | Type à entrer      | Détails                                                 | Nullable |
+| ------------------ | ------------------ | ------------------------------------------------------- | -------- |
+| reference          | string             | longueur 50 (+ `unique: true` à la main)                | non      |
+| name               | string             | longueur 150                                            | non      |
+| description        | text               | —                                                       | oui      |
+| dailyPrice         | decimal            | precision 10, scale 2                                   | non      |
+| availabilityStatus | string             | longueur 20 (défaut `'available'` dans le constructeur) | non      |
+| photo              | string             | longueur 255                                            | oui      |
+| addedAt            | datetime_immutable | —                                                       | non      |
 
 **Relations à ajouter ici** :
 
-| Champ relation | Entité cible | Type | Nullable | Côté inverse |
-|---|---|---|---|---|
-| categorie | Categorie | ManyToOne | non | oui → propriété `equipements` sur `Categorie` |
-| fournisseur | Fournisseur | ManyToOne | non | oui → propriété `equipements` sur `Fournisseur` |
-| accessoires | Accessoire | ManyToMany | — | oui → propriété `equipements` sur `Accessoire` |
+| Champ relation | Entité cible | Type       | Nullable | Côté inverse                                 |
+| -------------- | ------------ | ---------- | -------- | -------------------------------------------- |
+| category       | Category     | ManyToOne  | non      | oui → propriété `equipments` sur `Category`  |
+| supplier       | Supplier     | ManyToOne  | non      | oui → propriété `equipments` sur `Supplier`  |
+| accessories    | Accessory    | ManyToMany | —        | oui → propriété `equipments` sur `Accessory` |
 
-### 12.2 Mise en place de l'héritage (édition manuelle de `Equipement.php`)
+### 11.2 Mise en place de l'héritage (édition manuelle de `Equipment.php`)
 
-Ajoute ces attributs **au niveau de la classe** `Equipement`, au-dessus de `#[ORM\Entity(...)]` généré :
+Ajoute ces attributs **au niveau de la classe** `Equipment`, au-dessus de `#[ORM\Entity(...)]` généré :
 
 ```php
-#[ORM\Entity(repositoryClass: EquipementRepository::class)]
+#[ORM\Entity(repositoryClass: EquipmentRepository::class)]
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
-    'audio' => MaterielAudio::class,
-    'video' => MaterielVideo::class,
+    'audio' => AudioEquipment::class,
+    'video' => VideoEquipment::class,
 ])]
-class Equipement
+class Equipment
 {
-    // ... champs générés à l'étape 12.1, ne change rien ici
+    // ... champs générés à l'étape 11.1
 }
 ```
 
-N'oublie pas les `use MaterielAudio;` / `use MaterielVideo;` en haut du fichier (même namespace `App\Entity`, donc pas obligatoire si même dossier, mais vérifie selon ton IDE).
+### 11.3 Créer `AudioEquipment.php` et `VideoEquipment.php` (à la main, pas de `make:entity`)
 
-### 12.3 Créer `MaterielAudio.php` et `MaterielVideo.php` (à la main, pas de `make:entity`)
-
-`src/Entity/MaterielAudio.php` :
+`src/Entity/AudioEquipment.php` :
 
 ```php
 <?php
 
 namespace App\Entity;
 
-use App\Repository\MaterielAudioRepository;
+use App\Repository\AudioEquipmentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: MaterielAudioRepository::class)]
-class MaterielAudio extends Equipement
+#[ORM\Entity(repositoryClass: AudioEquipmentRepository::class)]
+class AudioEquipment extends Equipment
 {
     #[ORM\Column]
-    private ?int $puissanceWatts = null;
+    private ?int $powerWatts = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $typeConnectique = null;
+    private ?string $connectorType = null;
 
     #[ORM\Column]
-    private ?int $nombreCanaux = null;
+    private ?int $channelCount = null;
 
-    public function getPuissanceWatts(): ?int
-    {
-        return $this->puissanceWatts;
-    }
+    public function getPowerWatts(): ?int { return $this->powerWatts; }
+    public function setPowerWatts(int $powerWatts): static { $this->powerWatts = $powerWatts; return $this; }
 
-    public function setPuissanceWatts(int $puissanceWatts): static
-    {
-        $this->puissanceWatts = $puissanceWatts;
-        return $this;
-    }
+    public function getConnectorType(): ?string { return $this->connectorType; }
+    public function setConnectorType(string $connectorType): static { $this->connectorType = $connectorType; return $this; }
 
-    public function getTypeConnectique(): ?string
-    {
-        return $this->typeConnectique;
-    }
-
-    public function setTypeConnectique(string $typeConnectique): static
-    {
-        $this->typeConnectique = $typeConnectique;
-        return $this;
-    }
-
-    public function getNombreCanaux(): ?int
-    {
-        return $this->nombreCanaux;
-    }
-
-    public function setNombreCanaux(int $nombreCanaux): static
-    {
-        $this->nombreCanaux = $nombreCanaux;
-        return $this;
-    }
+    public function getChannelCount(): ?int { return $this->channelCount; }
+    public function setChannelCount(int $channelCount): static { $this->channelCount = $channelCount; return $this; }
 }
 ```
 
-`src/Entity/MaterielVideo.php` :
+`src/Entity/VideoEquipment.php` :
 
 ```php
 <?php
 
 namespace App\Entity;
 
-use App\Repository\MaterielVideoRepository;
+use App\Repository\VideoEquipmentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: MaterielVideoRepository::class)]
-class MaterielVideo extends Equipement
+#[ORM\Entity(repositoryClass: VideoEquipmentRepository::class)]
+class VideoEquipment extends Equipment
 {
     #[ORM\Column(length: 20)]
     private ?string $resolution = null;
 
     #[ORM\Column]
-    private ?int $luminositeLumens = null;
+    private ?int $brightnessLumens = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $typeProjection = null;
+    private ?string $projectionType = null;
 
-    public function getResolution(): ?string
-    {
-        return $this->resolution;
-    }
+    public function getResolution(): ?string { return $this->resolution; }
+    public function setResolution(string $resolution): static { $this->resolution = $resolution; return $this; }
 
-    public function setResolution(string $resolution): static
-    {
-        $this->resolution = $resolution;
-        return $this;
-    }
+    public function getBrightnessLumens(): ?int { return $this->brightnessLumens; }
+    public function setBrightnessLumens(int $brightnessLumens): static { $this->brightnessLumens = $brightnessLumens; return $this; }
 
-    public function getLuminositeLumens(): ?int
-    {
-        return $this->luminositeLumens;
-    }
-
-    public function setLuminositeLumens(int $luminositeLumens): static
-    {
-        $this->luminositeLumens = $luminositeLumens;
-        return $this;
-    }
-
-    public function getTypeProjection(): ?string
-    {
-        return $this->typeProjection;
-    }
-
-    public function setTypeProjection(string $typeProjection): static
-    {
-        $this->typeProjection = $typeProjection;
-        return $this;
-    }
+    public function getProjectionType(): ?string { return $this->projectionType; }
+    public function setProjectionType(string $projectionType): static { $this->projectionType = $projectionType; return $this; }
 }
 ```
 
-Crée aussi les repositories vides correspondants (`src/Repository/MaterielAudioRepository.php` et `MaterielVideoRepository.php`), sur le modèle de `EquipementRepository` mais en changeant le type d'entité gérée :
+Crée aussi les repositories vides (`src/Repository/AudioEquipmentRepository.php` et `VideoEquipmentRepository.php`) sur le modèle de `EquipmentRepository` en changeant le type d'entité gérée :
 
 ```php
 <?php
 
 namespace App\Repository;
 
-use App\Entity\MaterielAudio;
+use App\Entity\AudioEquipment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class MaterielAudioRepository extends ServiceEntityRepository
+class AudioEquipmentRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, MaterielAudio::class);
+        parent::__construct($registry, AudioEquipment::class);
     }
 }
 ```
 
-(idem pour `MaterielVideoRepository` avec `MaterielVideo::class`)
+(idem pour `VideoEquipmentRepository` avec `VideoEquipment::class`)
 
 ---
 
-## 13. `Reservation`
+## 12. `Reservation`
 
 ```bash
-symfony console make:entity Reservation
+php bin/console make:entity Reservation
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| dateDebut | date_immutable | — | non |
-| dateFin | date_immutable | — | non |
-| villeEvenement | string | longueur 100 | non |
-| typeLieu | string | longueur 20 | non |
-| statut | string | longueur 20 (défaut `'en_attente'` dans le constructeur) | non |
-| montantTotal | decimal | precision 10, scale 2 (défaut `0` dans le constructeur) | non |
-| previsionMeteo | string | longueur 255 | oui |
-| dateCreation | datetime_immutable | — | non |
+| Champ           | Type à entrer      | Détails                                                 | Nullable |
+| --------------- | ------------------ | ------------------------------------------------------- | -------- |
+| startDate       | date_immutable     | —                                                       | non      |
+| endDate         | date_immutable     | —                                                       | non      |
+| eventCity       | string             | longueur 100                                            | non      |
+| venueType       | string             | longueur 20 (défaut `'indoor'` dans le constructeur)    | non      |
+| status          | string             | longueur 20 (défaut `'pending'` dans le constructeur)   | non      |
+| totalAmount     | decimal            | precision 10, scale 2 (défaut `0` dans le constructeur) | non      |
+| weatherForecast | string             | longueur 255                                            | oui      |
+| createdAt       | datetime_immutable | —                                                       | non      |
 
 **Relations à ajouter ici** :
 
-| Champ relation | Entité cible | Type | Nullable | Côté inverse |
-|---|---|---|---|---|
-| user | User | ManyToOne | non | oui → propriété `reservations` sur `User` |
+| Champ relation | Entité cible | Type      | Nullable | Côté inverse                              |
+| -------------- | ------------ | --------- | -------- | ----------------------------------------- |
+| user           | User         | ManyToOne | non      | oui → propriété `reservations` sur `User` |
 
 ---
 
-## 14. `LigneReservation`
+## 13. `ReservationLine`
 
 ```bash
-symfony console make:entity LigneReservation
+php bin/console make:entity ReservationLine
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| quantite | integer | — | non |
-| prixUnitaireJour | decimal | precision 10, scale 2 | non |
+| Champ           | Type à entrer | Détails               | Nullable |
+| --------------- | ------------- | --------------------- | -------- |
+| quantity        | integer       | —                     | non      |
+| unitPricePerDay | decimal       | precision 10, scale 2 | non      |
 
 **Relations à ajouter ici** :
 
-| Champ relation | Entité cible | Type | Nullable | Côté inverse |
-|---|---|---|---|---|
-| reservation | Reservation | ManyToOne | non | oui → propriété `ligneReservations` sur `Reservation` |
-| equipement | Equipement | ManyToOne | non | oui → propriété `ligneReservations` sur `Equipement` |
+| Champ relation | Entité cible | Type      | Nullable | Côté inverse                                       |
+| -------------- | ------------ | --------- | -------- | -------------------------------------------------- |
+| reservation    | Reservation  | ManyToOne | non      | oui → propriété `lines` sur `Reservation`          |
+| equipment      | Equipment    | ManyToOne | non      | oui → propriété `reservationLines` sur `Equipment` |
 
 ---
 
-## 15. `Devis`
+## 14. `Quote`
 
 ```bash
-symfony console make:entity Devis
+php bin/console make:entity Quote
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| dateDebutSouhaitee | date_immutable | — | non |
-| dateFinSouhaitee | date_immutable | — | non |
-| villeEvenement | string | longueur 100 | oui |
-| montantEstime | decimal | precision 10, scale 2 (défaut `0`) | non |
-| statut | string | longueur 20 (défaut `'en_attente'`) | non |
-| dateCreation | datetime_immutable | — | non |
-| dateValidite | date_immutable | — | non |
+| Champ              | Type à entrer      | Détails                            | Nullable |
+| ------------------ | ------------------ | ---------------------------------- | -------- |
+| requestedStartDate | date_immutable     | —                                  | non      |
+| requestedEndDate   | date_immutable     | —                                  | non      |
+| eventCity          | string             | longueur 100                       | oui      |
+| estimatedAmount    | decimal            | precision 10, scale 2 (défaut `0`) | non      |
+| status             | string             | longueur 20 (défaut `'pending'`)   | non      |
+| createdAt          | datetime_immutable | —                                  | non      |
+| validUntil         | date_immutable     | —                                  | non      |
 
 **Relations à ajouter ici** :
 
-| Champ relation | Entité cible | Type | Nullable | Côté inverse |
-|---|---|---|---|---|
-| user | User | ManyToOne | non | oui → propriété `devis` sur `User` |
+| Champ relation | Entité cible | Type      | Nullable | Côté inverse                        |
+| -------------- | ------------ | --------- | -------- | ----------------------------------- |
+| user           | User         | ManyToOne | non      | oui → propriété `quotes` sur `User` |
 
 ---
 
-## 16. `LigneDevis`
+## 15. `QuoteLine`
 
 ```bash
-symfony console make:entity LigneDevis
+php bin/console make:entity QuoteLine
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| quantite | integer | — | non |
-| prixUnitaireJour | decimal | precision 10, scale 2 | non |
+| Champ           | Type à entrer | Détails               | Nullable |
+| --------------- | ------------- | --------------------- | -------- |
+| quantity        | integer       | —                     | non      |
+| unitPricePerDay | decimal       | precision 10, scale 2 | non      |
 
 **Relations à ajouter ici** :
 
-| Champ relation | Entité cible | Type | Nullable | Côté inverse |
-|---|---|---|---|---|
-| devis | Devis | ManyToOne | non | oui → propriété `ligneDevis` sur `Devis` |
-| equipement | Equipement | ManyToOne | non | oui → propriété `ligneDevis` sur `Equipement` |
+| Champ relation | Entité cible | Type      | Nullable | Côté inverse                                 |
+| -------------- | ------------ | --------- | -------- | -------------------------------------------- |
+| quote          | Quote        | ManyToOne | non      | oui → propriété `lines` sur `Quote`          |
+| equipment      | Equipment    | ManyToOne | non      | oui → propriété `quoteLines` sur `Equipment` |
 
 ---
 
-## 17. `Facture`
+## 16. `Invoice`
 
 ```bash
-symfony console make:entity Facture
+php bin/console make:entity Invoice
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| numero | string | longueur 50 (+ `unique: true` à la main) | non |
-| montant | decimal | precision 10, scale 2 | non |
-| statutPaiement | string | longueur 20 (défaut `'en_attente'`) | non |
-| dateEmission | datetime_immutable | — | non |
-| dateEcheance | date_immutable | — | non |
+| Champ         | Type à entrer      | Détails                                  | Nullable |
+| ------------- | ------------------ | ---------------------------------------- | -------- |
+| number        | string             | longueur 50 (+ `unique: true` à la main) | non      |
+| amount        | decimal            | precision 10, scale 2                    | non      |
+| paymentStatus | string             | longueur 20 (défaut `'pending'`)         | non      |
+| issuedAt      | datetime_immutable | —                                        | non      |
+| dueDate       | date_immutable     | —                                        | non      |
 
 **Relations à ajouter ici** :
 
-| Champ relation | Entité cible | Type | Nullable | Côté inverse |
-|---|---|---|---|---|
-| reservation | Reservation | OneToOne | non | oui → propriété `facture` sur `Reservation` |
+| Champ relation | Entité cible | Type     | Nullable | Côté inverse                                |
+| -------------- | ------------ | -------- | -------- | ------------------------------------------- |
+| reservation    | Reservation  | OneToOne | non      | oui → propriété `invoice` sur `Reservation` |
 
-Après génération, vérifie que la colonne `reservation_id` côté `Facture` est bien `unique: true` (le maker l'ajoute normalement pour une OneToOne, sinon ajoute-le à la main).
+Après génération, vérifie que la colonne `reservation_id` côté `Invoice` est bien `unique: true` (le maker l'ajoute normalement pour une OneToOne, sinon ajoute-le à la main).
 
 ---
 
-## 18. `Avis`
+## 17. `Review`
 
 ```bash
-symfony console make:entity Avis
+php bin/console make:entity Review
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| note | integer | — | non |
-| commentaire | text | — | oui |
-| dateCreation | datetime_immutable | — | non |
+| Champ     | Type à entrer      | Détails | Nullable |
+| --------- | ------------------ | ------- | -------- |
+| rating    | integer            | —       | non      |
+| comment   | text               | —       | oui      |
+| createdAt | datetime_immutable | —       | non      |
 
 **Relations à ajouter ici** :
 
-| Champ relation | Entité cible | Type | Nullable | Côté inverse |
-|---|---|---|---|---|
-| user | User | ManyToOne | non | oui → propriété `avis` sur `User` |
-| equipement | Equipement | ManyToOne | non | oui → propriété `avis` sur `Equipement` |
+| Champ relation | Entité cible | Type      | Nullable | Côté inverse                              |
+| -------------- | ------------ | --------- | -------- | ----------------------------------------- |
+| user           | User         | ManyToOne | non      | oui → propriété `reviews` sur `User`      |
+| equipment      | Equipment    | ManyToOne | non      | oui → propriété `reviews` sur `Equipment` |
 
 ---
 
-## 19. `Maintenance`
+## 18. `Maintenance`
 
 ```bash
-symfony console make:entity Maintenance
+php bin/console make:entity Maintenance
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| typeIntervention | string | longueur 20 | non |
-| description | text | — | non |
-| dateIntervention | datetime_immutable | — | non |
-| statutApresIntervention | string | longueur 20 | non |
+| Champ                   | Type à entrer      | Détails     | Nullable |
+| ----------------------- | ------------------ | ----------- | -------- |
+| interventionType        | string             | longueur 20 | non      |
+| description             | text               | —           | non      |
+| interventionDate        | datetime_immutable | —           | non      |
+| statusAfterIntervention | string             | longueur 20 | non      |
 
 **Relations à ajouter ici** :
 
-| Champ relation | Entité cible | Type | Nullable | Côté inverse |
-|---|---|---|---|---|
-| equipement | Equipement | ManyToOne | non | oui → propriété `maintenances` sur `Equipement` |
-| technicien | User | ManyToOne | non | oui → propriété `maintenances` sur `User` |
+| Champ relation | Entité cible | Type      | Nullable | Côté inverse                                   |
+| -------------- | ------------ | --------- | -------- | ---------------------------------------------- |
+| equipment      | Equipment    | ManyToOne | non      | oui → propriété `maintenances` sur `Equipment` |
+| technician     | User         | ManyToOne | non      | oui → propriété `maintenances` sur `User`      |
 
-Pour la relation `technicien`, quand le maker demande l'entité cible, choisis `User` puis nomme bien la propriété `technicien` (pas `user`) pour que ce soit lisible dans le code.
+Pour la relation `technician`, quand le maker demande l'entité cible, choisis `User` puis nomme bien la propriété `technician` (pas `user`) pour que ce soit lisible dans le code.
 
 ---
 
-## 20. `Notification`
+## 19. `Notification`
 
 ```bash
-symfony console make:entity Notification
+php bin/console make:entity Notification
 ```
 
-| Champ | Type à entrer | Détails | Nullable |
-|---|---|---|---|
-| message | text | — | non |
-| type | string | longueur 50 | oui |
-| lu | boolean | — (défaut `false`) | non |
-| dateCreation | datetime_immutable | — | non |
+| Champ     | Type à entrer      | Détails            | Nullable |
+| --------- | ------------------ | ------------------ | -------- |
+| message   | text               | —                  | non      |
+| type      | string             | longueur 50        | oui      |
+| read      | boolean            | — (défaut `false`) | non      |
+| createdAt | datetime_immutable | —                  | non      |
 
 **Relations à ajouter ici** :
 
-| Champ relation | Entité cible | Type | Nullable | Côté inverse |
-|---|---|---|---|---|
-| user | User | ManyToOne | non | oui → propriété `notifications` sur `User` |
+| Champ relation | Entité cible | Type      | Nullable | Côté inverse                               |
+| -------------- | ------------ | --------- | -------- | ------------------------------------------ |
+| user           | User         | ManyToOne | non      | oui → propriété `notifications` sur `User` |
 
 ---
 
-## 21. Migration et base de données
+## 20. Migration et base de données
 
 ```bash
-symfony console doctrine:database:create   # souvent inutile, le service postgres crée déjà la DB
-symfony console make:migration
-symfony console doctrine:migrations:migrate
+php bin/console doctrine:database:create   # souvent inutile, le service postgres crée déjà la DB
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
 ```
 
-## 22. Fixtures
+## 21. Fixtures
 
 ```bash
-symfony console make:fixtures AppFixtures
+php bin/console make:fixtures AppFixtures
 # édite src/DataFixtures/AppFixtures.php avec Faker
-symfony console doctrine:fixtures:load
+php bin/console doctrine:fixtures:load
 ```
 
-## 23. Back-office EasyAdmin
+## 22. Back-office EasyAdmin
 
 ```bash
-symfony console make:admin:dashboard
-symfony console make:admin:crud Equipement
-symfony console make:admin:crud Categorie
-symfony console make:admin:crud Fournisseur
-symfony console make:admin:crud Accessoire
-symfony console make:admin:crud Reservation
-symfony console make:admin:crud Devis
-symfony console make:admin:crud Facture
-symfony console make:admin:crud Avis
-symfony console make:admin:crud Maintenance
-symfony console make:admin:crud User
+php bin/console make:admin:dashboard
+php bin/console make:admin:crud Equipment
+php bin/console make:admin:crud Category
+php bin/console make:admin:crud Supplier
+php bin/console make:admin:crud Accessory
+php bin/console make:admin:crud Reservation
+php bin/console make:admin:crud Quote
+php bin/console make:admin:crud Invoice
+php bin/console make:admin:crud Review
+php bin/console make:admin:crud Maintenance
+php bin/console make:admin:crud User
 ```
 
-## 24. Tests
+## 23. Tests
 
 ```bash
-symfony console make:test
+php bin/console make:test
 php bin/phpunit
 ```
 
-## 25. Lancer en local
+## 24. Lancer en local
 
 ```bash
-symfony server:start -d
-# app    : https://127.0.0.1:8000
-# mailpit: http://127.0.0.1:8025
+# via Docker (recommandé) :
+docker compose up -d
+# app     : http://localhost:8089
+# mailpit : http://localhost:8025
+# adminer : http://localhost:8088
+# mercure : http://localhost:3000
 ```
