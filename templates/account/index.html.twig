@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon compte{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Mon compte</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ user.firstName }} {{ user.lastName }}</h5>
+                    <p class="card-text">
+                        <strong>Email :</strong> {{ user.email }}<br>
+                        <strong>Téléphone :</strong> {{ user.phone ?: 'Non renseigné' }}<br>
+                        <strong>Rôle :</strong> {{ user.roles|join(', ') }}<br>
+                        <strong>Inscrit le :</strong> {{ user.registeredAt|date('d/m/Y') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#reservations">Mes réservations</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#quotes">Mes devis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#invoices">Mes factures</a>
+                </li>
+            </ul>
+            <div class="tab-content mt-3">
+                <div class="tab-pane fade show active" id="reservations">
+                    {% if user.reservations is empty %}
+                        <p class="text-muted">Aucune réservation pour le moment.</p>
+                    {% else %}
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Dates</th>
+                                    <th>Ville</th>
+                                    <th>Type</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for r in user.reservations %}
+                                <tr>
+                                    <td>{{ r.startDate|date('d/m/Y') }} – {{ r.endDate|date('d/m/Y') }}</td>
+                                    <td>{{ r.eventCity }}</td>
+                                    <td>{{ r.venueType == 'indoor' ? 'Intérieur' : 'Extérieur' }}</td>
+                                    <td>{{ r.totalAmount }} €</td>
+                                    <td><span class="badge bg-{{ r.status == 'confirmed' ? 'success' : r.status == 'pending' ? 'warning' : r.status == 'cancelled' ? 'danger' : 'secondary' }}">{{ r.status }}</span></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+                <div class="tab-pane fade" id="quotes">
+                    {% if user.quotes is empty %}
+                        <p class="text-muted">Aucun devis pour le moment.</p>
+                    {% else %}
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Dates</th>
+                                    <th>Ville</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for q in user.quotes %}
+                                <tr>
+                                    <td>{{ q.requestedStartDate|date('d/m/Y') }} – {{ q.requestedEndDate|date('d/m/Y') }}</td>
+                                    <td>{{ q.eventCity }}</td>
+                                    <td>{{ q.estimatedAmount }} €</td>
+                                    <td><span class="badge bg-{{ q.status == 'approved' ? 'success' : q.status == 'pending' ? 'warning' : 'danger' }}">{{ q.status }}</span></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+                <div class="tab-pane fade" id="invoices">
+                    {% set invoices = [] %}
+                    {% for r in user.reservations %}
+                        {% if r.invoice %}
+                            {% set invoices = invoices|merge([r.invoice]) %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if invoices is empty %}
+                        <p class="text-muted">Aucune facture pour le moment.</p>
+                    {% else %}
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Numéro</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                    <th>Émise le</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for inv in invoices %}
+                                <tr>
+                                    <td>{{ inv.number }}</td>
+                                    <td>{{ inv.amount }} €</td>
+                                    <td><span class="badge bg-{{ inv.paymentStatus == 'paid' ? 'success' : 'warning' }}">{{ inv.paymentStatus }}</span></td>
+                                    <td>{{ inv.issuedAt|date('d/m/Y') }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

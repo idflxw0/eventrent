@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container mt-5 text-center">
+    <h1>EventRent</h1>
+    <p class="lead">Location de matériel audiovisuel et événementiel</p>
+
+    {% if app.user %}
+        <p>Bienvenue, <strong>{{ app.user.firstName }}</strong> !</p>
+    {% else %}
+        <div class="mt-4">
+            <a href="{{ path('app_login') }}" class="btn btn-primary me-2">Connexion</a>
+            <a href="{{ path('app_register') }}" class="btn btn-outline-primary">Inscription</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
