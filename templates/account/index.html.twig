@@ -32,7 +32,7 @@
                 {% endif %}
                 <div style="color:var(--er-muted-text); font-size:.8125rem; margin-top:8px; padding-top:8px; border-top:1px solid var(--er-border);">
                     <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
-                    Membre depuis {{ user.registeredAt|date('F Y') }}
+                    Membre depuis {{ user.registeredAt ? user.registeredAt|date('F Y') : '—' }}
                 </div>
             </div>
 
@@ -190,7 +190,7 @@
                                         {% for r in user.reservations %}
                                             <tr>
                                                 <td style="white-space:nowrap;">
-                                                    {{ r.startDate|date('d/m/Y') }} – {{ r.endDate|date('d/m/Y') }}
+                                                    {{ r.startDate ? r.startDate|date('d/m/Y') : '—' }} – {{ r.endDate ? r.endDate|date('d/m/Y') : '—' }}
                                                 </td>
                                                 <td>{{ r.eventCity }}</td>
                                                 <td>{{ r.venueType == 'indoor' ? 'Intérieur' : 'Extérieur' }}</td>
@@ -250,7 +250,7 @@
                                         {% for q in user.quotes %}
                                             <tr>
                                                 <td style="white-space:nowrap;">
-                                                    {{ q.requestedStartDate|date('d/m/Y') }} – {{ q.requestedEndDate|date('d/m/Y') }}
+                                                    {{ q.requestedStartDate ? q.requestedStartDate|date('d/m/Y') : '—' }} – {{ q.requestedEndDate ? q.requestedEndDate|date('d/m/Y') : '—' }}
                                                 </td>
                                                 <td>{{ q.eventCity }}</td>
                                                 <td class="text-end" style="font-variant-numeric:tabular-nums; font-weight:700; color:var(--er-accent-text);">
@@ -301,7 +301,7 @@
                                         {% for inv in invoices %}
                                             <tr>
                                                 <td><strong>{{ inv.number }}</strong></td>
-                                                <td>{{ inv.issuedAt|date('d/m/Y') }}</td>
+                                                <td>{{ inv.issuedAt ? inv.issuedAt|date('d/m/Y') : '—' }}</td>
                                                 <td class="text-end" style="font-variant-numeric:tabular-nums; font-weight:700; color:var(--er-accent-text);">
                                                     {{ inv.amount }} €
                                                 </td>

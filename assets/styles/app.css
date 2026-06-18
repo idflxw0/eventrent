@@ -7,6 +7,7 @@
 :root {
   --er-primary:        #E55D1E;
   --er-accent:         #E55D1E;
+  --er-accent-text:    #E55D1E;
   --er-primary-dark:   #C04C15;
   --er-primary-pale:   #FFF1EB;
 
@@ -1338,18 +1339,21 @@ body {
 }
 
 .er-stat-pill {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: var(--er-muted);
-  border-radius: var(--radius-full);
-  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
   font-size: .875rem;
   font-weight: 600;
   color: var(--er-foreground);
+  margin-bottom: 10px;
 }
+.er-stat-pill:last-child { margin-bottom: 0; }
 .er-stat-pill strong { font-family: 'Poppins', sans-serif; font-size: 1.125rem; }
-.er-stat-pill i { color: var(--er-primary); }
+.er-stat-pill i { color: var(--er-primary); font-size: 1.125rem; }
+.er-stat-pill .num { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.125rem; }
 
 /* ─── INVOICE TABLE ───────────────────────────────────────── */
 .er-invoice-table {
@@ -1391,6 +1395,90 @@ body {
 }
 .er-summary-total { color: var(--er-primary); }
 .er-res-total { font-family: 'Poppins', sans-serif; font-weight: 700; }
+
+/* ─── ACCOUNT PAGE SPECIFICS ─────────────────────────────── */
+.er-account-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--er-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.er-account-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: var(--er-foreground);
+  margin-bottom: 4px;
+}
+
+.er-account-form-card {
+  background: var(--er-surface);
+  border: 1.5px solid var(--er-border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+
+.er-section-divider {
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--er-muted-text);
+  padding: 20px 0 16px;
+  margin-top: 8px;
+  border-top: 1px solid var(--er-border);
+}
+
+/* Empty states */
+.er-empty {
+  text-align: center;
+  padding: 48px 0;
+}
+.er-empty-icon {
+  font-size: 2.5rem;
+  color: var(--er-border);
+  display: block;
+  margin-bottom: 12px;
+}
+.er-empty-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--er-muted-text);
+}
+
+/* Extra badge variants */
+.er-badge-approved    { background: var(--er-success-bg); color: var(--er-success); }
+.er-badge-refused     { background: var(--er-destructive-bg); color: var(--er-destructive); }
+.er-badge-expired     { background: var(--er-muted); color: var(--er-muted-text); }
+.er-badge-in-progress { background: var(--er-info-bg); color: var(--er-info); }
+.er-badge-completed   { background: var(--er-muted); color: var(--er-foreground); }
+
+/* Bootstrap Nav Tabs override */
+.nav-tabs { border-bottom: 2px solid var(--er-border); gap: 4px; }
+.nav-tabs .nav-link {
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  color: var(--er-muted-text);
+  font-size: .875rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  margin-bottom: -2px;
+  transition: color .15s, border-color .15s;
+  font-family: 'Poppins', sans-serif;
+}
+.nav-tabs .nav-link:hover { color: var(--er-foreground); background: transparent; border-color: transparent; }
+.nav-tabs .nav-link.active { color: var(--er-primary); border-bottom-color: var(--er-primary); background: transparent; }
 
 /* ─── MODAL ───────────────────────────────────────────────── */
 .er-modal-overlay {
