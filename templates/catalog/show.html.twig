@@ -113,9 +113,10 @@
                         {% if avgRating > 0 %}
                             <span class="er-equip-stars" aria-hidden="true">
                                 {% for i in 1..5 %}
-                                    {% if i <= avgRating|round(0, 'floor') %}<i class="bi bi-star-fill"></i>{% endif %}
-                                    {% if avgRating|round(0, 'floor') < i and i - 1 < avgRating %}<i class="bi bi-star-half"></i>{% endif %}
-                                    {% if i > avgRating %}<i class="bi bi-star"></i>{% endif %}
+                                    {% if i <= avgRating|round(0, 'floor') %}<i class="bi bi-star-fill"></i>
+                                    {% elseif i - 1 < avgRating %}<i class="bi bi-star-half"></i>
+                                    {% else %}<i class="bi bi-star"></i>
+                                    {% endif %}
                                 {% endfor %}
                             </span>
                             <span style="font-weight:700; font-size:1rem;">{{ avgRating }}</span>
@@ -156,9 +157,10 @@
                 {% if avgRating > 0 %}
                     <div class="er-equip-stars mb-3" aria-label="{{ avgRating }} sur 5">
                         {% for i in 1..5 %}
-                            {% if i <= avgRating|round(0, 'floor') %}<i class="bi bi-star-fill" aria-hidden="true"></i>{% endif %}
-                            {% if avgRating|round(0, 'floor') < i and i - 1 < avgRating %}<i class="bi bi-star-half" aria-hidden="true"></i>{% endif %}
-                            {% if i > avgRating %}<i class="bi bi-star" aria-hidden="true"></i>{% endif %}
+                            {% if i <= avgRating|round(0, 'floor') %}<i class="bi bi-star-fill" aria-hidden="true"></i>
+                            {% elseif i - 1 < avgRating %}<i class="bi bi-star-half" aria-hidden="true"></i>
+                            {% else %}<i class="bi bi-star" aria-hidden="true"></i>
+                            {% endif %}
                         {% endfor %}
                         <span class="ms-1" style="font-size:.875rem; color:var(--er-muted-text);">{{ avgRating }} ({{ reviewCount }} avis)</span>
                     </div>

@@ -66,7 +66,7 @@ class EquipmentRepository extends ServiceEntityRepository
         $qb->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit);
 
-        return new Paginator($qb, fetchJoinCollection: false);
+        return new Paginator($qb, fetchJoinCollection: true);
     }
 
     public function findOneWithRelations(int $id): ?Equipment

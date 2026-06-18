@@ -33,6 +33,11 @@
                 Disponibles <span class="remove" aria-hidden="true">×</span>
             </a>
         {% endif %}
+        {% if filter.prixMax and filter.prixMax < priceRangeMax %}
+            <a href="{{ path('catalog_index', app.request.query.all|merge({(params.prix_max): null})) }}" class="er-filter-chip" aria-label="Supprimer filtre prix maximum">
+                ≤ {{ filter.prixMax }} € / jour <span class="remove" aria-hidden="true">×</span>
+            </a>
+        {% endif %}
     </div>
 </div>
 {% endif %}
@@ -127,9 +132,10 @@
                             {% if rating %}
                                 <div class="er-equip-stars" aria-label="{{ rating }} sur 5">
                                     {% for i in 1..5 %}
-                                        {% if i <= rating|round(0, 'floor') %}<i class="bi bi-star-fill" aria-hidden="true"></i>{% endif %}
-                                        {% if rating|round(0, 'floor') < i and i - 1 < rating %}<i class="bi bi-star-half" aria-hidden="true"></i>{% endif %}
-                                        {% if i > rating %}<i class="bi bi-star" aria-hidden="true"></i>{% endif %}
+                                        {% if i <= rating|round(0, 'floor') %}<i class="bi bi-star-fill" aria-hidden="true"></i>
+                                        {% elseif i - 1 < rating %}<i class="bi bi-star-half" aria-hidden="true"></i>
+                                        {% else %}<i class="bi bi-star" aria-hidden="true"></i>
+                                        {% endif %}
                                     {% endfor %}
                                     <span class="er-equip-reviews ms-1">({{ reviewCount }})</span>
                                 </div>
