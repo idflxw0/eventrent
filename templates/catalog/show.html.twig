@@ -1,0 +1,261 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Enceinte active Mackie SRM450 — EventRent{% endblock %}
+
+{% block body %}
+
+{# ===== MINI HERO ===== #}
+<div class="er-hero-inner">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb er-breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="#">Catalogue</a></li>
+                <li class="breadcrumb-item"><a href="#">Sonorisation</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Enceinte active Mackie SRM450</li>
+            </ol>
+        </nav>
+        <h1>Enceinte active Mackie SRM450</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-5">
+
+        {# ===== LEFT — Content ===== #}
+        <div class="col-lg-7">
+
+            {# Gallery #}
+            <div class="er-detail-gallery mb-3">
+                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=85"
+                     alt="Enceinte active Mackie SRM450 — vue principale">
+            </div>
+            <div class="er-dot-nav" aria-label="Navigation galerie photos" role="tablist">
+                <span class="er-dot active" role="tab" aria-selected="true" aria-label="Photo 1"></span>
+                <span class="er-dot" role="tab" aria-selected="false" aria-label="Photo 2"></span>
+                <span class="er-dot" role="tab" aria-selected="false" aria-label="Photo 3"></span>
+            </div>
+
+            {# Accessories #}
+            <div class="mt-4 mb-4">
+                <h2 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:1rem; margin-bottom:12px;">
+                    Accessoires compatibles :
+                </h2>
+                <div class="d-flex gap-2 flex-wrap">
+                    <span class="er-accessory-chip"><i class="bi bi-plug" aria-hidden="true"></i> Câble XLR</span>
+                    <span class="er-accessory-chip"><i class="bi bi-arrows-angle-expand" aria-hidden="true"></i> Pied d'enceinte</span>
+                    <span class="er-accessory-chip"><i class="bi bi-link-45deg" aria-hidden="true"></i> Câble secteur</span>
+                </div>
+            </div>
+
+            <hr style="border-color:var(--er-border);">
+
+            {# Description #}
+            <div class="mt-4">
+                <h2 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:1.25rem; margin-bottom:12px;">
+                    À propos de cet équipement
+                </h2>
+                <p>
+                    L'enceinte active Mackie SRM450 est une référence sur les scènes et dans les espaces événementiels depuis plus de 20 ans.
+                    Avec 1000W de puissance crête et un haut-parleur 12" haute performance, elle délivre un son clair, puissant et précis,
+                    adapté aussi bien aux concerts intimistes qu'aux grandes salles.
+                </p>
+                <p>
+                    Sa construction robuste et sa légèreté relative en font une enceinte facile à transporter et à installer.
+                    Elle convient parfaitement aux sonorisations de mariages, conférences, corporate events et petites scènes.
+                </p>
+            </div>
+
+            {# Tech specs — collapsible #}
+            <details class="er-specs-toggle mt-2 mb-4">
+                <summary>
+                    <i class="bi bi-cpu" aria-hidden="true"></i>
+                    Caractéristiques techniques
+                </summary>
+                <div class="mt-3 ps-3">
+                    <dl class="er-spec-table row g-0">
+                        <div class="col-6">
+                            <dt>Puissance (crête)</dt>
+                            <dd>1000 W</dd>
+                        </div>
+                        <div class="col-6">
+                            <dt>Haut-parleur</dt>
+                            <dd>12" à cône</dd>
+                        </div>
+                        <div class="col-6">
+                            <dt>Tweeter</dt>
+                            <dd>1" à compression</dd>
+                        </div>
+                        <div class="col-6">
+                            <dt>Connectique</dt>
+                            <dd>XLR, Jack 1/4"</dd>
+                        </div>
+                        <div class="col-6">
+                            <dt>Réponse en fréquence</dt>
+                            <dd>55 Hz – 20 kHz</dd>
+                        </div>
+                        <div class="col-6">
+                            <dt>Poids</dt>
+                            <dd>18,6 kg</dd>
+                        </div>
+                        <div class="col-6">
+                            <dt>Référence</dt>
+                            <dd>AUDIO-001</dd>
+                        </div>
+                        <div class="col-6">
+                            <dt>Fournisseur</dt>
+                            <dd>AudioPro France</dd>
+                        </div>
+                    </dl>
+                </div>
+            </details>
+
+            <hr style="border-color:var(--er-border);">
+
+            {# Reviews #}
+            <div class="mt-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h2 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:1.25rem; margin:0;">
+                        Avis clients <span style="color:var(--er-muted-text); font-size:1rem; font-weight:400;">(24)</span>
+                    </h2>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="er-equip-stars" aria-hidden="true">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                        </span>
+                        <span style="font-weight:700; font-size:1rem;">4.4</span>
+                        <span style="color:var(--er-muted-text); font-size:.875rem;">/ 5</span>
+                    </div>
+                </div>
+
+                <div class="er-review-card">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div class="er-review-author">Jean D.</div>
+                        <div class="er-review-stars" aria-label="5 étoiles">
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                    <p class="er-review-text">"Excellent son, très fiable. Livraison à l'heure. Je recommande fortement pour des événements professionnels."</p>
+                    <div class="er-review-date">Juin 2026</div>
+                </div>
+
+                <div class="er-review-card">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div class="er-review-author">Marie L.</div>
+                        <div class="er-review-stars" aria-label="4 étoiles">
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                    <p class="er-review-text">"Bon matériel, livraison ok. Le son est clair et puissant pour une salle de 80 personnes. Le câble XLR inclus est un vrai plus."</p>
+                    <div class="er-review-date">Mai 2026</div>
+                </div>
+
+                <div class="er-review-card">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div class="er-review-author">Thomas B.</div>
+                        <div class="er-review-stars" aria-label="5 étoiles">
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                            <i class="bi bi-star-fill" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                    <p class="er-review-text">"Parfait pour mon mariage en extérieur. Personnel très réactif. Vraiment satisfait."</p>
+                    <div class="er-review-date">Avril 2026</div>
+                </div>
+            </div>
+
+        </div>
+
+        {# ===== RIGHT — Booking Panel (desktop sticky) ===== #}
+        <div class="col-lg-5">
+            <aside class="er-booking-panel" aria-label="Panneau de réservation">
+
+                <div class="d-flex align-items-start justify-content-between mb-1">
+                    <h2 style="font-family:'Poppins',sans-serif; font-weight:700; font-size:1.125rem; margin:0; flex:1;">
+                        Enceinte active Mackie SRM450
+                    </h2>
+                </div>
+                <div class="er-equip-stars mb-3" aria-label="4.4 étoiles sur 5">
+                    <i class="bi bi-star-fill" aria-hidden="true"></i>
+                    <i class="bi bi-star-fill" aria-hidden="true"></i>
+                    <i class="bi bi-star-fill" aria-hidden="true"></i>
+                    <i class="bi bi-star-fill" aria-hidden="true"></i>
+                    <i class="bi bi-star-half" aria-hidden="true"></i>
+                    <span class="ms-1" style="font-size:.875rem; color:var(--er-muted-text);">4.4 (24 avis)</span>
+                </div>
+
+                <div class="er-booking-price mb-3">
+                    150 € <span>/ jour</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="er-badge er-badge-available">
+                        <i class="bi bi-circle-fill" style="font-size:.5rem;" aria-hidden="true"></i>
+                        Disponible
+                    </span>
+                    <span style="font-size:.8125rem; color:var(--er-muted-text);">Réf : AUDIO-001</span>
+                </div>
+
+                <div class="mb-4" style="font-size:.875rem; color:var(--er-muted-text);">
+                    <i class="bi bi-building me-1" aria-hidden="true"></i> Fournisseur : <strong style="color:var(--er-foreground);">AudioPro France</strong>
+                </div>
+
+                <hr style="border-color:var(--er-border); margin:0 -24px 20px;">
+
+                <a href="#" class="btn-er-accent w-100 mb-2 text-decoration-none text-center"
+                   style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:1rem;">
+                    <i class="bi bi-calendar-plus" aria-hidden="true"></i>
+                    Réserver
+                </a>
+                <a href="#" class="btn-er-outline w-100 text-decoration-none text-center"
+                   style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:.9375rem;">
+                    <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                    Demander un devis
+                </a>
+
+                <hr style="border-color:var(--er-border); margin:20px -24px 16px;">
+
+                <ul class="list-unstyled mb-0" style="font-size:.875rem; color:var(--er-muted-text);">
+                    <li class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-truck text-er-primary" aria-hidden="true"></i> Livraison sous 24h
+                    </li>
+                    <li class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-shield-check text-er-primary" aria-hidden="true"></i> Annulation gratuite sous 48h
+                    </li>
+                    <li class="d-flex align-items-center gap-2">
+                        <i class="bi bi-telephone text-er-primary" aria-hidden="true"></i> Support technique inclus
+                    </li>
+                </ul>
+
+            </aside>
+        </div>
+
+    </div>
+</div>
+
+{# ===== MOBILE BOOKING BAR ===== #}
+<div class="er-mobile-booking-bar" aria-label="Barre de réservation mobile">
+    <div>
+        <div class="er-booking-price" style="font-size:1.25rem;">150 €<span style="font-size:.875rem;"> / jour</span></div>
+        <span class="er-badge er-badge-available" style="font-size:.7rem;">
+            <i class="bi bi-circle-fill" style="font-size:.4rem;" aria-hidden="true"></i> Disponible
+        </span>
+    </div>
+    <a href="#" class="btn-er-accent text-decoration-none"
+       style="display:inline-flex; align-items:center; gap:6px; padding:10px 20px;">
+        <i class="bi bi-calendar-plus" aria-hidden="true"></i> Réserver
+    </a>
+</div>
+
+{% endblock %}

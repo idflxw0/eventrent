@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes réservations — EventRent{% endblock %}
+
+{% block body %}
+
+<div class="er-hero-inner">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb er-breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Mes réservations</li>
+            </ol>
+        </nav>
+        <h1>Mes réservations</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            {# Status filter tabs #}
+            <nav class="er-tab-filter mb-4" aria-label="Filtrer par statut">
+                <button class="er-tab-btn active" type="button" aria-pressed="true">Toutes</button>
+                <button class="er-tab-btn" type="button" aria-pressed="false">En attente</button>
+                <button class="er-tab-btn" type="button" aria-pressed="false">Confirmées</button>
+                <button class="er-tab-btn" type="button" aria-pressed="false">Terminées</button>
+                <button class="er-tab-btn" type="button" aria-pressed="false">Annulées</button>
+            </nav>
+
+            {# Reservation cards #}
+
+            <article class="er-reservation-card status-confirmed" aria-label="Réservation RES-0042">
+                <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+                    <div>
+                        <div class="er-res-title">RES-0042</div>
+                        <div class="er-res-meta">
+                            <i class="bi bi-calendar3 me-1" aria-hidden="true"></i> 01–03 août 2026
+                            &nbsp;·&nbsp;
+                            <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> Paris
+                        </div>
+                        <div class="er-res-equipment">
+                            Enceinte Mackie SRM450 × 2, Table de mixage Yamaha MG16 × 1
+                        </div>
+                        <div class="er-res-total">760 €</div>
+                    </div>
+                    <span class="er-badge er-badge-confirmed flex-shrink-0">
+                        <i class="bi bi-check-circle" aria-hidden="true"></i> Confirmée
+                    </span>
+                </div>
+                <div class="d-flex gap-2 mt-3 flex-wrap">
+                    <a href="#" class="btn-er-primary text-decoration-none"
+                       style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
+                        <i class="bi bi-eye" aria-hidden="true"></i> Voir le détail
+                    </a>
+                    <button type="button" class="btn-er-danger-outline"
+                            style="padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);"
+                            aria-label="Annuler la réservation RES-0042">
+                        <i class="bi bi-x-circle me-1" aria-hidden="true"></i> Annuler
+                    </button>
+                </div>
+            </article>
+
+            <article class="er-reservation-card status-pending" aria-label="Réservation RES-0041">
+                <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+                    <div>
+                        <div class="er-res-title">RES-0041</div>
+                        <div class="er-res-meta">
+                            <i class="bi bi-calendar3 me-1" aria-hidden="true"></i> 15–16 août 2026
+                            &nbsp;·&nbsp;
+                            <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> Lyon
+                        </div>
+                        <div class="er-res-equipment">
+                            Vidéoprojecteur Epson EH-TW9400 × 1, BenQ TK850 × 1
+                        </div>
+                        <div class="er-res-total">320 €</div>
+                    </div>
+                    <span class="er-badge er-badge-pending flex-shrink-0">
+                        <i class="bi bi-clock" aria-hidden="true"></i> En attente
+                    </span>
+                </div>
+                <div class="d-flex gap-2 mt-3 flex-wrap">
+                    <a href="#" class="btn-er-primary text-decoration-none"
+                       style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
+                        <i class="bi bi-eye" aria-hidden="true"></i> Voir le détail
+                    </a>
+                    <button type="button" class="btn-er-danger-outline"
+                            style="padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);"
+                            aria-label="Annuler la réservation RES-0041">
+                        <i class="bi bi-x-circle me-1" aria-hidden="true"></i> Annuler
+                    </button>
+                </div>
+            </article>
+
+            <article class="er-reservation-card status-completed" aria-label="Réservation RES-0035">
+                <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+                    <div>
+                        <div class="er-res-title">RES-0035</div>
+                        <div class="er-res-meta">
+                            <i class="bi bi-calendar3 me-1" aria-hidden="true"></i> 10–12 juin 2026
+                            &nbsp;·&nbsp;
+                            <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> Bordeaux
+                        </div>
+                        <div class="er-res-equipment">
+                            Micro sans fil Shure BLX24 × 3
+                        </div>
+                        <div class="er-res-total">225 €</div>
+                    </div>
+                    <span class="er-badge er-badge-completed flex-shrink-0">
+                        <i class="bi bi-check2-all" aria-hidden="true"></i> Terminée
+                    </span>
+                </div>
+                <div class="d-flex gap-2 mt-3 flex-wrap">
+                    <a href="#" class="btn-er-primary text-decoration-none"
+                       style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
+                        <i class="bi bi-eye" aria-hidden="true"></i> Voir le détail
+                    </a>
+                    <a href="#" class="btn-er-outline text-decoration-none"
+                       style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
+                        <i class="bi bi-star" aria-hidden="true"></i> Laisser un avis
+                    </a>
+                </div>
+            </article>
+
+            {# Empty state (hidden in this demo but here for Twig) #}
+            <div class="er-empty" style="display:none;" aria-live="polite">
+                <i class="bi bi-calendar3 er-empty-icon" aria-hidden="true"></i>
+                <div class="er-empty-title">Vous n'avez pas encore de réservation.</div>
+                <p class="er-empty-sub">Parcourez notre catalogue pour trouver le matériel idéal.</p>
+                <a href="#" class="btn-er-accent text-decoration-none"
+                   style="display:inline-flex; align-items:center; gap:8px; padding:12px 24px;">
+                    <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i>
+                    Parcourir le catalogue
+                </a>
+            </div>
+
+            <div class="mt-4 text-center">
+                <a href="#" class="btn-er-accent text-decoration-none"
+                   style="display:inline-flex; align-items:center; gap:8px; padding:12px 24px;">
+                    <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                    Nouvelle réservation
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.querySelectorAll('.er-tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.er-tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+        });
+        this.classList.add('active');
+        this.setAttribute('aria-pressed', 'true');
+    });
+});
+</script>
+{% endblock %}

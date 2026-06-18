@@ -1,28 +1,123 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription{% endblock %}
+{% block title %}Créer un compte — EventRent{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h1 class="mb-4">Créer un compte</h1>
+<div class="er-auth-page" style="align-items:flex-start; padding-top:48px; padding-bottom:48px;">
+    <div class="container">
+        <div class="er-auth-card" style="max-width:520px;">
 
-            {{ form_start(registrationForm) }}
-                <div class="row">
-                    <div class="col-md-6">{{ form_row(registrationForm.firstName) }}</div>
-                    <div class="col-md-6">{{ form_row(registrationForm.lastName) }}</div>
+            <div class="text-center mb-4">
+                <a href="{{ path('app_home') }}" class="text-decoration-none">
+                    <span class="font-poppins fw-bold fs-4 text-er-primary">Event<span class="text-er-accent">Rent</span></span>
+                </a>
+            </div>
+
+            <h1 class="er-auth-title">Créer votre compte</h1>
+            <p class="er-auth-sub">Rejoignez EventRent et réservez votre matériel en quelques clics.</p>
+
+            {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
+
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label class="er-form-label" for="{{ registrationForm.firstName.vars.id }}">
+                            Prénom <span class="req" aria-hidden="true">*</span>
+                        </label>
+                        {{ form_widget(registrationForm.firstName, {'attr': {'class': 'er-form-control form-control', 'placeholder': 'Jean'}}) }}
+                        {% if registrationForm.firstName.vars.errors|length %}
+                            <span class="er-form-error" role="alert">
+                                <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+                                {{ registrationForm.firstName.vars.errors[0].message }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="col-6">
+                        <label class="er-form-label" for="{{ registrationForm.lastName.vars.id }}">
+                            Nom <span class="req" aria-hidden="true">*</span>
+                        </label>
+                        {{ form_widget(registrationForm.lastName, {'attr': {'class': 'er-form-control form-control', 'placeholder': 'Dupont'}}) }}
+                        {% if registrationForm.lastName.vars.errors|length %}
+                            <span class="er-form-error" role="alert">
+                                <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+                                {{ registrationForm.lastName.vars.errors[0].message }}
+                            </span>
+                        {% endif %}
+                    </div>
                 </div>
-                {{ form_row(registrationForm.email) }}
-                {{ form_row(registrationForm.phone) }}
-                {{ form_row(registrationForm.plainPassword) }}
 
-                <button type="submit" class="btn btn-primary">S'inscrire</button>
+                <div class="mb-3">
+                    <label class="er-form-label" for="{{ registrationForm.email.vars.id }}">
+                        Adresse email <span class="req" aria-hidden="true">*</span>
+                    </label>
+                    {{ form_widget(registrationForm.email, {'attr': {'class': 'er-form-control form-control', 'placeholder': 'jean.dupont@example.com'}}) }}
+                    {% if registrationForm.email.vars.errors|length %}
+                        <span class="er-form-error" role="alert">
+                            <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+                            {{ registrationForm.email.vars.errors[0].message }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="er-form-label" for="{{ registrationForm.phone.vars.id }}">
+                        Téléphone <span style="color:var(--er-muted-text);font-weight:400;">(optionnel)</span>
+                    </label>
+                    {{ form_widget(registrationForm.phone, {'attr': {'class': 'er-form-control form-control', 'placeholder': '06 12 34 56 78', 'type': 'tel'}}) }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="er-form-label" for="{{ registrationForm.plainPassword.first.vars.id }}">
+                        Mot de passe <span class="req" aria-hidden="true">*</span>
+                    </label>
+                    <div class="er-pw-wrap">
+                        {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'er-form-control form-control pe-5', 'placeholder': '8 caractères minimum'}}) }}
+                        <button type="button" class="er-pw-toggle"
+                                data-pw-toggle="#{{ registrationForm.plainPassword.first.vars.id }}"
+                                aria-label="Afficher le mot de passe">
+                            <i class="bi bi-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    {% if registrationForm.plainPassword.first.vars.errors|length %}
+                        <span class="er-form-error" role="alert">
+                            <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+                            {{ registrationForm.plainPassword.first.vars.errors[0].message }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-5">
+                    <label class="er-form-label" for="{{ registrationForm.plainPassword.second.vars.id }}">
+                        Confirmer le mot de passe <span class="req" aria-hidden="true">*</span>
+                    </label>
+                    <div class="er-pw-wrap">
+                        {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'er-form-control form-control pe-5', 'placeholder': 'Répétez le mot de passe'}}) }}
+                        <button type="button" class="er-pw-toggle"
+                                data-pw-toggle="#{{ registrationForm.plainPassword.second.vars.id }}"
+                                aria-label="Afficher le mot de passe">
+                            <i class="bi bi-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    {% if registrationForm.plainPassword.second.vars.errors|length %}
+                        <span class="er-form-error" role="alert">
+                            <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+                            {{ registrationForm.plainPassword.second.vars.errors[0].message }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn-er-accent w-100 mb-3" style="font-size:1rem;">
+                    Créer mon compte
+                </button>
+
             {{ form_end(registrationForm) }}
 
-            <p class="mt-3">
-                Déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a>
+            <p class="text-center mb-0" style="font-size:.9rem; color:var(--er-muted-text);">
+                Déjà un compte ?
+                <a href="{{ path('app_login') }}" class="fw-600 text-er-primary text-decoration-none">
+                    Se connecter
+                </a>
             </p>
+
         </div>
     </div>
 </div>
