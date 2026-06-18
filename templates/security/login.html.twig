@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion — EventRent{% endblock %}
+
+{% block body %}
+<div class="er-auth-page">
+    <div class="container">
+        <div class="er-auth-card">
+
+            <div class="text-center mb-4">
+                <a href="{{ path('app_home') }}" class="text-decoration-none">
+                    <span class="font-poppins fw-bold fs-4 text-er-primary">Event<span class="text-er-accent">Rent</span></span>
+                </a>
+            </div>
+
+            <h1 class="er-auth-title">Connexion</h1>
+            <p class="er-auth-sub">Accédez à votre espace EventRent.</p>
+
+            {% if error %}
+                <div class="alert mb-4" role="alert"
+                     style="background:var(--er-destructive-bg);color:var(--er-destructive);border:1px solid #fecaca;border-radius:var(--radius-md);font-size:.9rem;display:flex;align-items:center;gap:8px;">
+                    <i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i>
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+
+                <div class="mb-4">
+                    <label class="er-form-label" for="username">
+                        Adresse email <span class="req" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                        type="email"
+                        id="username"
+                        name="_username"
+                        class="er-form-control form-control"
+                        value="{{ last_username }}"
+                        required
+                        autofocus
+                        autocomplete="email"
+                        aria-required="true">
+                </div>
+
+                <div class="mb-5">
+                    <label class="er-form-label" for="password">
+                        Mot de passe <span class="req" aria-hidden="true">*</span>
+                    </label>
+                    <div class="er-pw-wrap">
+                        <input
+                            type="password"
+                            id="password"
+                            name="_password"
+                            class="er-form-control form-control pe-5"
+                            required
+                            autocomplete="current-password"
+                            aria-required="true">
+                        <button
+                            type="button"
+                            class="er-pw-toggle"
+                            data-pw-toggle="#password"
+                            aria-label="Afficher le mot de passe">
+                            <i class="bi bi-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button type="submit" class="btn-er-primary w-100 mb-3" style="font-size:1rem;">
+                    Se connecter
+                </button>
+
+            </form>
+
+            <p class="text-center mb-0" style="font-size:.9rem; color:var(--er-muted-text);">
+                Pas encore de compte ?
+                <a href="{{ path('app_register') }}" class="fw-600 text-er-primary text-decoration-none">
+                    Créer un compte&nbsp;→
+                </a>
+            </p>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

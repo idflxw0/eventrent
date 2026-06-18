@@ -1,0 +1,335 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon compte — EventRent{% endblock %}
+
+{% block body %}
+
+<div class="er-hero-inner">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb er-breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Mon compte</li>
+            </ol>
+        </nav>
+        <h1>Mon compte</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4">
+
+        {# ===== LEFT — Profile summary ===== #}
+        <aside class="col-lg-3" aria-label="Informations du compte">
+            <div class="er-account-info-card mb-3">
+                <div class="er-account-avatar" aria-hidden="true">
+                    {{ user.firstName|first|upper }}{{ user.lastName|first|upper }}
+                </div>
+                <div class="er-account-name">{{ user.firstName }} {{ user.lastName }}</div>
+                <div style="color:var(--er-muted-text); font-size:.875rem; margin-bottom:4px;">{{ user.email }}</div>
+                {% if user.phone %}
+                    <div style="color:var(--er-muted-text); font-size:.875rem; margin-bottom:4px;">{{ user.phone }}</div>
+                {% endif %}
+                <div style="color:var(--er-muted-text); font-size:.8125rem; margin-top:8px; padding-top:8px; border-top:1px solid var(--er-border);">
+                    <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
+                    Membre depuis {{ user.registeredAt ? user.registeredAt|date('F Y') : '—' }}
+                </div>
+            </div>
+
+            <div class="er-account-info-card">
+                <div class="er-stat-pill">
+                    <i class="bi bi-calendar-check text-er-primary" aria-hidden="true"></i>
+                    <span>
+                        <span class="num">{{ user.reservations|length }}</span>
+                        <span style="font-size:.8rem; color:var(--er-muted-text); display:block; margin-top:-2px;">réservation{{ user.reservations|length != 1 ? 's' }}</span>
+                    </span>
+                </div>
+                <div class="er-stat-pill">
+                    <i class="bi bi-file-earmark-text text-er-primary" aria-hidden="true"></i>
+                    <span>
+                        <span class="num">{{ user.quotes|length }}</span>
+                        <span style="font-size:.8rem; color:var(--er-muted-text); display:block; margin-top:-2px;">devis</span>
+                    </span>
+                </div>
+            </div>
+        </aside>
+
+        {# ===== RIGHT — Edit form + Tabs ===== #}
+        <div class="col-lg-9">
+
+            {# Profile edit form #}
+            <div class="er-account-form-card mb-4">
+                <h2 style="font-family:'Poppins',sans-serif; font-size:1.125rem; margin-bottom:24px;">
+                    <i class="bi bi-pencil-square me-2 text-er-primary" aria-hidden="true"></i>
+                    Mes informations
+                </h2>
+
+                <form novalidate>
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label class="er-form-label" for="acc-firstname">Prénom</label>
+                            <input type="text" id="acc-firstname" class="er-form-control form-control"
+                                   value="{{ user.firstName }}">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="er-form-label" for="acc-lastname">Nom</label>
+                            <input type="text" id="acc-lastname" class="er-form-control form-control"
+                                   value="{{ user.lastName }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="er-form-label" for="acc-email">Email</label>
+                        <input type="email" id="acc-email" class="er-form-control form-control"
+                               value="{{ user.email }}">
+                    </div>
+                    <div class="mb-4">
+                        <label class="er-form-label" for="acc-phone">Téléphone</label>
+                        <input type="tel" id="acc-phone" class="er-form-control form-control"
+                               value="{{ user.phone ?: '' }}" placeholder="Non renseigné">
+                    </div>
+
+                    <div class="er-section-divider">Changer le mot de passe</div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <label class="er-form-label" for="acc-pw-current">Mot de passe actuel</label>
+                            <div class="er-pw-wrap">
+                                <input type="password" id="acc-pw-current" class="er-form-control form-control pe-5"
+                                       autocomplete="current-password" placeholder="••••••••">
+                                <button type="button" class="er-pw-toggle"
+                                        data-pw-toggle="#acc-pw-current"
+                                        aria-label="Afficher le mot de passe">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="er-form-label" for="acc-pw-new">Nouveau mot de passe</label>
+                            <div class="er-pw-wrap">
+                                <input type="password" id="acc-pw-new" class="er-form-control form-control pe-5"
+                                       autocomplete="new-password" placeholder="••••••••">
+                                <button type="button" class="er-pw-toggle"
+                                        data-pw-toggle="#acc-pw-new"
+                                        aria-label="Afficher le mot de passe">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="er-form-label" for="acc-pw-confirm">Confirmer le mot de passe</label>
+                            <div class="er-pw-wrap">
+                                <input type="password" id="acc-pw-confirm" class="er-form-control form-control pe-5"
+                                       autocomplete="new-password" placeholder="••••••••">
+                                <button type="button" class="er-pw-toggle"
+                                        data-pw-toggle="#acc-pw-confirm"
+                                        aria-label="Afficher le mot de passe">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <button type="reset" class="btn-er-ghost">Annuler</button>
+                        <button type="submit" class="btn-er-primary">
+                            <i class="bi bi-check2 me-1" aria-hidden="true"></i> Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {# ===== Activity Tabs ===== #}
+            <div class="er-account-form-card">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-res" data-bs-toggle="tab" data-bs-target="#pane-res"
+                                role="tab" aria-controls="pane-res" aria-selected="true">
+                            <i class="bi bi-calendar-check me-1" aria-hidden="true"></i>Réservations
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-quotes" data-bs-toggle="tab" data-bs-target="#pane-quotes"
+                                role="tab" aria-controls="pane-quotes" aria-selected="false">
+                            <i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>Devis
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-invoices" data-bs-toggle="tab" data-bs-target="#pane-invoices"
+                                role="tab" aria-controls="pane-invoices" aria-selected="false">
+                            <i class="bi bi-receipt me-1" aria-hidden="true"></i>Factures
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content mt-4">
+
+                    {# Reservations tab #}
+                    <div class="tab-pane fade show active" id="pane-res" role="tabpanel" aria-labelledby="tab-res">
+                        {% if user.reservations is empty %}
+                            <div class="er-empty" style="padding:40px 0;">
+                                <i class="bi bi-calendar3 er-empty-icon" aria-hidden="true"></i>
+                                <div class="er-empty-title">Aucune réservation pour le moment.</div>
+                                <a href="#" class="btn-er-accent text-decoration-none mt-3"
+                                   style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px;">
+                                    Parcourir le catalogue
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="table-responsive">
+                                <table class="er-invoice-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Dates</th>
+                                            <th>Ville</th>
+                                            <th>Type</th>
+                                            <th class="text-end">Montant</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for r in user.reservations %}
+                                            <tr>
+                                                <td style="white-space:nowrap;">
+                                                    {{ r.startDate ? r.startDate|date('d/m/Y') : '—' }} – {{ r.endDate ? r.endDate|date('d/m/Y') : '—' }}
+                                                </td>
+                                                <td>{{ r.eventCity }}</td>
+                                                <td>{{ r.venueType == 'indoor' ? 'Intérieur' : 'Extérieur' }}</td>
+                                                <td class="text-end" style="font-variant-numeric:tabular-nums; font-weight:700; color:var(--er-accent-text);">
+                                                    {{ r.totalAmount }} €
+                                                </td>
+                                                <td>
+                                                    {% set statusMap = {
+                                                        'pending': 'pending',
+                                                        'confirmed': 'confirmed',
+                                                        'in_progress': 'in-progress',
+                                                        'completed': 'completed',
+                                                        'cancelled': 'cancelled'
+                                                    } %}
+                                                    {% set statusLabel = {
+                                                        'pending': 'En attente',
+                                                        'confirmed': 'Confirmée',
+                                                        'in_progress': 'En cours',
+                                                        'completed': 'Terminée',
+                                                        'cancelled': 'Annulée'
+                                                    } %}
+                                                    <span class="er-badge er-badge-{{ statusMap[r.status] ?? 'completed' }}">
+                                                        {{ statusLabel[r.status] ?? r.status }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {# Quotes tab #}
+                    <div class="tab-pane fade" id="pane-quotes" role="tabpanel" aria-labelledby="tab-quotes">
+                        {% if user.quotes is empty %}
+                            <div class="er-empty" style="padding:40px 0;">
+                                <i class="bi bi-file-earmark-text er-empty-icon" aria-hidden="true"></i>
+                                <div class="er-empty-title">Aucun devis en cours.</div>
+                                <a href="#" class="btn-er-accent text-decoration-none mt-3"
+                                   style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px;">
+                                    Demander un devis
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="table-responsive">
+                                <table class="er-invoice-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Dates</th>
+                                            <th>Ville</th>
+                                            <th class="text-end">Montant estimé</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for q in user.quotes %}
+                                            <tr>
+                                                <td style="white-space:nowrap;">
+                                                    {{ q.requestedStartDate ? q.requestedStartDate|date('d/m/Y') : '—' }} – {{ q.requestedEndDate ? q.requestedEndDate|date('d/m/Y') : '—' }}
+                                                </td>
+                                                <td>{{ q.eventCity }}</td>
+                                                <td class="text-end" style="font-variant-numeric:tabular-nums; font-weight:700; color:var(--er-accent-text);">
+                                                    {{ q.estimatedAmount }} €
+                                                </td>
+                                                <td>
+                                                    {% set qStatusMap = {'pending':'pending','approved':'approved','refused':'refused','expired':'expired'} %}
+                                                    {% set qStatusLabel = {'pending':'En attente','approved':'Approuvé','refused':'Refusé','expired':'Expiré'} %}
+                                                    <span class="er-badge er-badge-{{ qStatusMap[q.status] ?? 'pending' }}">
+                                                        {{ qStatusLabel[q.status] ?? q.status }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {# Invoices tab #}
+                    <div class="tab-pane fade" id="pane-invoices" role="tabpanel" aria-labelledby="tab-invoices">
+                        {% set invoices = [] %}
+                        {% for r in user.reservations %}
+                            {% if r.invoice %}
+                                {% set invoices = invoices|merge([r.invoice]) %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if invoices is empty %}
+                            <div class="er-empty" style="padding:40px 0;">
+                                <i class="bi bi-receipt er-empty-icon" aria-hidden="true"></i>
+                                <div class="er-empty-title">Aucune facture pour le moment.</div>
+                            </div>
+                        {% else %}
+                            <div class="table-responsive">
+                                <table class="er-invoice-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Numéro</th>
+                                            <th>Émise le</th>
+                                            <th class="text-end">Montant</th>
+                                            <th>Statut paiement</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for inv in invoices %}
+                                            <tr>
+                                                <td><strong>{{ inv.number }}</strong></td>
+                                                <td>{{ inv.issuedAt ? inv.issuedAt|date('d/m/Y') : '—' }}</td>
+                                                <td class="text-end" style="font-variant-numeric:tabular-nums; font-weight:700; color:var(--er-accent-text);">
+                                                    {{ inv.amount }} €
+                                                </td>
+                                                <td>
+                                                    <span class="er-badge {{ inv.paymentStatus == 'paid' ? 'er-badge-approved' : 'er-badge-pending' }}">
+                                                        {{ inv.paymentStatus == 'paid' ? 'Payée' : 'En attente' }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="#" class="btn-er-ghost"
+                                                       style="padding:6px 10px; font-size:.8rem; color:var(--er-primary);"
+                                                       aria-label="Télécharger la facture {{ inv.number }}">
+                                                        <i class="bi bi-download" aria-hidden="true"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

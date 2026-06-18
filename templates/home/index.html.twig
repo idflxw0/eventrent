@@ -1,0 +1,374 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}EventRent — Location d'équipements événementiels{% endblock %}
+
+{% block body %}
+
+{# =========================================================
+   HERO — split layout: left bold type, right dark visual panel
+   ========================================================= #}
+<section class="er-hero-home">
+    <div class="container">
+        <div class="er-hero-grid">
+
+            <div class="er-hero-text">
+                <div class="er-hero-eyebrow">Location événementielle professionnelle</div>
+                <h1 class="er-hero-headline">
+                    Équipements<br>
+                    <span class="er-hero-accent">pro</span> pour<br>
+                    vos événements.
+                </h1>
+                <p class="er-hero-sub">
+                    Sonorisation, vidéoprojecteurs, micros et éclairage scénique.
+                    Livraison J+1 partout en France, technicien disponible sur demande.
+                </p>
+                <div class="er-hero-actions">
+                    <a href="#" class="btn-er-primary">
+                        <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i>
+                        Voir le catalogue
+                    </a>
+                    <a href="#how-it-works" class="btn-er-outline-dark">
+                        Comment ça marche
+                    </a>
+                </div>
+            </div>
+
+            <div class="er-hero-visual" aria-hidden="true">
+                <div class="er-hero-visual-bg">
+                    <div class="er-hero-equip-grid">
+                        <div class="er-hero-equip-item">
+                            <i class="bi bi-speaker-fill"></i>
+                            <span>Sonorisation</span>
+                        </div>
+                        <div class="er-hero-equip-item">
+                            <i class="bi bi-camera-video-fill"></i>
+                            <span>Vidéo</span>
+                        </div>
+                        <div class="er-hero-equip-item">
+                            <i class="bi bi-mic-fill"></i>
+                            <span>Micros</span>
+                        </div>
+                        <div class="er-hero-equip-item">
+                            <i class="bi bi-lightbulb-fill"></i>
+                            <span>Éclairage</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{# =========================================================
+   TRUST STRIP
+   ========================================================= #}
+<div class="er-trust-strip">
+    <div class="container">
+        <div class="er-trust-items">
+            <div class="er-trust-item">
+                <i class="bi bi-truck" aria-hidden="true"></i>
+                Livraison J+1
+            </div>
+            <div class="er-trust-divider" aria-hidden="true"></div>
+            <div class="er-trust-item">
+                <i class="bi bi-shield-check" aria-hidden="true"></i>
+                Matériel certifié
+            </div>
+            <div class="er-trust-divider" aria-hidden="true"></div>
+            <div class="er-trust-item">
+                <i class="bi bi-headset" aria-hidden="true"></i>
+                Support 7j/7
+            </div>
+            <div class="er-trust-divider" aria-hidden="true"></div>
+            <div class="er-trust-item">
+                <i class="bi bi-star-fill" aria-hidden="true"></i>
+                4,8/5 · 1 200+ avis
+            </div>
+        </div>
+    </div>
+</div>
+
+{# =========================================================
+   CATEGORIES
+   ========================================================= #}
+<section class="er-section er-muted-section">
+    <div class="container">
+        <div class="d-flex align-items-end justify-content-between mb-5 gap-3 flex-wrap">
+            <div>
+                <div class="er-section-eyebrow">Catalogue</div>
+                <h2 class="er-section-title mb-0">Trouvez l'équipement<br>qu'il vous faut.</h2>
+            </div>
+            <a href="#" class="btn-er-outline" style="flex-shrink:0;">
+                Tout le catalogue <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        {# Desktop grid #}
+        <div class="er-cat-row">
+            <a href="#" class="er-cat-card">
+                <div class="er-cat-icon"><i class="bi bi-speaker-fill" aria-hidden="true"></i></div>
+                <div>
+                    <div class="er-cat-name">Sonorisation</div>
+                    <div class="er-cat-count">Enceintes, amplis, câbles…</div>
+                </div>
+                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
+            </a>
+            <a href="#" class="er-cat-card">
+                <div class="er-cat-icon"><i class="bi bi-camera-video-fill" aria-hidden="true"></i></div>
+                <div>
+                    <div class="er-cat-name">Vidéo &amp; Projection</div>
+                    <div class="er-cat-count">Vidéoprojecteurs, écrans…</div>
+                </div>
+                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
+            </a>
+            <a href="#" class="er-cat-card">
+                <div class="er-cat-icon"><i class="bi bi-mic-fill" aria-hidden="true"></i></div>
+                <div>
+                    <div class="er-cat-name">Micros &amp; Mixage</div>
+                    <div class="er-cat-count">Micros, tables, égaliseurs…</div>
+                </div>
+                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
+            </a>
+            <a href="#" class="er-cat-card">
+                <div class="er-cat-icon"><i class="bi bi-lightbulb-fill" aria-hidden="true"></i></div>
+                <div>
+                    <div class="er-cat-name">Éclairage</div>
+                    <div class="er-cat-count">PAR, LED, jeux de lumières…</div>
+                </div>
+                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        {# Mobile scroll #}
+        <div class="er-cat-scroll">
+            <a href="#" class="er-cat-card">
+                <div class="er-cat-icon"><i class="bi bi-speaker-fill" aria-hidden="true"></i></div>
+                <div>
+                    <div class="er-cat-name">Sonorisation</div>
+                    <div class="er-cat-count">Enceintes, amplis…</div>
+                </div>
+                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
+            </a>
+            <a href="#" class="er-cat-card">
+                <div class="er-cat-icon"><i class="bi bi-camera-video-fill" aria-hidden="true"></i></div>
+                <div>
+                    <div class="er-cat-name">Vidéo &amp; Projection</div>
+                    <div class="er-cat-count">Vidéoprojecteurs…</div>
+                </div>
+                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
+            </a>
+            <a href="#" class="er-cat-card">
+                <div class="er-cat-icon"><i class="bi bi-mic-fill" aria-hidden="true"></i></div>
+                <div>
+                    <div class="er-cat-name">Micros &amp; Mixage</div>
+                    <div class="er-cat-count">Micros, tables…</div>
+                </div>
+                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
+            </a>
+            <a href="#" class="er-cat-card">
+                <div class="er-cat-icon"><i class="bi bi-lightbulb-fill" aria-hidden="true"></i></div>
+                <div>
+                    <div class="er-cat-name">Éclairage</div>
+                    <div class="er-cat-count">PAR, LED…</div>
+                </div>
+                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+{# =========================================================
+   FEATURED EQUIPMENT
+   ========================================================= #}
+<section class="er-section er-white-section">
+    <div class="container">
+        <div class="d-flex align-items-end justify-content-between mb-5 gap-3 flex-wrap">
+            <div>
+                <div class="er-section-eyebrow">Équipements phares</div>
+                <h2 class="er-section-title mb-0">Les plus demandés.</h2>
+            </div>
+            <a href="#" class="btn-er-outline" style="flex-shrink:0;">
+                Tout voir <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+            </a>
+        </div>
+
+        <div class="er-equip-grid">
+
+            <article class="er-equip-card">
+                <div class="er-equip-img" style="background:linear-gradient(150deg,#1c1c2e,#2d1208);">
+                    <i class="bi bi-speaker-fill" aria-hidden="true"></i>
+                    <div class="er-equip-img-tag">
+                        <span class="er-badge er-badge-available">
+                            <i class="bi bi-circle-fill" style="font-size:.45em"></i> Disponible
+                        </span>
+                    </div>
+                </div>
+                <div class="er-equip-body">
+                    <h3 class="er-equip-name">Enceinte active Mackie SRM450</h3>
+                    <p class="er-equip-desc">450W RMS, 12" woofer, tweeter titanium. Idéale pour conférences et concerts en intérieur.</p>
+                    <div class="er-equip-footer">
+                        <div class="er-equip-price">150 € <span>/ jour</span></div>
+                        <a href="#" class="btn-er-primary" style="font-size:.8125rem;padding:8px 18px;">Réserver</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="er-equip-card">
+                <div class="er-equip-img" style="background:linear-gradient(150deg,#0f1520,#1a2240);">
+                    <i class="bi bi-projector-fill" aria-hidden="true"></i>
+                    <div class="er-equip-img-tag">
+                        <span class="er-badge er-badge-available">
+                            <i class="bi bi-circle-fill" style="font-size:.45em"></i> Disponible
+                        </span>
+                    </div>
+                </div>
+                <div class="er-equip-body">
+                    <h3 class="er-equip-name">Vidéoprojecteur Epson EB-2250U</h3>
+                    <p class="er-equip-desc">5 000 lumens, WUXGA. Projection jusqu'à 8 m de large pour présentations et événements.</p>
+                    <div class="er-equip-footer">
+                        <div class="er-equip-price">120 € <span>/ jour</span></div>
+                        <a href="#" class="btn-er-primary" style="font-size:.8125rem;padding:8px 18px;">Réserver</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="er-equip-card">
+                <div class="er-equip-img" style="background:linear-gradient(150deg,#1a1208,#2a1c06);">
+                    <i class="bi bi-mic-fill" aria-hidden="true"></i>
+                    <div class="er-equip-img-tag">
+                        <span class="er-badge er-badge-available">
+                            <i class="bi bi-circle-fill" style="font-size:.45em"></i> Disponible
+                        </span>
+                    </div>
+                </div>
+                <div class="er-equip-body">
+                    <h3 class="er-equip-name">Micro sans fil Shure BLX24</h3>
+                    <p class="er-equip-desc">Portée 90 m, autonomie 14 h, accord automatique. Le choix des professionnels de la scène.</p>
+                    <div class="er-equip-footer">
+                        <div class="er-equip-price">45 € <span>/ jour</span></div>
+                        <a href="#" class="btn-er-primary" style="font-size:.8125rem;padding:8px 18px;">Réserver</a>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    </div>
+</section>
+
+{# =========================================================
+   HOW IT WORKS
+   ========================================================= #}
+<section class="er-steps-bg" id="how-it-works">
+    <div class="container">
+        <div class="d-flex align-items-end justify-content-between mb-5 gap-3 flex-wrap">
+            <div>
+                <div class="er-section-eyebrow" style="color:var(--er-primary);">Processus</div>
+                <h2 class="er-section-title mb-0" style="color:#fff;">Simple. Rapide. Fiable.</h2>
+            </div>
+            <a href="{{ path('app_register') }}" class="btn-er-light" style="flex-shrink:0;">
+                Commencer maintenant
+            </a>
+        </div>
+
+        <div class="er-steps-grid">
+            <div class="er-step-item">
+                <div class="er-step-num">01</div>
+                <h3 class="er-step-title">Choisissez vos équipements</h3>
+                <p class="er-step-desc">Parcourez +500 références. Filtrez par catégorie, disponibilité et budget. Devis instantané.</p>
+            </div>
+            <div class="er-step-item">
+                <div class="er-step-num">02</div>
+                <h3 class="er-step-title">Confirmez votre réservation</h3>
+                <p class="er-step-desc">Sélectionnez vos dates et le lieu de l'événement. Paiement sécurisé en ligne.</p>
+            </div>
+            <div class="er-step-item">
+                <div class="er-step-num">03</div>
+                <h3 class="er-step-title">On livre, vous brillez</h3>
+                <p class="er-step-desc">Livraison et installation sur site. Un technicien disponible pendant tout l'événement.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# =========================================================
+   TESTIMONIALS
+   ========================================================= #}
+<section class="er-section er-white-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="er-section-eyebrow" style="justify-content:center;">
+                <i class="bi bi-star-fill text-warning me-1" aria-hidden="true"></i>
+                Avis clients vérifiés
+            </div>
+            <h2 class="er-section-title">Ils nous font confiance.</h2>
+            <p class="er-section-sub mx-auto" style="max-width:460px;">Plus de 1 200 événements réussis avec EventRent en 2025.</p>
+        </div>
+
+        <div class="er-testimonials-grid">
+            <div class="er-testimonial-card">
+                <div class="er-testimonial-stars">★★★★★</div>
+                <p class="er-testimonial-text">
+                    "Matériel impeccable, livraison à l'heure. Le technicien était ultra compétent.
+                    Notre conférence de 300 personnes s'est déroulée sans le moindre accroc."
+                </p>
+                <div class="er-testimonial-author">
+                    <div class="er-testimonial-avatar">SL</div>
+                    <div>
+                        <div class="er-testimonial-name">Sophie L.</div>
+                        <div class="er-testimonial-role">Responsable événements · Paris</div>
+                    </div>
+                </div>
+            </div>
+            <div class="er-testimonial-card">
+                <div class="er-testimonial-stars">★★★★★</div>
+                <p class="er-testimonial-text">
+                    "Matériel son et vidéo loué pour un mariage de 200 invités.
+                    Qualité professionnelle, rapport qualité-prix excellent, équipe au top."
+                </p>
+                <div class="er-testimonial-author">
+                    <div class="er-testimonial-avatar">MT</div>
+                    <div>
+                        <div class="er-testimonial-name">Marc T.</div>
+                        <div class="er-testimonial-role">Wedding planner · Lyon</div>
+                    </div>
+                </div>
+            </div>
+            <div class="er-testimonial-card">
+                <div class="er-testimonial-stars">★★★★★</div>
+                <p class="er-testimonial-text">
+                    "Interface claire, réservation en quelques clics. Le support technique
+                    réactif nous a sauvé la mise le soir J. Je recommande sans hésiter."
+                </p>
+                <div class="er-testimonial-author">
+                    <div class="er-testimonial-avatar">AR</div>
+                    <div>
+                        <div class="er-testimonial-name">Alice R.</div>
+                        <div class="er-testimonial-role">Directrice artistique · Bordeaux</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# =========================================================
+   CTA BAND
+   ========================================================= #}
+<section class="er-cta-band">
+    <div class="container">
+        <h2>Votre prochain événement,<br>avec le bon équipement.</h2>
+        <p>Réservez en ligne en 5 minutes. Livraison dès demain.</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="#" class="btn-er-white">
+                <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i>
+                Voir le catalogue
+            </a>
+            <a href="{{ path('app_register') }}" class="btn-er-light">
+                Créer un compte gratuit
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

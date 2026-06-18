@@ -1,0 +1,202 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réservation RES-0042 — EventRent{% endblock %}
+
+{% block body %}
+
+<div class="er-hero-inner">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb er-breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="#">Mes réservations</a></li>
+                <li class="breadcrumb-item active" aria-current="page">RES-0042</li>
+            </ol>
+        </nav>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <h1 style="margin:0;">Réservation #RES-0042</h1>
+            <span class="er-badge er-badge-confirmed" style="font-size:.875rem; padding:6px 14px;">
+                <i class="bi bi-check-circle" aria-hidden="true"></i> Confirmée
+            </span>
+        </div>
+        <p class="er-breadcrumb mt-2 mb-0" style="color:rgba(255,255,255,.7);">
+            <i class="bi bi-calendar3 me-1" aria-hidden="true"></i> Du 01/08/2026 au 03/08/2026
+            &nbsp;·&nbsp;
+            <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> Paris, Extérieur
+        </p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="row g-4">
+
+                {# ===== Equipment table ===== #}
+                <div class="col-12">
+                    <div class="er-account-info-card">
+                        <h2 style="font-family:'Poppins',sans-serif; font-size:1.125rem; margin-bottom:20px;">
+                            <i class="bi bi-box-seam me-2 text-er-primary" aria-hidden="true"></i>
+                            Équipements loués
+                        </h2>
+                        <div class="table-responsive">
+                            <table class="er-invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>Équipement</th>
+                                        <th class="text-center">Qté</th>
+                                        <th class="text-end">Prix / jour</th>
+                                        <th class="text-end">Sous-total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Enceinte active Mackie SRM450</strong>
+                                            <span style="display:block; font-size:.8125rem; color:var(--er-muted-text);">Réf : AUDIO-001</span>
+                                        </td>
+                                        <td class="text-center">2</td>
+                                        <td class="text-end font-variant-numeric: tabular-nums;">150 €</td>
+                                        <td class="text-end">600 €</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Table de mixage Yamaha MG16</strong>
+                                            <span style="display:block; font-size:.8125rem; color:var(--er-muted-text);">Réf : MIX-002</span>
+                                        </td>
+                                        <td class="text-center">1</td>
+                                        <td class="text-end">80 €</td>
+                                        <td class="text-end">160 €</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-end">Total TTC</td>
+                                        <td class="text-end er-invoice-total">760 €</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {# ===== Invoice info ===== #}
+                <div class="col-md-6">
+                    <div class="er-account-info-card h-100">
+                        <h2 style="font-family:'Poppins',sans-serif; font-size:1.125rem; margin-bottom:16px;">
+                            <i class="bi bi-receipt me-2 text-er-primary" aria-hidden="true"></i>
+                            Facture associée
+                        </h2>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span style="font-weight:600;">INV-2026-000045</span>
+                            <span class="er-badge er-badge-pending">En attente de paiement</span>
+                        </div>
+                        <p style="font-size:.9rem; color:var(--er-muted-text); margin:0;">
+                            Émise le 18/06/2026 · Montant : <strong style="color:var(--er-foreground);">760 €</strong>
+                        </p>
+                        <a href="#" class="btn-er-outline text-decoration-none mt-4"
+                           style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
+                            <i class="bi bi-download" aria-hidden="true"></i> Télécharger la facture
+                        </a>
+                    </div>
+                </div>
+
+                {# ===== Event details ===== #}
+                <div class="col-md-6">
+                    <div class="er-account-info-card h-100">
+                        <h2 style="font-family:'Poppins',sans-serif; font-size:1.125rem; margin-bottom:16px;">
+                            <i class="bi bi-info-circle me-2 text-er-primary" aria-hidden="true"></i>
+                            Détails de l'événement
+                        </h2>
+                        <dl style="font-size:.9375rem; margin:0;">
+                            <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Date de début</dt>
+                            <dd style="margin-bottom:12px;">01 août 2026</dd>
+                            <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Date de fin</dt>
+                            <dd style="margin-bottom:12px;">03 août 2026</dd>
+                            <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Ville</dt>
+                            <dd style="margin-bottom:12px;">Paris</dd>
+                            <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Type de lieu</dt>
+                            <dd style="margin-bottom:0;">Extérieur</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                {# ===== Danger zone ===== #}
+                <div class="col-12">
+                    <div class="er-account-info-card"
+                         style="border-color:#fecaca; background:var(--er-destructive-bg);">
+                        <h2 style="font-family:'Poppins',sans-serif; font-size:1rem; color:var(--er-destructive); margin-bottom:8px;">
+                            <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
+                            Zone dangereuse
+                        </h2>
+                        <p style="font-size:.9rem; color:var(--er-muted-text); margin-bottom:16px;">
+                            L'annulation est possible jusqu'à 48h avant la date de début. Cette action est irréversible.
+                        </p>
+                        <button type="button" class="btn-er-danger-outline"
+                                style="font-size:.875rem; padding:8px 18px; border-radius:var(--radius-md);"
+                                onclick="document.getElementById('cancel-modal').classList.add('open')"
+                                aria-label="Annuler cette réservation">
+                            <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
+                            Annuler cette réservation
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-4">
+                <a href="#" class="btn-er-ghost text-decoration-none"
+                   style="display:inline-flex; align-items:center; gap:6px;">
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i> Retour à mes réservations
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{# ===== CANCELLATION MODAL ===== #}
+<div id="cancel-modal" class="er-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
+    <div class="er-modal">
+        <h2 class="er-modal-title" id="cancel-modal-title">
+            <i class="bi bi-exclamation-triangle text-er-accent me-2" aria-hidden="true"></i>
+            Annuler la réservation ?
+        </h2>
+        <div class="er-modal-body">
+            <p class="er-modal-warning">
+                <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
+                Cette action est irréversible.
+            </p>
+            <p>La réservation <strong>#RES-0042</strong> passera au statut <strong>Annulée</strong>.
+               Vous recevrez un email de confirmation d'annulation.</p>
+        </div>
+        <div class="d-flex gap-3 justify-content-end flex-wrap">
+            <button type="button" class="btn-er-ghost"
+                    onclick="document.getElementById('cancel-modal').classList.remove('open')"
+                    aria-label="Garder la réservation">
+                Garder la réservation
+            </button>
+            <button type="button" class="btn-er-danger"
+                    aria-label="Confirmer l'annulation">
+                <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
+                Confirmer l'annulation
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+/* Close modal on overlay click */
+document.getElementById('cancel-modal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+});
+/* Close on Escape */
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') document.getElementById('cancel-modal').classList.remove('open');
+});
+</script>
+{% endblock %}

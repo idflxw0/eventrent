@@ -1,24 +1,201 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}EventRent — Location d'équipements événementiels{% endblock %}</title>
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
 
-        {% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
-        {% if frankenphpHotReload %}
-        <meta name="frankenphp-hot-reload:url" content="{{ frankenphpHotReload }}">
-        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
-        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
-        {% endif %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    {{ importmap('app') }}
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+
+{# ===== NAVBAR ===== #}
+<nav class="er-navbar navbar navbar-expand-lg" aria-label="Navigation principale">
+    <div class="container">
+
+        <a class="er-navbar-brand" href="{{ path('app_home') }}">
+            Event<span>Rent</span>
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#er-nav"
+                aria-controls="er-nav" aria-expanded="false"
+                aria-label="Ouvrir le menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="er-nav">
+            <ul class="navbar-nav me-auto ms-4 gap-1">
+                <li class="nav-item">
+                    <a class="er-nav-link" href="#">Catalogue</a>
+                </li>
+                <li class="nav-item">
+                    <a class="er-nav-link" href="#">Comment ça marche</a>
+                </li>
+                {% if app.user %}
+                    <li class="nav-item">
+                        <a class="er-nav-link" href="#">Mes réservations</a>
+                    </li>
+                {% endif %}
+            </ul>
+
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
+                {% if app.user %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item">
+                            <a class="er-nav-link" href="{{ path('admin') }}">
+                                <i class="bi bi-shield-lock me-1" aria-hidden="true"></i>Admin
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="nav-item dropdown">
+                        <a class="er-nav-link dropdown-toggle" href="#"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
+                            {{ app.user.firstName }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ path('app_account') }}">
+                                    <i class="bi bi-person me-2" aria-hidden="true"></i>Mon compte
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-calendar3 me-2" aria-hidden="true"></i>Mes réservations
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>Déconnexion
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="er-nav-link {% if app.request.attributes.get('_route') == 'app_login' %}active{% endif %}"
+                           href="{{ path('app_login') }}">
+                            Connexion
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="er-btn-register" href="{{ path('app_register') }}">
+                            S'inscrire
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+{# ===== FLASH MESSAGES ===== #}
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert er-flash er-flash-{{ label }} alert-dismissible fade show mb-0 rounded-0" role="alert">
+            <div class="container d-flex align-items-center gap-2">
+                {% if label == 'success' %}
+                    <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                {% elseif label == 'danger' or label == 'error' %}
+                    <i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i>
+                {% else %}
+                    <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+                {% endif %}
+                {{ message }}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    {% endfor %}
+{% endfor %}
+
+{# ===== MAIN CONTENT ===== #}
+<main id="main-content">
+    {% block body %}{% endblock %}
+</main>
+
+{# ===== FOOTER ===== #}
+<footer class="er-footer" aria-label="Pied de page">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-4">
+                <a href="{{ path('app_home') }}" class="er-footer-brand">Event<span>Rent</span></a>
+                <p class="er-footer-tagline">Votre partenaire en location d'équipements audiovisuels et événementiels.</p>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h6>Catalogue</h6>
+                <a href="#">Sonorisation</a>
+                <a href="#">Vidéoprojecteurs</a>
+                <a href="#">Micros</a>
+                <a href="#">Éclairage</a>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h6>Compte</h6>
+                <a href="{{ path('app_login') }}">Connexion</a>
+                <a href="{{ path('app_register') }}">Inscription</a>
+                {% if app.user %}
+                <a href="{{ path('app_account') }}">Mon espace</a>
+                {% endif %}
+            </div>
+            <div class="col-6 col-lg-2">
+                <h6>Aide</h6>
+                <a href="#">Comment ça marche</a>
+                <a href="#">FAQ</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h6>Légal</h6>
+                <a href="#">CGU</a>
+                <a href="#">Confidentialité</a>
+                <a href="#">Mentions légales</a>
+            </div>
+        </div>
+        <div class="er-footer-copy">
+            © {{ "now"|date("Y") }} EventRent — Tous droits réservés.
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* Password show/hide */
+document.querySelectorAll('[data-pw-toggle]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var input = document.querySelector(this.dataset.pwToggle);
+        if (!input) return;
+        var isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        var icon = this.querySelector('i');
+        if (icon) icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+        this.setAttribute('aria-label', isHidden ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+    });
+});
+
+/* Qty spinners */
+document.querySelectorAll('.er-qty-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var wrap = this.closest('.er-qty-spinner');
+        var input = wrap.querySelector('.er-qty-value');
+        var min = parseInt(input.dataset.min || '1');
+        var max = parseInt(input.dataset.max || '99');
+        var val = parseInt(input.value || min);
+        if (this.dataset.action === 'inc') input.value = Math.min(val + 1, max);
+        if (this.dataset.action === 'dec') input.value = Math.max(val - 1, min);
+    });
+});
+</script>
+
+{% block javascripts %}{% endblock %}
+</body>
 </html>

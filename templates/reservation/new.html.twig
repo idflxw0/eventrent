@@ -1,0 +1,237 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle réservation — EventRent{% endblock %}
+
+{% block body %}
+
+<div class="er-hero-inner">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb er-breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="#">Mes réservations</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Nouvelle réservation</li>
+            </ol>
+        </nav>
+        <h1>Nouvelle réservation</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="er-wizard-card">
+
+        {# ===== STEP INDICATOR ===== #}
+        <div class="er-wizard-steps mb-5" aria-label="Étapes du formulaire">
+            <div class="er-wizard-step done">
+                <div class="er-wizard-step-dot">
+                    <i class="bi bi-check" aria-hidden="true"></i>
+                </div>
+                <span class="er-wizard-step-label">Équipements</span>
+            </div>
+            <div class="er-wizard-connector done"></div>
+            <div class="er-wizard-step active">
+                <div class="er-wizard-step-dot">2</div>
+                <span class="er-wizard-step-label">Dates &amp; Lieu</span>
+            </div>
+            <div class="er-wizard-connector"></div>
+            <div class="er-wizard-step">
+                <div class="er-wizard-step-dot">3</div>
+                <span class="er-wizard-step-label">Confirmation</span>
+            </div>
+        </div>
+
+        {# ===== STEP 1 — Equipment selection (shown as done / summary) ===== #}
+        {# Demo: showing step 2 as active. Step 1 summary shown above #}
+
+        <div id="step-1" style="display:none;" aria-hidden="true">
+            <h2 class="mb-4" style="font-family:'Poppins',sans-serif; font-size:1.25rem;">
+                Étape 1 — Catégorie &amp; Équipements
+            </h2>
+
+            <div class="mb-4">
+                <label class="er-form-label" for="equip-category">Quelle catégorie d'équipement ?</label>
+                <select id="equip-category" class="form-select er-form-control" style="max-width:280px;">
+                    <option value="">Choisir une catégorie</option>
+                    <option value="sono" selected>Sonorisation</option>
+                    <option value="video">Vidéoprojecteurs</option>
+                    <option value="micro">Micros</option>
+                    <option value="mixage">Mixage</option>
+                </select>
+            </div>
+
+            <h3 style="font-size:1rem; font-weight:600; margin-bottom:12px;">Équipements disponibles :</h3>
+            <div class="mb-4">
+                <label class="er-equip-select-row selected">
+                    <input type="checkbox" checked>
+                    <span class="er-equip-select-name">Enceinte active Mackie SRM450</span>
+                    <span class="er-equip-select-price">150 €/j</span>
+                    <i class="bi bi-plus-circle text-er-primary" aria-hidden="true"></i>
+                </label>
+                <label class="er-equip-select-row">
+                    <input type="checkbox">
+                    <span class="er-equip-select-name">Table de mixage Yamaha MG16</span>
+                    <span class="er-equip-select-price">80 €/j</span>
+                    <i class="bi bi-plus-circle" style="color:var(--er-muted-text);" aria-hidden="true"></i>
+                </label>
+                <label class="er-equip-select-row">
+                    <input type="checkbox">
+                    <span class="er-equip-select-name">Micro sans fil Shure BLX24</span>
+                    <span class="er-equip-select-price">25 €/j</span>
+                    <i class="bi bi-plus-circle" style="color:var(--er-muted-text);" aria-hidden="true"></i>
+                </label>
+            </div>
+
+            <h3 style="font-size:1rem; font-weight:600; margin-bottom:12px;">Équipements sélectionnés :</h3>
+            <div class="mb-5 p-4" style="background:var(--er-muted); border-radius:var(--radius-lg);">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                    <span style="font-weight:600;">Enceinte Mackie SRM450</span>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="er-qty-spinner">
+                            <button class="er-qty-btn" type="button" data-action="dec" aria-label="Diminuer la quantité">−</button>
+                            <input class="er-qty-value" type="number" value="2" data-min="1" data-max="10" aria-label="Quantité" readonly>
+                            <button class="er-qty-btn" type="button" data-action="inc" aria-label="Augmenter la quantité">+</button>
+                        </div>
+                        <button type="button" class="btn-er-ghost" style="padding:8px 12px; font-size:.8rem; color:var(--er-destructive);">
+                            <i class="bi bi-x" aria-hidden="true"></i> Retirer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 justify-content-end">
+                <a href="#" class="btn-er-ghost">Annuler</a>
+                <button type="button" class="btn-er-accent">Étape suivante →</button>
+            </div>
+        </div>
+
+        {# ===== STEP 2 — Dates & Lieu (ACTIVE) ===== #}
+        <div id="step-2">
+            <h2 class="mb-1" style="font-family:'Poppins',sans-serif; font-size:1.25rem;">Étape 2 — Dates &amp; Lieu</h2>
+            <p class="mb-4" style="color:var(--er-muted-text); font-size:.9rem;">
+                Équipements sélectionnés :
+                <strong style="color:var(--er-foreground);">Enceinte Mackie SRM450 × 2</strong>
+            </p>
+
+            <form novalidate>
+                <fieldset>
+                    <legend class="er-form-label" style="font-size:1rem; font-family:'Poppins',sans-serif; font-weight:600; margin-bottom:16px;">
+                        Période de location
+                    </legend>
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <label class="er-form-label" for="res-start">
+                                Date de début <span class="req" aria-hidden="true">*</span>
+                            </label>
+                            <input type="date" id="res-start" name="start_date"
+                                   class="er-form-control form-control" required aria-required="true">
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="er-form-label" for="res-end">
+                                Date de fin <span class="req" aria-hidden="true">*</span>
+                            </label>
+                            <input type="date" id="res-end" name="end_date"
+                                   class="er-form-control form-control" required aria-required="true">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="mb-4">
+                    <label class="er-form-label" for="res-city">
+                        Ville de l'événement <span class="req" aria-hidden="true">*</span>
+                    </label>
+                    <input type="text" id="res-city" name="event_city"
+                           class="er-form-control form-control"
+                           placeholder="Ex : Paris, Lyon, Marseille..."
+                           required aria-required="true">
+                </div>
+
+                <fieldset class="mb-5">
+                    <legend class="er-form-label" style="font-size:.9rem;">
+                        Type de lieu <span class="req" aria-hidden="true">*</span>
+                    </legend>
+                    <div class="d-flex gap-4 mt-2 flex-wrap">
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; min-height:44px; padding:4px 0;">
+                            <input type="radio" name="venue_type" value="indoor" style="width:18px; height:18px; accent-color:var(--er-primary);">
+                            <span>
+                                <strong>Intérieur</strong>
+                                <span style="display:block; font-size:.8rem; color:var(--er-muted-text);">Salle, salle des fêtes, entrepôt…</span>
+                            </span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; min-height:44px; padding:4px 0;">
+                            <input type="radio" name="venue_type" value="outdoor" style="width:18px; height:18px; accent-color:var(--er-primary);" checked>
+                            <span>
+                                <strong>Extérieur</strong>
+                                <span style="display:block; font-size:.8rem; color:var(--er-muted-text);">Jardin, plein air, tente…</span>
+                            </span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="d-flex gap-3 justify-content-between flex-wrap">
+                    <button type="button" class="btn-er-ghost">
+                        <i class="bi bi-chevron-left me-1" aria-hidden="true"></i> Étape précédente
+                    </button>
+                    <button type="submit" class="btn-er-accent">
+                        Voir le récapitulatif <i class="bi bi-chevron-right ms-1" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    {# ===== STEP 3 — Summary (shown inline for demo) ===== #}
+    <div class="er-wizard-card mt-4" style="border:2px solid var(--er-accent); display:none;" id="step-3">
+        <h2 style="font-family:'Poppins',sans-serif; font-size:1.25rem; margin-bottom:24px;">
+            Étape 3 — Récapitulatif de votre réservation
+        </h2>
+
+        <div class="p-4 mb-4" style="background:var(--er-bg); border-radius:var(--radius-lg); border:1px solid var(--er-border);">
+            <table class="er-summary-table">
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong>Enceinte active Mackie SRM450</strong><br>
+                            <span style="font-size:.875rem; color:var(--er-muted-text);">150 € × 2 × 2 jours</span>
+                        </td>
+                        <td class="text-end er-res-total" style="white-space:nowrap;">600 €</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td class="text-end er-summary-total">600 €</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="d-flex flex-column gap-2 mb-4" style="font-size:.9375rem;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-calendar3 text-er-primary" aria-hidden="true"></i>
+                Du <strong>01/08/2026</strong> au <strong>03/08/2026</strong> (2 jours)
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-geo-alt text-er-primary" aria-hidden="true"></i>
+                Paris — Extérieur
+            </div>
+            <div class="d-flex align-items-center gap-2"
+                 style="background:#fffbeb; border:1px solid #fde68a; border-radius:var(--radius-md); padding:10px 14px;">
+                <i class="bi bi-sun text-warning" aria-hidden="true"></i>
+                <span>Météo le 01/08 : <strong>28°C, ensoleillé</strong> — Faible risque de pluie (12%)</span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 justify-content-between flex-wrap">
+            <button type="button" class="btn-er-ghost">
+                <i class="bi bi-pencil me-1" aria-hidden="true"></i> Modifier
+            </button>
+            <button type="submit" class="btn-er-accent" style="font-size:1rem; padding:12px 28px;">
+                <i class="bi bi-check-circle me-2" aria-hidden="true"></i> Confirmer la réservation
+            </button>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

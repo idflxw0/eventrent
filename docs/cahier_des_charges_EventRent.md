@@ -2,8 +2,8 @@
 
 ## Projet : EventRent — Plateforme de location de matériel audiovisuel et événementiel
 
-*Projet de fin de cycle — Symfony 6.x/7.x & Twig*
-*Nom de projet provisoire, à adapter librement.*
+_Projet de fin de cycle — Symfony 6.x/7.x & Twig_
+_Nom de projet provisoire, à adapter librement._
 
 ---
 
@@ -14,6 +14,7 @@
 Les organisateurs d'événements (mariages, concerts, conférences, soirées d'entreprise, tournages) ont régulièrement besoin de louer du matériel audiovisuel (sonorisation, vidéoprojection, écrans, micros) et de l'équipement d'éclairage pour une durée limitée. Aujourd'hui, ce type de location passe souvent par des échanges téléphoniques ou emails non centralisés : le client ne sait pas en temps réel ce qui est disponible, le prestataire gère son planning de location manuellement (tableurs, agenda papier), et le suivi de l'état du matériel (pannes, maintenance) n'est pas toujours connecté à la disponibilité affichée.
 
 Cela génère trois problèmes récurrents :
+
 - des doubles réservations sur un même équipement,
 - des devis approximatifs ou tardifs,
 - un matériel en panne proposé à la location car son indisponibilité n'a pas été remontée.
@@ -21,6 +22,7 @@ Cela génère trois problèmes récurrents :
 ### 1.2 Objectifs du projet
 
 EventRent est une plateforme web qui centralise :
+
 - la consultation d'un catalogue de matériel AV/événementiel avec disponibilité en temps réel,
 - la réservation en ligne avec calcul automatique des tarifs,
 - la génération de devis et de factures liés aux réservations,
@@ -30,16 +32,16 @@ EventRent est une plateforme web qui centralise :
 
 ### 1.3 Périmètre fonctionnel (résumé)
 
-| Inclus dans le périmètre | Hors périmètre |
-|---|---|
-| Catalogue et fiches techniques du matériel | Paiement en ligne réel (CB, etc.) — on gère un *statut* de paiement, pas une vraie transaction |
-| Réservation avec gestion de disponibilité par période | Application mobile native |
-| Devis et factures (génération de documents simples) | Gestion comptable / export fiscal complet |
-| Avis clients sur le matériel loué | Multi-langue |
-| Suivi de maintenance du matériel | Géolocalisation cartographique avancée (juste vérification météo par ville) |
-| Notifications par email | Chat en temps réel client/technicien |
-| API REST de consultation du catalogue | |
-| Back-office d'administration | |
+| Inclus dans le périmètre                              | Hors périmètre                                                                                 |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Catalogue et fiches techniques du matériel            | Paiement en ligne réel (CB, etc.) — on gère un _statut_ de paiement, pas une vraie transaction |
+| Réservation avec gestion de disponibilité par période | Application mobile native                                                                      |
+| Devis et factures (génération de documents simples)   | Gestion comptable / export fiscal complet                                                      |
+| Avis clients sur le matériel loué                     | Multi-langue                                                                                   |
+| Suivi de maintenance du matériel                      | Géolocalisation cartographique avancée (juste vérification météo par ville)                    |
+| Notifications par email                               | Chat en temps réel client/technicien                                                           |
+| API REST de consultation du catalogue                 |                                                                                                |
+| Back-office d'administration                          |                                                                                                |
 
 ---
 
@@ -54,6 +56,7 @@ Toute personne non connectée. Peut uniquement consulter les informations publiq
 Utilisateur ayant créé un compte pour louer du matériel. C'est le rôle par défaut à l'inscription.
 
 Responsabilités et droits :
+
 - consulter le catalogue et les disponibilités,
 - créer, consulter, modifier et annuler ses propres réservations (sous conditions, cf. règles de gestion),
 - demander un devis,
@@ -66,6 +69,7 @@ Responsabilités et droits :
 Membre du personnel chargé de l'état physique du matériel. Compte créé par un administrateur (pas d'auto-inscription).
 
 Responsabilités et droits :
+
 - consulter le planning de maintenance qui lui est assigné,
 - déclarer une intervention de maintenance sur un équipement (panne constatée, réparation effectuée, contrôle périodique),
 - mettre à jour le statut de disponibilité d'un équipement (« disponible » / « en maintenance » / « hors service »),
@@ -76,6 +80,7 @@ Responsabilités et droits :
 Pilote l'ensemble de la plateforme via le back-office.
 
 Responsabilités et droits :
+
 - gestion complète du catalogue (équipements, catégories, accessoires, fournisseurs),
 - gestion des comptes utilisateurs (création de comptes techniciens, modification de rôles, désactivation de comptes),
 - gestion du cycle de vie des réservations (validation, annulation, changement de statut),
@@ -86,18 +91,18 @@ Responsabilités et droits :
 
 ### 2.5 Tableau récapitulatif des droits
 
-| Action | Visiteur | Client | Technicien | Admin |
-|---|---|---|---|---|
-| Consulter le catalogue | ✅ | ✅ | ✅ | ✅ |
-| Créer un compte | ✅ | — | — | — |
-| Réserver du matériel | ❌ | ✅ | ❌ | ✅ (pour le compte d'un client) |
-| Annuler sa propre réservation | ❌ | ✅ (conditionnel) | ❌ | ✅ (toutes) |
-| Demander un devis | ❌ | ✅ | ❌ | ✅ |
-| Laisser un avis | ❌ | ✅ (si a loué) | ❌ | ❌ |
-| Déclarer une maintenance | ❌ | ❌ | ✅ | ✅ |
-| Modifier le catalogue | ❌ | ❌ | ❌ | ✅ |
-| Gérer les utilisateurs | ❌ | ❌ | ❌ | ✅ |
-| Voir les statistiques globales | ❌ | ❌ | ❌ | ✅ |
+| Action                         | Visiteur | Client            | Technicien | Admin                           |
+| ------------------------------ | -------- | ----------------- | ---------- | ------------------------------- |
+| Consulter le catalogue         | ✅       | ✅                | ✅         | ✅                              |
+| Créer un compte                | ✅       | —                 | —          | —                               |
+| Réserver du matériel           | ❌       | ✅                | ❌         | ✅ (pour le compte d'un client) |
+| Annuler sa propre réservation  | ❌       | ✅ (conditionnel) | ❌         | ✅ (toutes)                     |
+| Demander un devis              | ❌       | ✅                | ❌         | ✅                              |
+| Laisser un avis                | ❌       | ✅ (si a loué)    | ❌         | ❌                              |
+| Déclarer une maintenance       | ❌       | ❌                | ✅         | ✅                              |
+| Modifier le catalogue          | ❌       | ❌                | ❌         | ✅                              |
+| Gérer les utilisateurs         | ❌       | ❌                | ❌         | ✅                              |
+| Voir les statistiques globales | ❌       | ❌                | ❌         | ✅                              |
 
 ---
 
@@ -182,6 +187,7 @@ Responsabilités et droits :
 ### 3.10 Back-office d'administration
 
 Espace réservé à `ROLE_ADMIN`, comprenant :
+
 - gestion CRUD du catalogue (équipements, catégories, accessoires, fournisseurs),
 - gestion des utilisateurs et de leurs rôles,
 - gestion des réservations et des devis (validation, changement de statut),
@@ -198,12 +204,14 @@ Espace réservé à `ROLE_ADMIN`, comprenant :
 ### 4.1 Liste des cas d'utilisation par acteur
 
 **Visiteur**
+
 - UC01 — Consulter le catalogue
 - UC02 — Rechercher / filtrer le matériel
 - UC03 — Consulter la fiche détaillée d'un équipement
 - UC04 — Créer un compte
 
 **Client**
+
 - UC05 — Se connecter / se déconnecter
 - UC06 — Effectuer une réservation
 - UC07 — Consulter la météo prévisionnelle de son événement
@@ -215,11 +223,13 @@ Espace réservé à `ROLE_ADMIN`, comprenant :
 - UC13 — Gérer son profil
 
 **Technicien**
+
 - UC14 — Consulter le planning de maintenance assigné
 - UC15 — Déclarer une intervention de maintenance
 - UC16 — Mettre à jour le statut de disponibilité d'un équipement
 
 **Administrateur**
+
 - UC17 — Gérer le catalogue (CRUD équipements, catégories, accessoires, fournisseurs)
 - UC18 — Gérer les comptes utilisateurs et leurs rôles
 - UC19 — Valider ou refuser un devis
@@ -315,64 +325,69 @@ Espace réservé à `ROLE_ADMIN`, comprenant :
 
 ## 6. Aperçu du modèle de données
 
-### 6.1 Liste des entités (13)
+### 6.1 Liste des entités (15)
 
-| Entité | Rôle |
-|---|---|
-| `User` | Compte utilisateur (Client, Technicien, Admin via rôles) |
-| `Equipement` | Entité parente (héritage CTI) — attributs communs : nom, description, prix/jour, statut |
-| `MaterielAudio` | Sous-type d'`Equipement` — puissance, connectique, nb canaux |
-| `MaterielVideo` | Sous-type d'`Equipement` — résolution, luminosité, type projection |
-| `Categorie` | Catégorie d'équipement |
-| `Fournisseur` | Fournisseur d'un équipement |
-| `Accessoire` | Accessoire compatible avec un ou plusieurs équipements |
-| `Reservation` | Réservation effectuée par un client |
-| `LigneReservation` | Ligne de réservation (jonction Reservation ↔ Equipement, avec quantité et prix) |
-| `Avis` | Avis laissé par un client sur un équipement |
-| `Devis` | Devis demandé par un client |
-| `Facture` | Facture liée à une réservation |
-| `Maintenance` | Intervention de maintenance sur un équipement |
-| `Notification` | Notification envoyée à un utilisateur |
+| Entité            | Rôle                                                                                                  |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| `User`            | Compte utilisateur (Client, Technicien, Admin via rôles)                                              |
+| `Equipment`       | Entité parente (héritage CTI) — attributs communs : name, description, dailyPrice, availabilityStatus |
+| `AudioEquipment`  | Sous-type d'`Equipment` — powerWatts, connectorType, channelCount                                     |
+| `VideoEquipment`  | Sous-type d'`Equipment` — resolution, brightnessLumens, projectionType                                |
+| `Category`        | Catégorie d'équipement                                                                                |
+| `Supplier`        | Fournisseur d'un équipement                                                                           |
+| `Accessory`       | Accessoire compatible avec un ou plusieurs équipements                                                |
+| `Reservation`     | Réservation effectuée par un client                                                                   |
+| `ReservationLine` | Ligne de réservation (jonction Reservation ↔ Equipment, avec quantity et unitPricePerDay)             |
+| `Review`          | Avis laissé par un client sur un équipement                                                           |
+| `Quote`           | Devis demandé par un client                                                                           |
+| `QuoteLine`       | Ligne de devis (jonction Quote ↔ Equipment, avec quantity et unitPricePerDay)                         |
+| `Invoice`         | Facture liée à une réservation                                                                        |
+| `Maintenance`     | Intervention de maintenance sur un équipement                                                         |
+| `Notification`    | Notification envoyée à un utilisateur                                                                 |
 
 ### 6.2 Relations principales
 
-- `Equipement` (1) — (N) `MaterielAudio` / `MaterielVideo` → **héritage CTI**
-- `Categorie` (1) — (N) `Equipement`
-- `Fournisseur` (1) — (N) `Equipement`
-- `Equipement` (N) — (N) `Accessoire` → **ManyToMany simple**
+- `Equipment` (1) — (N) `AudioEquipment` / `VideoEquipment` → **héritage CTI**
+- `Category` (1) — (N) `Equipment`
+- `Supplier` (1) — (N) `Equipment`
+- `Equipment` (N) — (N) `Accessory` → **ManyToMany simple**
 - `User` (1) — (N) `Reservation`
-- `Reservation` (N) — (N) `Equipement` via `LigneReservation` → **ManyToMany avec attributs**
-- `User` (1) — (N) `Avis`, `Equipement` (1) — (N) `Avis`
-- `User` (1) — (N) `Devis`
-- `Reservation` (1) — (1) `Facture`
-- `Equipement` (1) — (N) `Maintenance`, `User` (technicien) (1) — (N) `Maintenance`
+- `Reservation` (N) — (N) `Equipment` via `ReservationLine` → **ManyToMany avec attributs**
+- `User` (1) — (N) `Review`, `Equipment` (1) — (N) `Review`
+- `User` (1) — (N) `Quote`
+- `Quote` (1) — (N) `QuoteLine`, `Equipment` (1) — (N) `QuoteLine`
+- `Reservation` (1) — (1) `Invoice`
+- `Equipment` (1) — (N) `Maintenance`, `User` (technician) (1) — (N) `Maintenance`
 - `User` (1) — (N) `Notification`
 
 ### 6.3 Schéma simplifié (diagramme entité-relation)
 
 ```mermaid
 erDiagram
-    USER ||--o{ RESERVATION : effectue
-    USER ||--o{ AVIS : redige
-    USER ||--o{ DEVIS : demande
-    USER ||--o{ NOTIFICATION : recoit
-    USER ||--o{ MAINTENANCE : intervient
+    USER ||--o{ RESERVATION : makes
+    USER ||--o{ REVIEW : writes
+    USER ||--o{ QUOTE : requests
+    USER ||--o{ NOTIFICATION : receives
+    USER ||--o{ MAINTENANCE : performs
 
-    EQUIPEMENT ||--o{ MATERIEL_AUDIO : herite
-    EQUIPEMENT ||--o{ MATERIEL_VIDEO : herite
-    CATEGORIE ||--o{ EQUIPEMENT : classe
-    FOURNISSEUR ||--o{ EQUIPEMENT : fournit
-    EQUIPEMENT }o--o{ ACCESSOIRE : compatible_avec
+    EQUIPMENT ||--|| AUDIO_EQUIPMENT : inherits
+    EQUIPMENT ||--|| VIDEO_EQUIPMENT : inherits
+    CATEGORY ||--o{ EQUIPMENT : classifies
+    SUPPLIER ||--o{ EQUIPMENT : supplies
+    EQUIPMENT }o--o{ ACCESSORY : compatible_with
 
-    RESERVATION ||--o{ LIGNE_RESERVATION : contient
-    EQUIPEMENT ||--o{ LIGNE_RESERVATION : concerne
-    RESERVATION ||--|| FACTURE : genere
+    RESERVATION ||--o{ RESERVATION_LINE : contains
+    EQUIPMENT ||--o{ RESERVATION_LINE : concerns
+    RESERVATION ||--|| INVOICE : generates
 
-    EQUIPEMENT ||--o{ AVIS : concerne
-    EQUIPEMENT ||--o{ MAINTENANCE : subit
+    QUOTE ||--o{ QUOTE_LINE : contains
+    EQUIPMENT ||--o{ QUOTE_LINE : concerns
+
+    EQUIPMENT ||--o{ REVIEW : concerns
+    EQUIPMENT ||--o{ MAINTENANCE : undergoes
 ```
 
-*Ce diagramme est une vue simplifiée à des fins de cahier des charges. Le MCD/diagramme de classes complet (livrable distinct) devra détailler tous les attributs, types et cardinalités exactes.*
+_Ce diagramme est une vue simplifiée à des fins de cahier des charges. Le MCD/diagramme de classes complet (livrable distinct) devra détailler tous les attributs, types et cardinalités exactes._
 
 ---
 
@@ -395,13 +410,13 @@ erDiagram
 
 ### Bonus ciblés
 
-| Bonus du barème | Statut |
-|---|---|
-| Temps réel (Mercure) | **Visé** — notifications poussées en direct (cf. 3.7) |
-| Asynchronisme (Messenger) | À évaluer selon le temps restant |
-| Commandes CLI | À évaluer (candidats naturels : expiration des devis RG05, passage auto en "Terminée" RG09) |
-| Tests de mutation (Infection) | À évaluer |
-| DDD / TDD | Non visé en l'état |
+| Bonus du barème               | Statut                                                                                      |
+| ----------------------------- | ------------------------------------------------------------------------------------------- |
+| Temps réel (Mercure)          | **Visé** — notifications poussées en direct (cf. 3.7)                                       |
+| Asynchronisme (Messenger)     | À évaluer selon le temps restant                                                            |
+| Commandes CLI                 | À évaluer (candidats naturels : expiration des devis RG05, passage auto en "Terminée" RG09) |
+| Tests de mutation (Infection) | À évaluer                                                                                   |
+| DDD / TDD                     | Non visé en l'état                                                                          |
 
 ---
 
