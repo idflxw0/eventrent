@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Réservation RES-0042 — EventRent{% endblock %}
+{% set statusBadge = reservation.status == 'confirmed' ? 'er-badge-confirmed' : (reservation.status == 'pending' ? 'er-badge-pending' : (reservation.status == 'cancelled' ? 'er-badge-cancelled' : 'er-badge-completed')) %}
+{% set statusIcon = reservation.status == 'confirmed' ? 'check-circle' : (reservation.status == 'pending' ? 'clock' : (reservation.status == 'cancelled' ? 'x-circle' : 'check2-all')) %}
+{% set statusLabel = reservation.status == 'confirmed' ? 'Confirmée' : (reservation.status == 'pending' ? 'En attente' : (reservation.status == 'cancelled' ? 'Annulée' : 'Terminée')) %}
+
+{% block title %}Réservation RES-{{ '%04d'|format(reservation.id) }} — EventRent{% endblock %}
 
 {% block body %}
 
@@ -9,20 +13,20 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb er-breadcrumb mb-2">
                 <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
-                <li class="breadcrumb-item"><a href="#">Mes réservations</a></li>
-                <li class="breadcrumb-item active" aria-current="page">RES-0042</li>
+                <li class="breadcrumb-item"><a href="{{ path('reservation_index') }}">Mes réservations</a></li>
+                <li class="breadcrumb-item active" aria-current="page">RES-{{ '%04d'|format(reservation.id) }}</li>
             </ol>
         </nav>
         <div class="d-flex align-items-center gap-3 flex-wrap">
-            <h1 style="margin:0;">Réservation #RES-0042</h1>
-            <span class="er-badge er-badge-confirmed" style="font-size:.875rem; padding:6px 14px;">
-                <i class="bi bi-check-circle" aria-hidden="true"></i> Confirmée
+            <h1 style="margin:0;">Réservation #RES-{{ '%04d'|format(reservation.id) }}</h1>
+            <span class="er-badge {{ statusBadge }}" style="font-size:.875rem; padding:6px 14px;">
+                <i class="bi bi-{{ statusIcon }}" aria-hidden="true"></i> {{ statusLabel }}
             </span>
         </div>
         <p class="er-breadcrumb mt-2 mb-0" style="color:rgba(255,255,255,.7);">
-            <i class="bi bi-calendar3 me-1" aria-hidden="true"></i> Du 01/08/2026 au 03/08/2026
+            <i class="bi bi-calendar3 me-1" aria-hidden="true"></i> Du {{ reservation.startDate|date('d/m/Y') }} au {{ reservation.endDate|date('d/m/Y') }}
             &nbsp;·&nbsp;
-            <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> Paris, Extérieur
+            <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ reservation.eventCity }}, {{ reservation.venueType == 'indoor' ? 'Intérieur' : 'Extérieur' }}
         </p>
     </div>
 </div>
@@ -30,15 +34,12 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-9">
-
             <div class="row g-4">
 
-                {# ===== Equipment table ===== #}
                 <div class="col-12">
                     <div class="er-account-info-card">
                         <h2 style="font-family:'Poppins',sans-serif; font-size:1.125rem; margin-bottom:20px;">
-                            <i class="bi bi-box-seam me-2 text-er-primary" aria-hidden="true"></i>
-                            Équipements loués
+                            <i class="bi bi-box-seam me-2" style="color:var(--er-primary);" aria-hidden="true"></i> Équipements loués
                         </h2>
                         <div class="table-responsive">
                             <table class="er-invoice-table">
@@ -51,29 +52,22 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <strong>Enceinte active Mackie SRM450</strong>
-                                            <span style="display:block; font-size:.8125rem; color:var(--er-muted-text);">Réf : AUDIO-001</span>
-                                        </td>
-                                        <td class="text-center">2</td>
-                                        <td class="text-end font-variant-numeric: tabular-nums;">150 €</td>
-                                        <td class="text-end">600 €</td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Table de mixage Yamaha MG16</strong>
-                                            <span style="display:block; font-size:.8125rem; color:var(--er-muted-text);">Réf : MIX-002</span>
-                                        </td>
-                                        <td class="text-center">1</td>
-                                        <td class="text-end">80 €</td>
-                                        <td class="text-end">160 €</td>
-                                    </tr>
+                                    {% for line in reservation.lines %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ line.equipment.name }}</strong>
+                                                <span style="display:block; font-size:.8125rem; color:var(--er-muted-text);">Réf : {{ line.equipment.reference }}</span>
+                                            </td>
+                                            <td class="text-center">{{ line.quantity }}</td>
+                                            <td class="text-end">{{ line.unitPricePerDay }} €</td>
+                                            <td class="text-end">{{ (line.quantity * line.unitPricePerDay * days)|number_format(0, ',', ' ') }} €</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="3" class="text-end">Total TTC</td>
-                                        <td class="text-end er-invoice-total">760 €</td>
+                                        <td colspan="3" class="text-end">Total TTC ({{ days }} jour{{ days > 1 ? 's' : '' }})</td>
+                                        <td class="text-end er-invoice-total">{{ reservation.totalAmount }} €</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -81,86 +75,88 @@
                     </div>
                 </div>
 
-                {# ===== Invoice info ===== #}
+                {% if reservation.invoice %}
                 <div class="col-md-6">
                     <div class="er-account-info-card h-100">
                         <h2 style="font-family:'Poppins',sans-serif; font-size:1.125rem; margin-bottom:16px;">
-                            <i class="bi bi-receipt me-2 text-er-primary" aria-hidden="true"></i>
-                            Facture associée
+                            <i class="bi bi-receipt me-2" style="color:var(--er-primary);" aria-hidden="true"></i> Facture associée
                         </h2>
                         <div class="d-flex align-items-center gap-2 mb-2">
-                            <span style="font-weight:600;">INV-2026-000045</span>
-                            <span class="er-badge er-badge-pending">En attente de paiement</span>
+                            <span style="font-weight:600;">{{ reservation.invoice.number }}</span>
+                            <span class="er-badge er-badge-{{ reservation.invoice.paymentStatus == 'paid' ? 'confirmed' : 'pending' }}">
+                                {{ reservation.invoice.paymentStatus == 'paid' ? 'Payée' : 'En attente' }}
+                            </span>
                         </div>
                         <p style="font-size:.9rem; color:var(--er-muted-text); margin:0;">
-                            Émise le 18/06/2026 · Montant : <strong style="color:var(--er-foreground);">760 €</strong>
+                            Émise le {{ reservation.invoice.issuedAt|date('d/m/Y') }} · Montant : <strong style="color:var(--er-foreground);">{{ reservation.totalAmount }} €</strong>
                         </p>
-                        <a href="#" class="btn-er-outline text-decoration-none mt-4"
-                           style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
-                            <i class="bi bi-download" aria-hidden="true"></i> Télécharger la facture
-                        </a>
                     </div>
                 </div>
+                {% endif %}
 
-                {# ===== Event details ===== #}
                 <div class="col-md-6">
                     <div class="er-account-info-card h-100">
                         <h2 style="font-family:'Poppins',sans-serif; font-size:1.125rem; margin-bottom:16px;">
-                            <i class="bi bi-info-circle me-2 text-er-primary" aria-hidden="true"></i>
-                            Détails de l'événement
+                            <i class="bi bi-info-circle me-2" style="color:var(--er-primary);" aria-hidden="true"></i> Détails de l'événement
                         </h2>
                         <dl style="font-size:.9375rem; margin:0;">
                             <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Date de début</dt>
-                            <dd style="margin-bottom:12px;">01 août 2026</dd>
+                            <dd style="margin-bottom:12px;">{{ reservation.startDate|date('d F Y') }}</dd>
                             <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Date de fin</dt>
-                            <dd style="margin-bottom:12px;">03 août 2026</dd>
+                            <dd style="margin-bottom:12px;">{{ reservation.endDate|date('d F Y') }}</dd>
                             <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Ville</dt>
-                            <dd style="margin-bottom:12px;">Paris</dd>
+                            <dd style="margin-bottom:12px;">{{ reservation.eventCity }}</dd>
                             <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Type de lieu</dt>
-                            <dd style="margin-bottom:0;">Extérieur</dd>
+                            <dd style="margin-bottom:0;">{{ reservation.venueType == 'indoor' ? 'Intérieur' : 'Extérieur' }}</dd>
                         </dl>
                     </div>
                 </div>
 
-                {# ===== Danger zone ===== #}
+                {% if reservation.weatherForecast %}
                 <div class="col-12">
-                    <div class="er-account-info-card"
-                         style="border-color:#fecaca; background:var(--er-destructive-bg);">
+                    <div class="er-account-info-card" style="background:#fffbeb; border-color:#fde68a;">
+                        <div class="d-flex align-items-center gap-2" style="color:var(--er-warning);">
+                            <i class="bi bi-sun" style="font-size:1.25rem;" aria-hidden="true"></i>
+                            <strong>Prévision météo</strong>
+                        </div>
+                        <p style="margin:8px 0 0; font-size:.9375rem;">{{ reservation.weatherForecast }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if canCancel %}
+                <div class="col-12">
+                    <div class="er-account-info-card" style="border-color:#fecaca; background:var(--er-destructive-bg);">
                         <h2 style="font-family:'Poppins',sans-serif; font-size:1rem; color:var(--er-destructive); margin-bottom:8px;">
-                            <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
-                            Zone dangereuse
+                            <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i> Zone dangereuse
                         </h2>
                         <p style="font-size:.9rem; color:var(--er-muted-text); margin-bottom:16px;">
                             L'annulation est possible jusqu'à 48h avant la date de début. Cette action est irréversible.
                         </p>
-                        <button type="button" class="btn-er-danger-outline"
-                                style="font-size:.875rem; padding:8px 18px; border-radius:var(--radius-md);"
-                                onclick="document.getElementById('cancel-modal').classList.add('open')"
-                                aria-label="Annuler cette réservation">
-                            <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                            Annuler cette réservation
+                        <button type="button" class="btn-er-danger-outline" style="font-size:.875rem; padding:8px 18px; border-radius:var(--radius-md);"
+                                onclick="document.getElementById('cancel-modal').classList.add('open')">
+                            <i class="bi bi-x-circle me-1" aria-hidden="true"></i> Annuler cette réservation
                         </button>
                     </div>
                 </div>
+                {% endif %}
 
             </div>
 
             <div class="mt-4">
-                <a href="#" class="btn-er-ghost text-decoration-none"
-                   style="display:inline-flex; align-items:center; gap:6px;">
+                <a href="{{ path('reservation_index') }}" class="btn-er-ghost text-decoration-none" style="display:inline-flex; align-items:center; gap:6px;">
                     <i class="bi bi-arrow-left" aria-hidden="true"></i> Retour à mes réservations
                 </a>
             </div>
-
         </div>
     </div>
 </div>
 
-{# ===== CANCELLATION MODAL ===== #}
+{% if canCancel %}
 <div id="cancel-modal" class="er-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
     <div class="er-modal">
         <h2 class="er-modal-title" id="cancel-modal-title">
-            <i class="bi bi-exclamation-triangle text-er-accent me-2" aria-hidden="true"></i>
+            <i class="bi bi-exclamation-triangle me-2" style="color:var(--er-accent);" aria-hidden="true"></i>
             Annuler la réservation ?
         </h2>
         <div class="er-modal-body">
@@ -168,35 +164,34 @@
                 <i class="bi bi-exclamation-circle me-1" aria-hidden="true"></i>
                 Cette action est irréversible.
             </p>
-            <p>La réservation <strong>#RES-0042</strong> passera au statut <strong>Annulée</strong>.
+            <p>La réservation <strong>#RES-{{ '%04d'|format(reservation.id) }}</strong> passera au statut <strong>Annulée</strong>.
                Vous recevrez un email de confirmation d'annulation.</p>
         </div>
         <div class="d-flex gap-3 justify-content-end flex-wrap">
-            <button type="button" class="btn-er-ghost"
-                    onclick="document.getElementById('cancel-modal').classList.remove('open')"
-                    aria-label="Garder la réservation">
+            <button type="button" class="btn-er-ghost" onclick="document.getElementById('cancel-modal').classList.remove('open')">
                 Garder la réservation
             </button>
-            <button type="button" class="btn-er-danger"
-                    aria-label="Confirmer l'annulation">
-                <i class="bi bi-x-circle me-1" aria-hidden="true"></i>
-                Confirmer l'annulation
-            </button>
+            <form method="post" action="{{ path('reservation_cancel', {id: reservation.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ reservation.id) }}">
+                <button type="submit" class="btn-er-danger">
+                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i> Confirmer l'annulation
+                </button>
+            </form>
         </div>
     </div>
 </div>
+{% endif %}
 
 {% endblock %}
 
 {% block javascripts %}
+{{ parent() }}
 <script>
-/* Close modal on overlay click */
-document.getElementById('cancel-modal').addEventListener('click', function(e) {
+document.getElementById('cancel-modal')?.addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('open');
 });
-/* Close on Escape */
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') document.getElementById('cancel-modal').classList.remove('open');
+    if (e.key === 'Escape') document.getElementById('cancel-modal')?.classList.remove('open');
 });
 </script>
 {% endblock %}
