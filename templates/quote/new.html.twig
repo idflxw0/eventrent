@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demander un devis — EventRent{% endblock %}
+
+{% block body %}
+
+<div class="er-hero-inner">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb er-breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('quote_index') }}">Mes devis</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Nouveau devis</li>
+            </ol>
+        </nav>
+        <h1>Demander un devis</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="er-wizard-card">
+
+        {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+
+        <p class="mb-4" style="color:var(--er-muted-text); font-size:.9375rem;">
+            <i class="bi bi-info-circle me-1" style="color:var(--er-primary);" aria-hidden="true"></i>
+            Le devis sera examiné par un administrateur sous 48h. Validité : 15 jours.
+        </p>
+
+        <div class="row g-4 mb-4">
+            <div class="col-sm-6">
+                {{ form_row(form.requestedStartDate, {label_attr: {class: 'er-form-label'}, attr: {class: 'er-form-control form-control'}}) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_row(form.requestedEndDate, {label_attr: {class: 'er-form-label'}, attr: {class: 'er-form-control form-control'}}) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_row(form.eventCity, {label_attr: {class: 'er-form-label'}, attr: {class: 'er-form-control form-control'}}) }}
+            </div>
+            <div class="col-sm-6">
+                {{ form_row(form.category, {label_attr: {class: 'er-form-label'}, attr: {class: 'er-form-control form-select'}}) }}
+            </div>
+        </div>
+
+        <h2 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:1.125rem; margin-bottom:16px;">Équipements</h2>
+
+        <div id="lines-container"
+             data-prototype="{{ form_widget(form.lines.vars.prototype)|e('html_attr') }}"
+             data-index="{{ form.lines|length }}">
+            {% for line in form.lines %}
+                <div class="er-line-row d-flex align-items-end gap-3 mb-3 p-3" style="background:var(--er-muted); border-radius:var(--radius-lg);">
+                    <div style="flex:1;">
+                        {{ form_label(line.equipment, null, {label_attr: {class: 'er-form-label'}}) }}
+                        {{ form_widget(line.equipment) }}
+                        {{ form_errors(line.equipment) }}
+                    </div>
+                    <div style="width:100px;">
+                        {{ form_label(line.quantity, null, {label_attr: {class: 'er-form-label'}}) }}
+                        {{ form_widget(line.quantity, {attr: {class: 'er-form-control form-control text-center', style: 'width:80px;'}}) }}
+                    </div>
+                    <button type="button" class="btn-er-ghost er-remove-line mb-1"
+                            style="padding:8px 12px; color:var(--er-destructive);" aria-label="Supprimer cette ligne">
+                        <i class="bi bi-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-line" class="btn-er-outline mt-2 mb-4" style="font-size:.875rem; padding:8px 16px;">
+            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i> Ajouter un équipement
+        </button>
+
+        {{ form_errors(form) }}
+
+        <div class="d-flex gap-3 justify-content-between flex-wrap mt-5">
+            <a href="{{ path('quote_index') }}" class="btn-er-ghost text-decoration-none">
+                <i class="bi bi-chevron-left me-1" aria-hidden="true"></i> Annuler
+            </a>
+            <button type="submit" class="btn-er-accent" style="font-size:1rem;">
+                <i class="bi bi-send me-2" aria-hidden="true"></i> Envoyer la demande
+            </button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+(function () {
+    const container = document.getElementById('lines-container');
+    const addBtn    = document.getElementById('add-line');
+
+    function addLine() {
+        const index = parseInt(container.dataset.index, 10);
+        const proto = container.dataset.prototype.replace(/__name__/g, index);
+        const wrap = document.createElement('div');
+        wrap.className = 'er-line-row d-flex align-items-end gap-3 mb-3 p-3';
+        wrap.style.cssText = 'background:var(--er-muted); border-radius:var(--radius-lg);';
+        wrap.innerHTML = proto;
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn-er-ghost er-remove-line mb-1';
+        removeBtn.style.cssText = 'padding:8px 12px; color:var(--er-destructive);';
+        removeBtn.setAttribute('aria-label', 'Supprimer cette ligne');
+        removeBtn.innerHTML = '<i class="bi bi-trash" aria-hidden="true"></i>';
+        wrap.appendChild(removeBtn);
+        container.appendChild(wrap);
+        container.dataset.index = index + 1;
+    }
+
+    addBtn.addEventListener('click', addLine);
+
+    container.addEventListener('click', function (e) {
+        const btn = e.target.closest('.er-remove-line');
+        if (btn) btn.closest('.er-line-row').remove();
+    });
+})();
+</script>
+{% endblock %}

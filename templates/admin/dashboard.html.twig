@@ -1,0 +1,72 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}Tableau de bord — EventRent{% endblock %}
+
+{% block main %}
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-4">
+                <div style="font-size:2rem; font-weight:800; color:#E55D1E;">{{ stats.equipment }}</div>
+                <div style="font-size:.875rem; color:#6B7280; margin-top:4px;">
+                    <i class="fas fa-tools me-1"></i> Équipements
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-4">
+                <div style="font-size:2rem; font-weight:800; color:#E55D1E;">{{ stats.reservations }}</div>
+                <div style="font-size:.875rem; color:#6B7280; margin-top:4px;">
+                    <i class="fas fa-calendar-check me-1"></i> Réservations
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-4">
+                <div style="font-size:2rem; font-weight:800; color:#E55D1E;">{{ stats.users }}</div>
+                <div style="font-size:.875rem; color:#6B7280; margin-top:4px;">
+                    <i class="fas fa-users me-1"></i> Utilisateurs
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-4">
+                <div style="font-size:2rem; font-weight:800; color:#E55D1E;">{{ stats.pendingQuotes }}</div>
+                <div style="font-size:.875rem; color:#6B7280; margin-top:4px;">
+                    <i class="fas fa-file-invoice me-1"></i> Devis en attente
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Raccourcis</h5>
+        <div class="d-flex gap-3 flex-wrap">
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\EquipmentCrudController').setAction('index') }}"
+               class="btn btn-primary">
+                <i class="fas fa-tools me-1"></i> Gérer le catalogue
+            </a>
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\ReservationCrudController').setAction('index') }}"
+               class="btn btn-primary">
+                <i class="fas fa-calendar-check me-1"></i> Voir les réservations
+            </a>
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\QuoteCrudController').setAction('index') }}"
+               class="btn btn-primary">
+                <i class="fas fa-file-invoice me-1"></i> Gérer les devis
+            </a>
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\UserCrudController').setAction('index') }}"
+               class="btn btn-primary">
+                <i class="fas fa-users me-1"></i> Gérer les utilisateurs
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
