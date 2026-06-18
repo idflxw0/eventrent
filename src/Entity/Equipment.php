@@ -17,6 +17,12 @@ use Doctrine\ORM\Mapping as ORM;
 ])]
 class Equipment
 {
+    public const STATUS_AVAILABLE    = 'available';
+    public const STATUS_MAINTENANCE  = 'maintenance';
+    public const STATUS_OUT_OF_SERVICE = 'out_of_service';
+    public const TYPE_AUDIO = 'audio';
+    public const TYPE_VIDEO = 'video';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -68,7 +74,7 @@ class Equipment
 
     public function __construct()
     {
-        $this->availabilityStatus = 'available';
+        $this->availabilityStatus = self::STATUS_AVAILABLE;
         $this->addedAt = new \DateTimeImmutable();
         $this->accessories = new ArrayCollection();
         $this->reservationLines = new ArrayCollection();
@@ -78,6 +84,11 @@ class Equipment
     }
 
     public function getId(): ?int { return $this->id; }
+
+    public function getType(): string
+    {
+        return $this instanceof VideoEquipment ? self::TYPE_VIDEO : self::TYPE_AUDIO;
+    }
 
     public function getReference(): ?string { return $this->reference; }
     public function setReference(string $reference): static { $this->reference = $reference; return $this; }

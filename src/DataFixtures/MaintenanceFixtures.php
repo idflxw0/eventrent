@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\AudioEquipment;
+use App\Entity\Equipment;
 use App\Entity\Maintenance;
 use App\Entity\User;
 use App\Entity\VideoEquipment;
@@ -22,7 +23,7 @@ class MaintenanceFixtures extends Fixture implements DependentFixtureInterface
         $m1->setInterventionType('repair');
         $m1->setDescription('Remplacement du haut-parleur grillé sur la voie gauche. Vérification ampli interne OK.');
         $m1->setInterventionDate(new \DateTimeImmutable('2026-04-15 10:00:00'));
-        $m1->setStatusAfterIntervention('available');
+        $m1->setStatusAfterIntervention(Equipment::STATUS_AVAILABLE);
         $manager->persist($m1);
 
         $m2 = new Maintenance();
@@ -31,7 +32,7 @@ class MaintenanceFixtures extends Fixture implements DependentFixtureInterface
         $m2->setInterventionType('inspection');
         $m2->setDescription('Contrôle périodique : lampe à 1200 h (max 5000 h), filtre à air nettoyé, focus vérifié.');
         $m2->setInterventionDate(new \DateTimeImmutable('2026-05-20 14:00:00'));
-        $m2->setStatusAfterIntervention('available');
+        $m2->setStatusAfterIntervention(Equipment::STATUS_AVAILABLE);
         $manager->persist($m2);
 
         $m3 = new Maintenance();
@@ -40,7 +41,7 @@ class MaintenanceFixtures extends Fixture implements DependentFixtureInterface
         $m3->setInterventionType('breakdown');
         $m3->setDescription('Court-circuit canal droit. Pièces commandées, en attente de livraison.');
         $m3->setInterventionDate(new \DateTimeImmutable('2026-06-10 08:30:00'));
-        $m3->setStatusAfterIntervention('maintenance');
+        $m3->setStatusAfterIntervention(Equipment::STATUS_MAINTENANCE);
         $manager->persist($m3);
 
         $manager->flush();

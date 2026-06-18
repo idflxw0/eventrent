@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Accessory;
 use App\Entity\AudioEquipment;
 use App\Entity\Category;
+use App\Entity\Equipment;
 use App\Entity\Supplier;
 use App\Entity\VideoEquipment;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -78,7 +79,7 @@ class EquipmentFixtures extends Fixture implements DependentFixtureInterface
             $this->addReference($ref, $e);
         }
 
-        $this->getReference(self::CROWN, AudioEquipment::class)->setAvailabilityStatus('maintenance');
+        $this->getReference(self::CROWN, AudioEquipment::class)->setAvailabilityStatus(Equipment::STATUS_MAINTENANCE);
 
         $manager->flush();
     }
