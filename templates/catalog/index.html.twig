@@ -4,7 +4,6 @@
 
 {% block body %}
 
-{# ===== MINI HERO ===== #}
 <div class="er-hero-inner">
     <div class="container">
         <nav aria-label="breadcrumb">
@@ -13,303 +12,165 @@
                 <li class="breadcrumb-item active" aria-current="page">Catalogue</li>
             </ol>
         </nav>
-        <h1>Catalogue — <span style="color:var(--er-accent);">24 équipements</span></h1>
+        <h1>Catalogue{% if total %} — <span style="color:var(--er-accent);">{{ total }} équipement{{ total > 1 ? 's' : '' }}</span>{% endif %}</h1>
     </div>
 </div>
 
-{# ===== ACTIVE FILTER CHIPS ===== #}
+{% set hasFilters = filter.catId or filter.dispo or filter.prixMax %}
+{% if hasFilters %}
 <div style="background:var(--er-surface); border-bottom:1px solid var(--er-border);">
     <div class="container py-3 d-flex align-items-center gap-2 flex-wrap">
         <span style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-right:4px;">Filtres actifs :</span>
-        <button class="er-filter-chip" aria-label="Supprimer filtre Sonorisation">
-            Sonorisation <span class="remove" aria-hidden="true">×</span>
-        </button>
-        <button class="er-filter-chip" aria-label="Supprimer filtre Disponibles">
-            Disponibles <span class="remove" aria-hidden="true">×</span>
-        </button>
-        <a href="#" style="font-size:.8125rem; color:var(--er-destructive); text-decoration:none; margin-left:4px; font-weight:600;">
-            Tout effacer
-        </a>
+        {% for cat in categories %}
+            {% if filter.catId == cat.id %}
+                <a href="{{ path('catalog_index', app.request.query.all|merge({(params.cat): null})) }}" class="er-filter-chip" aria-label="Supprimer filtre {{ cat.name }}">
+                    {{ cat.name }} <span class="remove" aria-hidden="true">×</span>
+                </a>
+            {% endif %}
+        {% endfor %}
+        {% if filter.dispo %}
+            <a href="{{ path('catalog_index', app.request.query.all|merge({(params.dispo): null})) }}" class="er-filter-chip" aria-label="Supprimer filtre Disponibles">
+                Disponibles <span class="remove" aria-hidden="true">×</span>
+            </a>
+        {% endif %}
     </div>
 </div>
+{% endif %}
 
 <div class="container py-5">
     <div class="row g-4">
 
-        {# ===== FILTER SIDEBAR — Desktop ===== #}
         <aside class="col-lg-3 d-none d-lg-block" aria-label="Filtres">
-            <div class="er-filter-sidebar">
+            <form method="get" action="{{ path('catalog_index') }}" class="er-filter-sidebar">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <h2 class="er-filter-title mb-0">
                         <i class="bi bi-funnel me-2" aria-hidden="true"></i>Filtres
                     </h2>
-                    <a href="#" style="font-size:.8rem; color:var(--er-muted-text);">Réinitialiser</a>
+                    <a href="{{ path('catalog_index') }}" style="font-size:.8rem; color:var(--er-muted-text);">Réinitialiser</a>
                 </div>
 
-                {# Availability #}
                 <div class="er-filter-group">
                     <div class="er-filter-group-title">Disponibilité</div>
                     <label class="er-filter-check">
-                        <input type="radio" name="availability" value="all" checked>
+                        <input type="radio" name="{{ params.dispo }}" value="" onchange="this.form.submit()" {{ not filter.dispo ? 'checked' : '' }}>
                         <span class="er-filter-check-label">Tous</span>
                     </label>
                     <label class="er-filter-check">
-                        <input type="radio" name="availability" value="available">
+                        <input type="radio" name="{{ params.dispo }}" value="{{ EqStatus.AVAILABLE }}" onchange="this.form.submit()" {{ filter.dispo == EqStatus.AVAILABLE ? 'checked' : '' }}>
                         <span class="er-filter-check-label">Disponibles uniquement</span>
                     </label>
                 </div>
 
-                {# Categories #}
                 <div class="er-filter-group">
                     <div class="er-filter-group-title">Catégorie</div>
-                    <label class="er-filter-check">
-                        <input type="checkbox" name="cat[]" value="sono" checked>
-                        <span class="er-filter-check-label">Sonorisation</span>
-                        <span class="er-filter-check-count">6</span>
-                    </label>
-                    <label class="er-filter-check">
-                        <input type="checkbox" name="cat[]" value="video">
-                        <span class="er-filter-check-label">Vidéoprojecteurs</span>
-                        <span class="er-filter-check-count">4</span>
-                    </label>
-                    <label class="er-filter-check">
-                        <input type="checkbox" name="cat[]" value="micro">
-                        <span class="er-filter-check-label">Micros</span>
-                        <span class="er-filter-check-count">5</span>
-                    </label>
-                    <label class="er-filter-check">
-                        <input type="checkbox" name="cat[]" value="ampli">
-                        <span class="er-filter-check-label">Amplificateurs</span>
-                        <span class="er-filter-check-count">4</span>
-                    </label>
-                    <label class="er-filter-check">
-                        <input type="checkbox" name="cat[]" value="mixage">
-                        <span class="er-filter-check-label">Mixage</span>
-                        <span class="er-filter-check-count">5</span>
-                    </label>
+                    {% for cat in categories %}
+                        <label class="er-filter-check">
+                            <input type="radio" name="{{ params.cat }}" value="{{ cat.id }}" onchange="this.form.submit()" {{ filter.catId == cat.id ? 'checked' : '' }}>
+                            <span class="er-filter-check-label">{{ cat.name }}</span>
+                            <span class="er-filter-check-count">{{ countMap[cat.id]|default(0) }}</span>
+                        </label>
+                    {% endfor %}
                 </div>
 
-                {# Price range #}
                 <div class="er-filter-group">
                     <div class="er-filter-group-title">Prix / jour</div>
-                    <input type="range" class="er-range mb-3" min="0" max="500" value="300" aria-label="Prix maximum">
+                    <input type="range" class="er-range mb-3" name="{{ params.prix_max }}" min="0" max="{{ priceRangeMax }}" value="{{ filter.prixMax|default(priceRangeMax) }}" onchange="this.form.submit()" aria-label="Prix maximum">
                     <div class="d-flex justify-content-between" style="font-size:.875rem;">
                         <span>0 €</span>
-                        <span style="font-weight:700; color:var(--er-primary);">≤ 300 €</span>
-                        <span>500 €</span>
+                        <span style="font-weight:700; color:var(--er-primary);">≤ {{ filter.prixMax|default(priceRangeMax) }} €</span>
+                        <span>{{ priceRangeMax }} €</span>
                     </div>
                 </div>
 
-                <button class="btn-er-primary w-100 mt-2">Appliquer les filtres</button>
-            </div>
+                {% if filter.sort %}<input type="hidden" name="{{ params.sort }}" value="{{ filter.sort }}">{% endif %}
+                <button type="submit" class="btn-er-primary w-100 mt-2">Appliquer les filtres</button>
+            </form>
         </aside>
 
-        {# ===== GRID ===== #}
         <div class="col-lg-9">
-
-            {# Sort bar #}
             <div class="er-sort-bar">
                 <div class="d-flex align-items-center gap-2">
-                    {# Mobile filter toggle #}
-                    <button class="btn-er-outline d-lg-none" style="padding:8px 16px; font-size:.875rem;" type="button">
-                        <i class="bi bi-funnel me-1" aria-hidden="true"></i>Filtres (2)
-                    </button>
-                    <span class="er-results-count"><strong>8</strong> résultats</span>
+                    <span class="er-results-count"><strong>{{ total }}</strong> résultat{{ total > 1 ? 's' : '' }}</span>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <label class="er-form-label mb-0" for="sort-select" style="font-size:.875rem; white-space:nowrap;">Trier par :</label>
-                    <select id="sort-select" class="form-select form-select-sm" style="width:auto; min-height:auto; height:38px;" aria-label="Trier les résultats">
-                        <option>Mieux notés</option>
-                        <option>Prix croissant</option>
-                        <option>Prix décroissant</option>
-                        <option>Plus récents</option>
+                <form method="get" class="d-flex align-items-center gap-2">
+                    {% if filter.catId %}<input type="hidden" name="{{ params.cat }}" value="{{ filter.catId }}">{% endif %}
+                    {% if filter.dispo %}<input type="hidden" name="{{ params.dispo }}" value="{{ filter.dispo }}">{% endif %}
+                    {% if filter.prixMax %}<input type="hidden" name="{{ params.prix_max }}" value="{{ filter.prixMax }}">{% endif %}
+                    <label for="sort-select" class="er-form-label mb-0" style="font-size:.875rem; white-space:nowrap;">Trier par :</label>
+                    <select id="sort-select" name="{{ params.sort }}" class="form-select form-select-sm" style="width:auto; min-height:auto; height:38px;" onchange="this.form.submit()" aria-label="Trier les résultats">
+                        {% for value, label in sortOptions %}
+                            <option value="{{ value }}" {{ filter.sort == value ? 'selected' : '' }}>{{ label }}</option>
+                        {% endfor %}
                     </select>
-                </div>
+                </form>
             </div>
 
-            <div class="row g-4">
-
-                {# Card 1 #}
-                <div class="col-sm-6 col-xl-4">
-                    <article class="er-equip-card">
+            <div class="er-catalog-grid">
+                {% for e in equipment %}
+                    {% set rating = avgRatings[e.id] %}
+                    {% set reviewCount = e.reviews|length %}
+                    {% set isMaint = e.availabilityStatus == EqStatus.MAINTENANCE or e.availabilityStatus == EqStatus.OUT_OF_SERVICE %}
+                    <article class="er-equip-card{{ isMaint ? ' is-maintenance' : '' }}">
                         <div class="er-equip-img">
-                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80"
-                                 alt="Enceinte active Mackie SRM450" loading="lazy">
-                            <span class="er-badge er-badge-available"><i class="bi bi-circle-fill" style="font-size:.5rem" aria-hidden="true"></i> Disponible</span>
+                            <i class="bi bi-{{ e.type == EqType.VIDEO ? 'projector' : 'speaker' }} text-white"></i>
+                            <span class="er-badge {{ isMaint ? 'er-badge-maintenance' : 'er-badge-available' }}">
+                                {% if isMaint %}
+                                    <i class="bi bi-wrench" aria-hidden="true"></i> En maintenance
+                                {% else %}
+                                    <i class="bi bi-circle-fill" style="font-size:.5rem" aria-hidden="true"></i> Disponible
+                                {% endif %}
+                            </span>
                         </div>
                         <div class="er-equip-body">
-                            <span class="er-equip-category">Sonorisation</span>
-                            <h3 class="er-equip-name">Enceinte active Mackie SRM450</h3>
-                            <div class="er-equip-stars" aria-label="4.4 étoiles">
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star-half" aria-hidden="true"></i>
-                                <span class="er-equip-reviews ms-1">(28)</span>
-                            </div>
-                            <div class="er-equip-price">150 € <span>/ jour</span></div>
+                            <span class="er-equip-category">{{ e.category.name }}</span>
+                            <h3 class="er-equip-name">{{ e.name }}</h3>
+                            {% if rating %}
+                                <div class="er-equip-stars" aria-label="{{ rating }} sur 5">
+                                    {% for i in 1..5 %}
+                                        {% if i <= rating|round(0, 'floor') %}<i class="bi bi-star-fill" aria-hidden="true"></i>{% endif %}
+                                        {% if rating|round(0, 'floor') < i and i - 1 < rating %}<i class="bi bi-star-half" aria-hidden="true"></i>{% endif %}
+                                        {% if i > rating %}<i class="bi bi-star" aria-hidden="true"></i>{% endif %}
+                                    {% endfor %}
+                                    <span class="er-equip-reviews ms-1">({{ reviewCount }})</span>
+                                </div>
+                            {% endif %}
+                            <div class="er-equip-price">{{ e.dailyPrice|number_format(0, ',', ' ') }} € <span>/ jour</span></div>
                         </div>
                         <div class="er-equip-footer">
-                            <a href="#" class="btn-er-primary w-100 text-decoration-none text-center" style="display:block; padding:10px; border-radius:var(--radius-md);">Voir la fiche →</a>
+                            {% if isMaint %}
+                                <button class="btn w-100" disabled style="min-height:44px; background:var(--er-muted); color:#94a3b8; border-radius:var(--radius-md); font-weight:600; cursor:not-allowed; border:none;">Indisponible</button>
+                            {% else %}
+                                <a href="{{ path('catalog_show', {id: e.id}) }}" class="btn-er-primary w-100 text-decoration-none text-center" style="display:block; padding:10px; border-radius:var(--radius-md);">Voir la fiche →</a>
+                            {% endif %}
                         </div>
                     </article>
-                </div>
-
-                {# Card 2 #}
-                <div class="col-sm-6 col-xl-4">
-                    <article class="er-equip-card">
-                        <div class="er-equip-img">
-                            <img src="https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=600&q=80"
-                                 alt="Vidéoprojecteur Epson EH-TW9400" loading="lazy">
-                            <span class="er-badge er-badge-available"><i class="bi bi-circle-fill" style="font-size:.5rem" aria-hidden="true"></i> Disponible</span>
-                        </div>
-                        <div class="er-equip-body">
-                            <span class="er-equip-category">Vidéoprojecteurs</span>
-                            <h3 class="er-equip-name">Vidéoprojecteur Epson EH-TW9400</h3>
-                            <div class="er-equip-stars" aria-label="5 étoiles">
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <span class="er-equip-reviews ms-1">(12)</span>
-                            </div>
-                            <div class="er-equip-price">200 € <span>/ jour</span></div>
-                        </div>
-                        <div class="er-equip-footer">
-                            <a href="#" class="btn-er-primary w-100 text-decoration-none text-center" style="display:block; padding:10px; border-radius:var(--radius-md);">Voir la fiche →</a>
-                        </div>
-                    </article>
-                </div>
-
-                {# Card 3 — maintenance #}
-                <div class="col-sm-6 col-xl-4">
-                    <article class="er-equip-card is-maintenance">
-                        <div class="er-equip-img">
-                            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80"
-                                 alt="Console de mixage Yamaha MG16" loading="lazy">
-                            <span class="er-badge er-badge-maintenance"><i class="bi bi-wrench" aria-hidden="true"></i> En maintenance</span>
-                        </div>
-                        <div class="er-equip-body">
-                            <span class="er-equip-category">Mixage</span>
-                            <h3 class="er-equip-name">Console Yamaha MG16</h3>
-                            <div class="er-equip-stars" aria-label="4 étoiles">
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star" aria-hidden="true"></i>
-                                <span class="er-equip-reviews ms-1">(9)</span>
-                            </div>
-                            <div class="er-equip-price">80 € <span>/ jour</span></div>
-                        </div>
-                        <div class="er-equip-footer">
-                            <button class="btn w-100" disabled
-                                    style="min-height:44px; background:var(--er-muted); color:#94a3b8; border-radius:var(--radius-md); font-weight:600; cursor:not-allowed; border:none;">
-                                Indisponible
-                            </button>
-                        </div>
-                    </article>
-                </div>
-
-                {# Card 4 #}
-                <div class="col-sm-6 col-xl-4">
-                    <article class="er-equip-card">
-                        <div class="er-equip-img">
-                            <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80"
-                                 alt="Micro sans fil Shure BLX24" loading="lazy">
-                            <span class="er-badge er-badge-available"><i class="bi bi-circle-fill" style="font-size:.5rem" aria-hidden="true"></i> Disponible</span>
-                        </div>
-                        <div class="er-equip-body">
-                            <span class="er-equip-category">Micros</span>
-                            <h3 class="er-equip-name">Micro sans fil Shure BLX24</h3>
-                            <div class="er-equip-stars" aria-label="4 étoiles">
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star" aria-hidden="true"></i>
-                                <span class="er-equip-reviews ms-1">(19)</span>
-                            </div>
-                            <div class="er-equip-price">25 € <span>/ jour</span></div>
-                        </div>
-                        <div class="er-equip-footer">
-                            <a href="#" class="btn-er-primary w-100 text-decoration-none text-center" style="display:block; padding:10px; border-radius:var(--radius-md);">Voir la fiche →</a>
-                        </div>
-                    </article>
-                </div>
-
-                {# Card 5 #}
-                <div class="col-sm-6 col-xl-4">
-                    <article class="er-equip-card">
-                        <div class="er-equip-img">
-                            <img src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=600&q=80"
-                                 alt="Amplificateur QSC GX7" loading="lazy">
-                            <span class="er-badge er-badge-available"><i class="bi bi-circle-fill" style="font-size:.5rem" aria-hidden="true"></i> Disponible</span>
-                        </div>
-                        <div class="er-equip-body">
-                            <span class="er-equip-category">Amplificateurs</span>
-                            <h3 class="er-equip-name">Amplificateur QSC GX7</h3>
-                            <div class="er-equip-stars" aria-label="4.5 étoiles">
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star-half" aria-hidden="true"></i>
-                                <span class="er-equip-reviews ms-1">(7)</span>
-                            </div>
-                            <div class="er-equip-price">65 € <span>/ jour</span></div>
-                        </div>
-                        <div class="er-equip-footer">
-                            <a href="#" class="btn-er-primary w-100 text-decoration-none text-center" style="display:block; padding:10px; border-radius:var(--radius-md);">Voir la fiche →</a>
-                        </div>
-                    </article>
-                </div>
-
-                {# Card 6 — reserved #}
-                <div class="col-sm-6 col-xl-4">
-                    <article class="er-equip-card is-unavailable" aria-label="Équipement non disponible">
-                        <div class="er-equip-img">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80"
-                                 alt="Caisson de basse RCF Sub 905-AS" loading="lazy">
-                            <span class="er-badge er-badge-confirmed"><i class="bi bi-calendar-x" aria-hidden="true"></i> Réservé</span>
-                        </div>
-                        <div class="er-equip-body">
-                            <span class="er-equip-category">Sonorisation</span>
-                            <h3 class="er-equip-name">Caisson de basse RCF Sub 905-AS</h3>
-                            <div class="er-equip-stars" aria-label="3 étoiles">
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
-                                <i class="bi bi-star-fill" aria-hidden="true"></i><i class="bi bi-star" aria-hidden="true"></i>
-                                <i class="bi bi-star" aria-hidden="true"></i>
-                                <span class="er-equip-reviews ms-1">(4)</span>
-                            </div>
-                            <div class="er-equip-price">120 € <span>/ jour</span></div>
-                        </div>
-                        <div class="er-equip-footer">
-                            <button class="btn w-100" disabled
-                                    style="min-height:44px; background:var(--er-muted); color:#94a3b8; border-radius:var(--radius-md); font-weight:600; cursor:not-allowed; border:none;">
-                                Indisponible
-                            </button>
-                        </div>
-                    </article>
-                </div>
-
+                {% else %}
+                    <p class="text-muted">Aucun équipement trouvé.</p>
+                {% endfor %}
             </div>
 
-            {# Pagination #}
+            {% if pages > 1 %}
             <nav class="mt-5 d-flex justify-content-center" aria-label="Pagination">
                 <ul class="pagination">
-                    <li class="page-item disabled">
-                        <span class="page-link" style="min-height:44px; display:flex; align-items:center;">
+                    <li class="page-item{{ page <= 1 ? ' disabled' : '' }}">
+                        <a class="page-link" href="{{ path('catalog_index', app.request.query.all|merge({(params.page): page - 1})) }}" style="min-height:44px; display:flex; align-items:center;">
                             <i class="bi bi-chevron-left" aria-hidden="true"></i>
-                        </span>
+                        </a>
                     </li>
-                    <li class="page-item active" aria-current="page">
-                        <span class="page-link" style="background:var(--er-primary); border-color:var(--er-primary); min-height:44px; display:flex; align-items:center;">1</span>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#" style="min-height:44px; display:flex; align-items:center; color:var(--er-foreground);">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#" style="min-height:44px; display:flex; align-items:center; color:var(--er-foreground);">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" style="min-height:44px; display:flex; align-items:center; color:var(--er-foreground);">
+                    {% for i in 1..pages %}
+                        <li class="page-item{{ i == page ? ' active' : '' }}"{% if i == page %} aria-current="page"{% endif %}>
+                            <a class="page-link" href="{{ path('catalog_index', app.request.query.all|merge({(params.page): i})) }}" style="min-height:44px; display:flex; align-items:center; {{ i == page ? 'background:var(--er-primary); border-color:var(--er-primary);' : 'color:var(--er-foreground);' }}">{{ i }}</a>
+                        </li>
+                    {% endfor %}
+                    <li class="page-item{{ page >= pages ? ' disabled' : '' }}">
+                        <a class="page-link" href="{{ path('catalog_index', app.request.query.all|merge({(params.page): page + 1})) }}" style="min-height:44px; display:flex; align-items:center; color:var(--er-foreground);">
                             <i class="bi bi-chevron-right" aria-hidden="true"></i>
                         </a>
                     </li>
                 </ul>
             </nav>
-
+            {% endif %}
         </div>
     </div>
 </div>
-
 {% endblock %}
