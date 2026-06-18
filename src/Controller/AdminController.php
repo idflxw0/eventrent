@@ -13,6 +13,6 @@ class AdminController extends AbstractController
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        return $this->redirectToRoute('app_home');
+        return $this->redirectToRoute('admin_quote_index');
     }
 }

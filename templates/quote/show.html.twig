@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% set badgeClass = quote.status == 'approved' ? 'er-badge-approved' : (quote.status == 'pending' ? 'er-badge-pending' : (quote.status == 'rejected' ? 'er-badge-refused' : 'er-badge-expired')) %}
+{% set statusIcon = quote.status == 'approved' ? 'check-circle' : quote.status == 'pending' ? 'clock' : quote.status == 'rejected' ? 'x-circle' : 'hourglass' %}
+{% set statusLabel = quote.status == 'approved' ? 'Approuvé' : quote.status == 'pending' ? 'En attente' : quote.status == 'rejected' ? 'Refusé' : 'Expiré' %}
+
+{% block title %}Devis DEVIS-{{ '%04d'|format(quote.id) }} — EventRent{% endblock %}
+
+{% block body %}
+
+<div class="er-hero-inner">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb er-breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('quote_index') }}">Mes devis</a></li>
+                <li class="breadcrumb-item active" aria-current="page">DEVIS-{{ '%04d'|format(quote.id) }}</li>
+            </ol>
+        </nav>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <h1 style="margin:0;">Devis #DEVIS-{{ '%04d'|format(quote.id) }}</h1>
+            <span class="er-badge {{ badgeClass }}" style="font-size:.875rem; padding:6px 14px;">
+                <i class="bi bi-{{ statusIcon }}" aria-hidden="true"></i> {{ statusLabel }}
+            </span>
+        </div>
+        <p class="er-breadcrumb mt-2 mb-0" style="color:rgba(255,255,255,.7);">
+            <i class="bi bi-calendar3 me-1" aria-hidden="true"></i> Du {{ quote.requestedStartDate|date('d/m/Y') }} au {{ quote.requestedEndDate|date('d/m/Y') }}
+            {% if quote.eventCity %}
+                &nbsp;·&nbsp;
+                <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ quote.eventCity }}
+            {% endif %}
+            &nbsp;·&nbsp; Valable jusqu'au {{ quote.validUntil|date('d/m/Y') }}
+        </p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="row g-4">
+
+                <div class="col-12">
+                    <div class="er-account-info-card">
+                        <h2 style="font-family:'Poppins',sans-serif; font-size:1.125rem; margin-bottom:20px;">
+                            <i class="bi bi-box-seam me-2" style="color:var(--er-primary);" aria-hidden="true"></i> Équipements
+                        </h2>
+                        <div class="table-responsive">
+                            <table class="er-invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>Équipement</th>
+                                        <th class="text-center">Qté</th>
+                                        <th class="text-end">Prix / jour</th>
+                                        <th class="text-end">Sous-total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for line in quote.lines %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ line.equipment.name }}</strong>
+                                                <span style="display:block; font-size:.8125rem; color:var(--er-muted-text);">Réf : {{ line.equipment.reference }}</span>
+                                            </td>
+                                            <td class="text-center">{{ line.quantity }}</td>
+                                            <td class="text-end">{{ line.unitPricePerDay }} €</td>
+                                            <td class="text-end">{{ (line.quantity * line.unitPricePerDay * days)|number_format(0, ',', ' ') }} €</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-end">Total estimé ({{ days }} jour{{ days > 1 ? 's' : '' }})</td>
+                                        <td class="text-end er-invoice-total">{{ quote.estimatedAmount }} €</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="er-account-info-card h-100">
+                        <h2 style="font-family:'Poppins',sans-serif; font-size:1.125rem; margin-bottom:16px;">
+                            <i class="bi bi-info-circle me-2" style="color:var(--er-primary);" aria-hidden="true"></i> Détails
+                        </h2>
+                        <dl style="font-size:.9375rem; margin:0;">
+                            <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Demandé le</dt>
+                            <dd style="margin-bottom:12px;">{{ quote.createdAt|date('d F Y à H:i') }}</dd>
+                            <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Valable jusqu'au</dt>
+                            <dd style="margin-bottom:12px;">{{ quote.validUntil|date('d F Y') }}</dd>
+                            <dt style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); margin-bottom:2px;">Ville</dt>
+                            <dd style="margin-bottom:0;">{{ quote.eventCity ?: 'Non précisée' }}</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                {% if is_granted('ROLE_ADMIN') and quote.status == 'pending' %}
+                <div class="col-md-6">
+                    <div class="er-account-info-card h-100" style="border-color:var(--er-primary);">
+                        <h2 style="font-family:'Poppins',sans-serif; font-size:1rem; margin-bottom:12px;">
+                            <i class="bi bi-shield-lock me-2" style="color:var(--er-primary);" aria-hidden="true"></i> Actions admin
+                        </h2>
+                        <p style="font-size:.875rem; color:var(--er-muted-text); margin-bottom:16px;">
+                            Demandé par <strong>{{ quote.user.firstName }} {{ quote.user.lastName }}</strong>
+                        </p>
+                        <div class="d-flex gap-3">
+                            <form method="post" action="{{ path('admin_quote_approve', {id: quote.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('approve' ~ quote.id) }}">
+                                <button type="submit" class="btn-er-primary" style="font-size:.875rem; padding:8px 18px;">
+                                    <i class="bi bi-check-circle me-1" aria-hidden="true"></i> Approuver
+                                </button>
+                            </form>
+                            <form method="post" action="{{ path('admin_quote_reject', {id: quote.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ quote.id) }}">
+                                <button type="submit" class="btn-er-danger-outline" style="font-size:.875rem; padding:8px 18px;">
+                                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i> Refuser
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <div class="mt-4">
+                <a href="{{ path('quote_index') }}" class="btn-er-ghost text-decoration-none" style="display:inline-flex; align-items:center; gap:6px;">
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i> Retour à mes devis
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
