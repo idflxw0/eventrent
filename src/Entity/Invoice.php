@@ -58,4 +58,9 @@ class Invoice
 
     public function getReservation(): ?Reservation { return $this->reservation; }
     public function setReservation(?Reservation $reservation): static { $this->reservation = $reservation; return $this; }
+
+    public function __toString(): string
+    {
+        return sprintf('Facture %s (%s €)', $this->number ?? '', $this->amount ?? '0.00');
+    }
 }

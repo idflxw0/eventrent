@@ -36,6 +36,19 @@ class EquipmentFixtures extends Fixture implements DependentFixtureInterface
             self::JBL_SUB => ['AUDIO-006', 'Caisson de basses JBL PRX818XLFW', 'Subwoofer 18" amplifié 1500 W, réponse en fréquence 30-103 Hz', '120.00', SupplierFixtures::SUP_2, CategoryFixtures::CAT_0, 1500, 'XLR',    1,  [AccessoryFixtures::ACC_1]],
         ];
 
+        $photos = [
+            'AUDIO-001' => 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=800&q=80',
+            'AUDIO-002' => 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=800&q=80',
+            'AUDIO-003' => 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80',
+            'AUDIO-004' => 'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=800&q=80',
+            'AUDIO-005' => 'https://images.unsplash.com/photo-1545454675-3531b543be5d?auto=format&fit=crop&w=800&q=80',
+            'AUDIO-006' => 'https://images.unsplash.com/photo-1618609378039-b572f64c5b42?auto=format&fit=crop&w=800&q=80',
+            'VIDEO-001' => 'https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&w=800&q=80',
+            'VIDEO-002' => 'https://images.unsplash.com/photo-1601933973783-43cf8a7d4c5f?auto=format&fit=crop&w=800&q=80',
+            'VIDEO-003' => 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80',
+            'VIDEO-004' => 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=800&q=80',
+        ];
+
         foreach ($audioDefs as $ref => [$code, $name, $desc, $price, $supRef, $catRef, $watts, $conn, $ch, $accRefs]) {
             $e = new AudioEquipment();
             $e->setReference($code);
@@ -47,6 +60,9 @@ class EquipmentFixtures extends Fixture implements DependentFixtureInterface
             $e->setPowerWatts($watts);
             $e->setConnectorType($conn);
             $e->setChannelCount($ch);
+            if (isset($photos[$code])) {
+                $e->setPhoto($photos[$code]);
+            }
             foreach ($accRefs as $ar) {
                 $e->addAccessory($this->getReference($ar, Accessory::class));
             }
@@ -72,6 +88,9 @@ class EquipmentFixtures extends Fixture implements DependentFixtureInterface
             $e->setResolution($res);
             $e->setBrightnessLumens($lum);
             $e->setProjectionType($proj);
+            if (isset($photos[$code])) {
+                $e->setPhoto($photos[$code]);
+            }
             foreach ($accRefs as $ar) {
                 $e->addAccessory($this->getReference($ar, Accessory::class));
             }

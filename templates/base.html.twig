@@ -38,7 +38,7 @@
                     <a class="er-nav-link" href="{{ path('catalog_index') }}">Catalogue</a>
                 </li>
                 <li class="nav-item">
-                    <a class="er-nav-link" href="#">Comment ça marche</a>
+                    <a class="er-nav-link" href="{{ path('app_home') }}#how-it-works">Comment ça marche</a>
                 </li>
                 {% if app.user %}
                     <li class="nav-item">
@@ -70,7 +70,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="{{ path('reservation_index') }}">
                                     <i class="bi bi-calendar3 me-2" aria-hidden="true"></i>Mes réservations
                                 </a>
                             </li>
@@ -134,10 +134,10 @@
             </div>
             <div class="col-6 col-lg-2">
                 <h6>Catalogue</h6>
-                <a href="#">Sonorisation</a>
-                <a href="#">Vidéoprojecteurs</a>
-                <a href="#">Micros</a>
-                <a href="#">Éclairage</a>
+                <a href="{{ path('catalog_index', {cat: 1}) }}">Sonorisation</a>
+                <a href="{{ path('catalog_index', {cat: 2}) }}">Vidéoprojecteurs</a>
+                <a href="{{ path('catalog_index', {cat: 3}) }}">Micros</a>
+                <a href="{{ path('catalog_index') }}">Éclairage</a>
             </div>
             <div class="col-6 col-lg-2">
                 <h6>Compte</h6>
@@ -149,7 +149,7 @@
             </div>
             <div class="col-6 col-lg-2">
                 <h6>Aide</h6>
-                <a href="#">Comment ça marche</a>
+                <a href="{{ path('app_home') }}#how-it-works">Comment ça marche</a>
                 <a href="#">FAQ</a>
                 <a href="#">Contact</a>
             </div>

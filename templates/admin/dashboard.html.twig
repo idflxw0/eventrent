@@ -3,69 +3,221 @@
 {% block page_title %}Tableau de bord — EventRent{% endblock %}
 
 {% block main %}
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center py-4">
-                <div style="font-size:2rem; font-weight:800; color:#E55D1E;">{{ stats.equipment }}</div>
-                <div style="font-size:.875rem; color:#6B7280; margin-top:4px;">
-                    <i class="fas fa-tools me-1"></i> Équipements
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center py-4">
-                <div style="font-size:2rem; font-weight:800; color:#E55D1E;">{{ stats.reservations }}</div>
-                <div style="font-size:.875rem; color:#6B7280; margin-top:4px;">
-                    <i class="fas fa-calendar-check me-1"></i> Réservations
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center py-4">
-                <div style="font-size:2rem; font-weight:800; color:#E55D1E;">{{ stats.users }}</div>
-                <div style="font-size:.875rem; color:#6B7280; margin-top:4px;">
-                    <i class="fas fa-users me-1"></i> Utilisateurs
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center py-4">
-                <div style="font-size:2rem; font-weight:800; color:#E55D1E;">{{ stats.pendingQuotes }}</div>
-                <div style="font-size:.875rem; color:#6B7280; margin-top:4px;">
-                    <i class="fas fa-file-invoice me-1"></i> Devis en attente
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Custom Premium Dashboard Styles -->
+<style>
+    :root {
+        --er-primary: #E55D1E;
+        --er-primary-hover: #c44c16;
+        --er-bg-card: rgba(255, 255, 255, 0.05);
+        --er-border-color: rgba(255, 255, 255, 0.08);
+    }
+    /* Dark mode adjustments to make cards pop */
+    .ea-dark-mode {
+        --er-bg-card: rgba(30, 30, 38, 0.7);
+        --er-border-color: rgba(255, 255, 255, 0.08);
+    }
+    .dashboard-card {
+        background: var(--er-bg-card) !important;
+        border: 1px solid var(--er-border-color) !important;
+        border-radius: 12px !important;
+        overflow: hidden;
+    }
+    .quick-link-btn {
+        background: var(--er-bg-card) !important;
+        border: 1px solid var(--er-border-color) !important;
+        color: #fff !important;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        border-radius: 8px;
+    }
+    .quick-link-btn:hover {
+        background: var(--er-primary) !important;
+        border-color: var(--er-primary) !important;
+        color: #fff !important;
+    }
+    .stat-number {
+        font-size: 2.25rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #FF7B39, #E55D1E);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .text-orange {
+        color: var(--er-primary) !important;
+    }
+    .status-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 20px;
+    }
+</style>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body">
-        <h5 class="card-title mb-3">Raccourcis</h5>
-        <div class="d-flex gap-3 flex-wrap">
-            <a href="{{ ea_url().setController('App\\Controller\\Admin\\EquipmentCrudController').setAction('index') }}"
-               class="btn btn-primary">
-                <i class="fas fa-tools me-1"></i> Gérer le catalogue
-            </a>
-            <a href="{{ ea_url().setController('App\\Controller\\Admin\\ReservationCrudController').setAction('index') }}"
-               class="btn btn-primary">
-                <i class="fas fa-calendar-check me-1"></i> Voir les réservations
-            </a>
-            <a href="{{ ea_url().setController('App\\Controller\\Admin\\QuoteCrudController').setAction('index') }}"
-               class="btn btn-primary">
-                <i class="fas fa-file-invoice me-1"></i> Gérer les devis
-            </a>
-            <a href="{{ ea_url().setController('App\\Controller\\Admin\\UserCrudController').setAction('index') }}"
-               class="btn btn-primary">
-                <i class="fas fa-users me-1"></i> Gérer les utilisateurs
-            </a>
+<div class="container-fluid px-0">
+    <!-- Stat Grid -->
+    <div class="row g-3 mb-4">
+        <!-- Equipment Card -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-card border-0 h-100">
+                <div class="card-body py-4 d-flex align-items-center">
+                    <div class="rounded-circle p-3 me-3 bg-opacity-10 bg-warning" style="background-color: rgba(229, 93, 30, 0.1);">
+                        <i class="fas fa-tools fa-2x text-orange"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number">{{ stats.equipment }}</div>
+                        <div class="text-muted small">Équipements</div>
+                        <div class="text-success small mt-1">
+                            <span class="fw-bold">{{ stats.availableEquip }}</span> dispo
+                            &nbsp;·&nbsp;
+                            <span class="text-danger fw-bold">{{ stats.maintenanceEquip }}</span> maint.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservations Card -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-card border-0 h-100">
+                <div class="card-body py-4 d-flex align-items-center">
+                    <div class="rounded-circle p-3 me-3 bg-opacity-10 bg-info" style="background-color: rgba(0, 180, 216, 0.1);">
+                        <i class="fas fa-calendar-check fa-2x text-info"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number" style="background: linear-gradient(135deg, #00b4d8, #0077b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ stats.reservations }}</div>
+                        <div class="text-muted small">Réservations</div>
+                        <div class="text-muted small mt-1">Volume total d'activité</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Quotes Card -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-card border-0 h-100">
+                <div class="card-body py-4 d-flex align-items-center">
+                    <div class="rounded-circle p-3 me-3 bg-opacity-10 bg-danger" style="background-color: rgba(220, 53, 69, 0.1);">
+                        <i class="fas fa-file-invoice fa-2x text-danger"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number" style="background: linear-gradient(135deg, #ff4d6d, #c9184a); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ stats.pendingQuotes }}</div>
+                        <div class="text-muted small">Devis en attente</div>
+                        {% if stats.pendingQuotes > 0 %}
+                            <div class="text-danger small mt-1 fw-bold">
+                                <i class="fas fa-exclamation-circle me-1"></i> Actions requises
+                            </div>
+                        {% else %}
+                            <div class="text-success small mt-1">Tous les devis traités</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users & Reviews Card -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card dashboard-card border-0 h-100">
+                <div class="card-body py-4 d-flex align-items-center">
+                    <div class="rounded-circle p-3 me-3 bg-opacity-10 bg-success" style="background-color: rgba(40, 167, 69, 0.1);">
+                        <i class="fas fa-star fa-2x text-success"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number" style="background: linear-gradient(135deg, #52b788, #2d6a4f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ stats.avgRating }} / 5</div>
+                        <div class="text-muted small">Note moyenne</div>
+                        <div class="text-muted small mt-1">{{ stats.users }} utilisateurs inscrits</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links / Shortcuts -->
+    <div class="card dashboard-card border-0 mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Raccourcis d'administration</h5>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{{ ea_url().setController('App\\Controller\\Admin\\EquipmentCrudController').setAction('index') }}"
+                   class="btn quick-link-btn px-3 py-2">
+                    <i class="fas fa-tools me-1 text-orange"></i> Gérer le catalogue
+                </a>
+                <a href="{{ ea_url().setController('App\\Controller\\Admin\\ReservationCrudController').setAction('index') }}"
+                   class="btn quick-link-btn px-3 py-2">
+                    <i class="fas fa-calendar-check me-1 text-info"></i> Voir les réservations
+                </a>
+                <a href="{{ path('admin_quote_pending') }}"
+                   class="btn quick-link-btn px-3 py-2">
+                    <i class="fas fa-hourglass-start me-1 text-danger"></i> Devis en attente
+                </a>
+                <a href="{{ ea_url().setController('App\\Controller\\Admin\\UserCrudController').setAction('index') }}"
+                   class="btn quick-link-btn px-3 py-2">
+                    <i class="fas fa-users me-1 text-success"></i> Gérer les utilisateurs
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Lists -->
+    <div class="row g-4">
+        <!-- Recent Reservations -->
+        <div class="col-lg-6">
+            <div class="card dashboard-card border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="card-title mb-0"><i class="fas fa-history me-2 text-info"></i>Réservations récentes</h5>
+                        <a href="{{ ea_url().setController('App\\Controller\\Admin\\ReservationCrudController').setAction('index') }}" class="btn btn-link btn-sm text-decoration-none">Voir tout</a>
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        {% for res in recentReservations %}
+                            <div class="p-3 d-flex align-items-center justify-content-between rounded" style="background: rgba(255,255,255,0.02); border: 1px solid var(--er-border-color);">
+                                <div>
+                                    <div class="fw-bold">RES-{{ '%04d'|format(res.id) }}</div>
+                                    <div class="text-muted small">{{ res.user.firstName }} {{ res.user.lastName }}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small">{{ res.startDate|date('d/m/Y') }} - {{ res.endDate|date('d/m/Y') }}</div>
+                                    {% if res.status == 'approved' or res.status == 'completed' %}
+                                        <span class="badge bg-success bg-opacity-10 text-success mt-1">Confirmée</span>
+                                    {% elseif res.status == 'pending' %}
+                                        <span class="badge bg-warning bg-opacity-10 text-warning mt-1">En attente</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary bg-opacity-10 text-muted mt-1">{{ res.status }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4 text-muted">Aucune réservation récente.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Pending Quotes -->
+        <div class="col-lg-6">
+            <div class="card dashboard-card border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="card-title mb-0"><i class="fas fa-hourglass-start me-2 text-danger"></i>Dernières demandes de devis</h5>
+                        <a href="{{ path('admin_quote_pending') }}" class="btn btn-link btn-sm text-decoration-none">Traiter</a>
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        {% for q in recentQuotes %}
+                            <div class="p-3 d-flex align-items-center justify-content-between rounded" style="background: rgba(255,255,255,0.02); border: 1px solid var(--er-border-color);">
+                                <div>
+                                    <div class="fw-bold text-danger">DEVIS-{{ '%04d'|format(q.id) }}</div>
+                                    <div class="text-muted small">{{ q.user.firstName }} {{ q.user.lastName }}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold text-orange">{{ q.estimatedAmount }} €</div>
+                                    <div class="text-muted small">{{ q.requestedStartDate|date('d/m/Y') }}</div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4 text-muted">Aucun devis en attente de traitement.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

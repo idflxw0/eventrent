@@ -144,4 +144,9 @@ class Equipment
     public function getQuoteLines(): Collection { return $this->quoteLines; }
     public function getReviews(): Collection { return $this->reviews; }
     public function getMaintenances(): Collection { return $this->maintenances; }
+
+    public function __toString(): string
+    {
+        return sprintf('%s (%s)', $this->name ?? '', $this->reference ?? '');
+    }
 }

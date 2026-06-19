@@ -214,4 +214,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getReviews(): Collection { return $this->reviews; }
     public function getMaintenances(): Collection { return $this->maintenances; }
     public function getNotifications(): Collection { return $this->notifications; }
+
+    public function __toString(): string
+    {
+        return sprintf('%s %s (%s)', $this->firstName ?? '', $this->lastName ?? '', $this->email ?? '');
+    }
 }

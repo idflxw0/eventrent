@@ -27,8 +27,10 @@
     <div class="row g-5">
         <div class="col-lg-7">
 
-            <div class="er-detail-gallery mb-3">
-                <i class="bi bi-{{ isAudio ? 'speaker' : 'projector' }} text-white" style="font-size:8rem; opacity:.15;"></i>
+            <div class="er-detail-gallery mb-3" {% if equipment.photo %}style="background-image: url('{{ equipment.photo }}'); background-size: cover; background-position: center;"{% endif %}>
+                {% if not equipment.photo %}
+                    <i class="bi bi-{{ isAudio ? 'speaker' : 'projector' }} text-white" style="font-size:8rem; opacity:.15;"></i>
+                {% endif %}
             </div>
 
             {% if not equipment.accessories.empty %}
@@ -186,7 +188,7 @@
                 <hr style="border-color:var(--er-border); margin:0 -24px 20px;">
 
                 {% if isMaint %}
-                    <button class="btn w-100 mb-2" disabled style="min-height:48px; background:var(--er-muted); color:#94a3b8; border-radius:var(--radius-md); font-weight:600; cursor:not-allowed; border:none; font-family:'Poppins',sans-serif;">Indisponible</button>
+                    <button class="btn w-100 mb-2" disabled style="min-height:48px; background:var(--er-muted); color:var(--er-muted-text); border-radius:var(--radius-md); font-weight:600; cursor:not-allowed; border:none; font-family:'Poppins',sans-serif;">Indisponible</button>
                 {% else %}
                     <a href="{{ path('reservation_new') }}" class="btn-er-accent w-100 mb-2 text-decoration-none text-center" style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:1rem;">
                         <i class="bi bi-calendar-plus" aria-hidden="true"></i> Réserver

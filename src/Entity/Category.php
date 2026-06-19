@@ -64,4 +64,9 @@ class Category
     }
 
     public function getEquipments(): Collection { return $this->equipments; }
+
+    public function __toString(): string
+    {
+        return $this->name ?? 'Catégorie sans nom';
+    }
 }

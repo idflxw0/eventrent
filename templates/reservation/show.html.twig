@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% set statusBadge = reservation.status == 'confirmed' ? 'er-badge-confirmed' : (reservation.status == 'pending' ? 'er-badge-pending' : (reservation.status == 'cancelled' ? 'er-badge-cancelled' : 'er-badge-completed')) %}
-{% set statusIcon = reservation.status == 'confirmed' ? 'check-circle' : (reservation.status == 'pending' ? 'clock' : (reservation.status == 'cancelled' ? 'x-circle' : 'check2-all')) %}
-{% set statusLabel = reservation.status == 'confirmed' ? 'Confirmée' : (reservation.status == 'pending' ? 'En attente' : (reservation.status == 'cancelled' ? 'Annulée' : 'Terminée')) %}
+{% set statusBadge = reservation.status == 'confirmed' ? 'er-badge-confirmed' : (reservation.status == 'pending' ? 'er-badge-pending' : (reservation.status == 'cancelled' ? 'er-badge-cancelled' : (reservation.status == 'in_progress' ? 'er-badge-in-progress' : 'er-badge-completed'))) %}
+{% set statusIcon = reservation.status == 'confirmed' ? 'check-circle' : (reservation.status == 'pending' ? 'clock' : (reservation.status == 'cancelled' ? 'x-circle' : (reservation.status == 'in_progress' ? 'play-circle' : 'check2-all'))) %}
+{% set statusLabel = reservation.status == 'confirmed' ? 'Confirmée' : (reservation.status == 'pending' ? 'En attente' : (reservation.status == 'cancelled' ? 'Annulée' : (reservation.status == 'in_progress' ? 'En cours' : 'Terminée'))) %}
 
 {% block title %}Réservation RES-{{ '%04d'|format(reservation.id) }} — EventRent{% endblock %}
 

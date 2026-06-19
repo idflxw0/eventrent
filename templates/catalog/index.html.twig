@@ -116,15 +116,19 @@
                     {% set reviewCount = e.reviews|length %}
                     {% set isMaint = e.availabilityStatus == EqStatus.MAINTENANCE or e.availabilityStatus == EqStatus.OUT_OF_SERVICE %}
                     <article class="er-equip-card{{ isMaint ? ' is-maintenance' : '' }}">
-                        <div class="er-equip-img">
-                            <i class="bi bi-{{ e.type == EqType.VIDEO ? 'projector' : 'speaker' }} text-white"></i>
-                            <span class="er-badge {{ isMaint ? 'er-badge-maintenance' : 'er-badge-available' }}">
-                                {% if isMaint %}
-                                    <i class="bi bi-wrench" aria-hidden="true"></i> En maintenance
-                                {% else %}
-                                    <i class="bi bi-circle-fill" style="font-size:.5rem" aria-hidden="true"></i> Disponible
-                                {% endif %}
-                            </span>
+                        <div class="er-equip-img" {% if e.photo %}style="background-image: url('{{ e.photo }}'); background-size: cover; background-position: center;"{% endif %}>
+                            {% if not e.photo %}
+                                <i class="bi bi-{{ e.type == EqType.VIDEO ? 'projector' : 'speaker' }} text-white"></i>
+                            {% endif %}
+                            <div class="er-equip-img-tag">
+                                <span class="er-badge {{ isMaint ? 'er-badge-maintenance' : 'er-badge-available' }}">
+                                    {% if isMaint %}
+                                        <i class="bi bi-wrench" aria-hidden="true"></i> En maintenance
+                                    {% else %}
+                                        <i class="bi bi-circle-fill" style="font-size:.5rem" aria-hidden="true"></i> Disponible
+                                    {% endif %}
+                                </span>
+                            </div>
                         </div>
                         <div class="er-equip-body">
                             <span class="er-equip-category">{{ e.category.name }}</span>
@@ -144,7 +148,7 @@
                         </div>
                         <div class="er-equip-footer">
                             {% if isMaint %}
-                                <button class="btn w-100" disabled style="min-height:44px; background:var(--er-muted); color:#94a3b8; border-radius:var(--radius-md); font-weight:600; cursor:not-allowed; border:none;">Indisponible</button>
+                                <button class="btn w-100" disabled style="min-height:44px; background:var(--er-muted); color:var(--er-muted-text); border-radius:var(--radius-md); font-weight:600; cursor:not-allowed; border:none;">Indisponible</button>
                             {% else %}
                                 <a href="{{ path('catalog_show', {id: e.id}) }}" class="btn-er-primary w-100 text-decoration-none text-center" style="display:block; padding:10px; border-radius:var(--radius-md);">Voir la fiche →</a>
                             {% endif %}

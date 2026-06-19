@@ -45,7 +45,16 @@
         <h2 style="font-family:'Poppins',sans-serif; font-weight:600; font-size:1.125rem; margin-bottom:16px;">Équipements</h2>
 
         <div id="lines-container"
-             data-prototype="{{ form_widget(form.lines.vars.prototype)|e('html_attr') }}"
+             data-prototype="{% apply escape('html_attr') %}
+                <div style='flex:1;'>
+                    <label class='er-form-label' for='{{ form.lines.vars.prototype.equipment.vars.id }}'>Équipement</label>
+                    {{ form_widget(form.lines.vars.prototype.equipment, {attr: {class: 'er-form-control form-select'}}) }}
+                </div>
+                <div style='width:100px;'>
+                    <label class='er-form-label' for='{{ form.lines.vars.prototype.quantity.vars.id }}'>Quantité</label>
+                    {{ form_widget(form.lines.vars.prototype.quantity, {attr: {class: 'er-form-control form-control text-center', style: 'width:80px;', value: '1'}}) }}
+                </div>
+             {% endapply %}"
              data-index="{{ form.lines|length }}">
             {% for line in form.lines %}
                 <div class="er-line-row d-flex align-items-end gap-3 mb-3 p-3" style="background:var(--er-muted); border-radius:var(--radius-lg);">

@@ -105,4 +105,14 @@ class Reservation
     }
 
     public function getInvoice(): ?Invoice { return $this->invoice; }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            'Réservation #%d - %s (%s)',
+            $this->id ?? 0,
+            $this->user?->getLastName() ?? 'Client inconnu',
+            $this->startDate?->format('d/m/Y') ?? 'Date inconnue'
+        );
+    }
 }
