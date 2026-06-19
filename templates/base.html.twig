@@ -197,5 +197,25 @@ document.querySelectorAll('.er-qty-btn').forEach(function(btn) {
 </script>
 
 {% block javascripts %}{% endblock %}
+
+{% if app.user and mercure_public_url %}
+<script>
+(function() {
+    const hubUrl = new URL({{ mercure_public_url|json_encode }});
+    hubUrl.searchParams.append('topic', '/users/{{ app.user.id }}/notifications');
+    const es = new EventSource(hubUrl);
+    es.onmessage = function(e) {
+        try {
+            const data = JSON.parse(e.data);
+            const alert = document.createElement('div');
+            alert.className = 'alert er-flash er-flash-info alert-dismissible fade show mb-0 rounded-0';
+            alert.setAttribute('role', 'alert');
+            alert.innerHTML = '<div class="container d-flex align-items-center gap-2"><i class="bi bi-bell-fill"></i> ' + data.message + '</div><button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+            document.querySelector('main')?.prepend(alert);
+        } catch (_) {}
+    };
+})();
+</script>
+{% endif %}
 </body>
 </html>
