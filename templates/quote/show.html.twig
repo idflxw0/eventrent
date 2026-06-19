@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% set badgeClass = quote.status == 'approved' ? 'er-badge-approved' : (quote.status == 'pending' ? 'er-badge-pending' : (quote.status == 'rejected' ? 'er-badge-refused' : 'er-badge-expired')) %}
-{% set statusIcon = quote.status == 'approved' ? 'check-circle' : quote.status == 'pending' ? 'clock' : quote.status == 'rejected' ? 'x-circle' : 'hourglass' %}
-{% set statusLabel = quote.status == 'approved' ? 'Approuvé' : quote.status == 'pending' ? 'En attente' : quote.status == 'rejected' ? 'Refusé' : 'Expiré' %}
+{% set badgeClass = quote.status == 'approved' ? 'er-badge-approved' : (quote.status == 'pending' ? 'er-badge-pending' : (quote.status == 'refused' ? 'er-badge-refused' : 'er-badge-expired')) %}
+{% set statusIcon = quote.status == 'approved' ? 'check-circle' : quote.status == 'pending' ? 'clock' : quote.status == 'refused' ? 'x-circle' : 'hourglass' %}
+{% set statusLabel = quote.status == 'approved' ? 'Approuvé' : quote.status == 'pending' ? 'En attente' : quote.status == 'refused' ? 'Refusé' : 'Expiré' %}
 
 {% block title %}Devis DEVIS-{{ '%04d'|format(quote.id) }} — EventRent{% endblock %}
 
@@ -29,7 +29,7 @@
                 &nbsp;·&nbsp;
                 <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ quote.eventCity }}
             {% endif %}
-            &nbsp;·&nbsp; Valable jusqu'au {{ quote.validUntil|date('d/m/Y') }}
+            {% if quote.validUntil %}&nbsp;·&nbsp; Valable jusqu'au {{ quote.validUntil|date('d/m/Y') }}{% endif %}
         </p>
     </div>
 </div>

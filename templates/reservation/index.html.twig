@@ -20,48 +20,48 @@
     <div class="row justify-content-center">
         <div class="col-lg-9">
 
-            <nav class="er-tab-filter mb-4" aria-label="Filtrer par statut">
-                <a href="{{ path('reservation_index') }}" class="er-tab-btn{{ not activeStatus ? ' active' : '' }}" aria-pressed="{{ not activeStatus ? 'true' : 'false' }}">Toutes</a>
-                <a href="{{ path('reservation_index', {status: 'pending'}) }}" class="er-tab-btn{{ activeStatus == 'pending' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'pending' ? 'true' : 'false' }}">En attente</a>
-                <a href="{{ path('reservation_index', {status: 'confirmed'}) }}" class="er-tab-btn{{ activeStatus == 'confirmed' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'confirmed' ? 'true' : 'false' }}">Confirmées</a>
-                <a href="{{ path('reservation_index', {status: 'in_progress'}) }}" class="er-tab-btn{{ activeStatus == 'in_progress' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'in_progress' ? 'true' : 'false' }}">En cours</a>
-                <a href="{{ path('reservation_index', {status: 'completed'}) }}" class="er-tab-btn{{ activeStatus == 'completed' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'completed' ? 'true' : 'false' }}">Terminées</a>
-                <a href="{{ path('reservation_index', {status: 'cancelled'}) }}" class="er-tab-btn{{ activeStatus == 'cancelled' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'cancelled' ? 'true' : 'false' }}">Annulées</a>
+            <nav class="er-status-tabs mb-4" aria-label="Filtrer par statut">
+                <a href="{{ path('reservation_index') }}" class="er-status-tab{{ not activeStatus ? ' active' : '' }}" aria-pressed="{{ not activeStatus ? 'true' : 'false' }}">Toutes</a>
+                <a href="{{ path('reservation_index', {status: 'pending'}) }}" class="er-status-tab{{ activeStatus == 'pending' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'pending' ? 'true' : 'false' }}">En attente</a>
+                <a href="{{ path('reservation_index', {status: 'confirmed'}) }}" class="er-status-tab{{ activeStatus == 'confirmed' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'confirmed' ? 'true' : 'false' }}">Confirmées</a>
+                <a href="{{ path('reservation_index', {status: 'in_progress'}) }}" class="er-status-tab{{ activeStatus == 'in_progress' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'in_progress' ? 'true' : 'false' }}">En cours</a>
+                <a href="{{ path('reservation_index', {status: 'completed'}) }}" class="er-status-tab{{ activeStatus == 'completed' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'completed' ? 'true' : 'false' }}">Terminées</a>
+                <a href="{{ path('reservation_index', {status: 'cancelled'}) }}" class="er-status-tab{{ activeStatus == 'cancelled' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'cancelled' ? 'true' : 'false' }}">Annulées</a>
             </nav>
 
             {% for r in reservations %}
                 {% set statusClass = r.status == 'confirmed' ? 'confirmed' : r.status == 'pending' ? 'pending' : r.status == 'cancelled' ? 'cancelled' : r.status == 'in_progress' ? 'in-progress' : 'completed' %}
                 {% set badgeClass = statusClass %}
                 {% set statusLabel = r.status == 'confirmed' ? 'Confirmée' : r.status == 'pending' ? 'En attente' : r.status == 'cancelled' ? 'Annulée' : r.status == 'in_progress' ? 'En cours' : 'Terminée' %}
-                <article class="er-reservation-card status-{{ statusClass }}" aria-label="Réservation #{{ r.id }}">
-                    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
-                        <div>
-                            <div class="er-res-title">RES-{{ '%04d'|format(r.id) }}</div>
-                            <div class="er-res-meta">
-                                <i class="bi bi-calendar3 me-1" aria-hidden="true"></i> {{ r.startDate|date('d/m/Y') }} – {{ r.endDate|date('d/m/Y') }}
-                                &nbsp;·&nbsp;
-                                <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ r.eventCity }}
-                            </div>
-                            <div class="er-res-equipment">
+                <article class="er-res-card" aria-label="Réservation #{{ r.id }}">
+                    <div class="er-res-stripe er-res-stripe-{{ statusClass }}"></div>
+                    <div class="er-res-body">
+                        <div style="flex:1; min-width:240px;">
+                            <div class="er-res-id">RES-{{ '%04d'|format(r.id) }}</div>
+                            <h2 class="er-res-name" style="margin: 4px 0;">
                                 {% for line in r.lines %}
                                     {{ line.equipment.name }} × {{ line.quantity }}{{ not loop.last ? ', ' : '' }}
                                 {% endfor %}
+                            </h2>
+                            <div class="er-res-meta mb-2">
+                                <span><i class="bi bi-calendar3 me-1" aria-hidden="true"></i> {{ r.startDate|date('d/m/Y') }} – {{ r.endDate|date('d/m/Y') }}</span>
+                                <span class="ms-3"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ r.eventCity }}</span>
                             </div>
-                            <div class="er-res-total">{{ r.totalAmount }} €</div>
+                            <span class="er-badge er-badge-{{ badgeClass }} d-inline-flex">
+                                <i class="bi bi-{{ r.status == 'confirmed' ? 'check-circle' : r.status == 'pending' ? 'clock' : r.status == 'cancelled' ? 'x-circle' : r.status == 'in_progress' ? 'play-circle' : 'check2-all' }}" aria-hidden="true"></i> {{ statusLabel }}
+                            </span>
+                            <div class="d-flex gap-2 mt-3 flex-wrap">
+                                <a href="{{ path('reservation_show', {id: r.id}) }}" class="btn-er-primary text-decoration-none" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
+                                    <i class="bi bi-eye" aria-hidden="true"></i> Voir le détail
+                                </a>
+                                {% if r.status == 'completed' %}
+                                    <a href="#" class="btn-er-outline text-decoration-none" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
+                                        <i class="bi bi-star" aria-hidden="true"></i> Laisser un avis
+                                    </a>
+                                {% endif %}
+                            </div>
                         </div>
-                        <span class="er-badge er-badge-{{ badgeClass }} flex-shrink-0">
-                            <i class="bi bi-{{ r.status == 'confirmed' ? 'check-circle' : r.status == 'pending' ? 'clock' : r.status == 'cancelled' ? 'x-circle' : r.status == 'in_progress' ? 'play-circle' : 'check2-all' }}" aria-hidden="true"></i> {{ statusLabel }}
-                        </span>
-                    </div>
-                    <div class="d-flex gap-2 mt-3 flex-wrap">
-                        <a href="{{ path('reservation_show', {id: r.id}) }}" class="btn-er-primary text-decoration-none" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
-                            <i class="bi bi-eye" aria-hidden="true"></i> Voir le détail
-                        </a>
-                        {% if r.status == 'completed' %}
-                            <a href="#" class="btn-er-outline text-decoration-none" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
-                                <i class="bi bi-star" aria-hidden="true"></i> Laisser un avis
-                            </a>
-                        {% endif %}
+                        <div class="er-res-price">{{ r.totalAmount }} €</div>
                     </div>
                 </article>
             {% else %}

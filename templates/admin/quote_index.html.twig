@@ -1,71 +1,77 @@
-{% extends 'base.html.twig' %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block title %}Gestion des devis — EventRent{% endblock %}
+{% block page_title %}Devis en attente — EventRent{% endblock %}
 
-{% block body %}
+{% block content_title %}Devis en attente{% endblock %}
 
-<div class="er-hero-inner">
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb er-breadcrumb mb-2">
-                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
-                <li class="breadcrumb-item"><a href="{{ path('admin') }}">Administration</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Devis en attente</li>
-            </ol>
-        </nav>
-        <h1>Devis en attente</h1>
-    </div>
-</div>
-
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-
-            {% for q in quotes %}
-                <article class="er-reservation-card status-pending mb-3">
-                    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
-                        <div>
-                            <div class="er-res-title">DEVIS-{{ '%04d'|format(q.id) }}</div>
-                            <div class="er-res-meta">
-                                <i class="bi bi-person me-1" aria-hidden="true"></i> {{ q.user.firstName }} {{ q.user.lastName }}
-                                &nbsp;·&nbsp;
-                                <i class="bi bi-calendar3 me-1" aria-hidden="true"></i> {{ q.requestedStartDate|date('d/m/Y') }} – {{ q.requestedEndDate|date('d/m/Y') }}
-                                {% if q.eventCity %}
-                                    &nbsp;·&nbsp;
-                                    <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ q.eventCity }}
-                                {% endif %}
-                            </div>
-                            <div class="er-res-equipment">
-                                {% for line in q.lines %}
-                                    {{ line.equipment.name }} × {{ line.quantity }}{{ not loop.last ? ', ' : '' }}
-                                {% endfor %}
-                            </div>
-                            <div class="er-res-total">{{ q.estimatedAmount }} €</div>
-                        </div>
-                        <div class="d-flex gap-2 flex-shrink-0">
-                            <form method="post" action="{{ path('admin_quote_approve', {id: q.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('approve' ~ q.id) }}">
-                                <button type="submit" class="btn-er-primary" style="font-size:.8125rem; padding:6px 14px;">
-                                    <i class="bi bi-check-circle me-1" aria-hidden="true"></i> Approuver
-                                </button>
-                            </form>
-                            <form method="post" action="{{ path('admin_quote_reject', {id: q.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ q.id) }}">
-                                <button type="submit" class="btn-er-danger-outline" style="font-size:.8125rem; padding:6px 14px;">
-                                    <i class="bi bi-x-circle me-1" aria-hidden="true"></i> Refuser
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </article>
-            {% else %}
-                <div class="er-empty" aria-live="polite">
-                    <i class="bi bi-inbox er-empty-icon" aria-hidden="true"></i>
-                    <div class="er-empty-title">Aucun devis en attente.</div>
-                </div>
-            {% endfor %}
-
+{% block main %}
+<div class="content-panel">
+    <div class="content-panel-body with-padding no-padding-bottom p-0">
+        <div class="table-responsive">
+            <table class="table datagrid {{ quotes is empty ? 'datagrid-empty' }}">
+                <thead>
+                    <tr>
+                        <th class="align-middle">ID</th>
+                        <th class="align-middle">Client</th>
+                        <th class="align-middle">Date de début</th>
+                        <th class="align-middle">Date de fin</th>
+                        <th class="align-middle">Montant estimé</th>
+                        <th class="align-middle">Équipements</th>
+                        <th class="align-middle">Ville</th>
+                        <th class="align-middle text-end" style="width: 220px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in quotes %}
+                        <tr>
+                            <td class="align-middle fw-bold">DEVIS-{{ '%04d'|format(q.id) }}</td>
+                            <td class="align-middle">
+                                <div><strong>{{ q.user.firstName }} {{ q.user.lastName }}</strong></div>
+                                <div class="text-muted small">{{ q.user.email }}</div>
+                            </td>
+                            <td class="align-middle">{{ q.requestedStartDate|date('d/m/Y') }}</td>
+                            <td class="align-middle">{{ q.requestedEndDate|date('d/m/Y') }}</td>
+                            <td class="align-middle fw-bold text-success">{{ q.estimatedAmount }} €</td>
+                            <td class="align-middle" style="max-width: 320px;">
+                                <div class="d-flex flex-column gap-2">
+                                    {% for line in q.lines %}
+                                        <div class="small d-flex align-items-center">
+                                            <span class="badge bg-secondary text-light me-2 px-2 py-1" style="font-size: 0.75rem; border: none !important; font-weight: 600;">{{ line.quantity }}x</span>
+                                            <span class="text-light">{{ line.equipment.name }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="align-middle">{{ q.eventCity ?? '-' }}</td>
+                            <td class="align-middle text-end">
+                                <div class="d-flex justify-content-end gap-1">
+                                    <form method="post" action="{{ path('admin_quote_approve', {id: q.id}) }}" class="d-inline m-0">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('approve' ~ q.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-success py-1 px-2" style="font-size: 0.8rem; background-color: #E55D1E; border-color: #E55D1E; color: #fff;">
+                                            <i class="fas fa-check me-1"></i> Approuver
+                                        </button>
+                                    </form>
+                                    <form method="post" action="{{ path('admin_quote_reject', {id: q.id}) }}" class="d-inline m-0">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ q.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 0.8rem; color: #fff; border-color: rgba(255,255,255,0.2);">
+                                            <i class="fas fa-times me-1"></i> Refuser
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+
+        {% if quotes is empty %}
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-inbox fa-3x mb-3 text-muted" aria-hidden="true"></i>
+                <h5>Aucun devis en attente de traitement</h5>
+                <p class="small mb-0">Tous les devis reçus ont été traités.</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

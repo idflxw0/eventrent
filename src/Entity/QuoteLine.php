@@ -41,4 +41,14 @@ class QuoteLine
 
     public function getEquipment(): ?Equipment { return $this->equipment; }
     public function setEquipment(?Equipment $equipment): static { $this->equipment = $equipment; return $this; }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            '%dx %s (%s €/jour)',
+            $this->quantity ?? 1,
+            $this->equipment?->getName() ?? 'Équipement inconnu',
+            $this->unitPricePerDay ?? '0.00'
+        );
+    }
 }

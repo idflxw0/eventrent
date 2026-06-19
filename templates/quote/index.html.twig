@@ -20,44 +20,48 @@
     <div class="row justify-content-center">
         <div class="col-lg-9">
 
-            <nav class="er-tab-filter mb-4" aria-label="Filtrer par statut">
-                <a href="{{ path('quote_index') }}" class="er-tab-btn{{ not activeStatus ? ' active' : '' }}" aria-pressed="{{ not activeStatus ? 'true' : 'false' }}">Tous</a>
-                <a href="{{ path('quote_index', {status: 'pending'}) }}" class="er-tab-btn{{ activeStatus == 'pending' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'pending' ? 'true' : 'false' }}">En attente</a>
-                <a href="{{ path('quote_index', {status: 'approved'}) }}" class="er-tab-btn{{ activeStatus == 'approved' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'approved' ? 'true' : 'false' }}">Approuvés</a>
-                <a href="{{ path('quote_index', {status: 'rejected'}) }}" class="er-tab-btn{{ activeStatus == 'rejected' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'rejected' ? 'true' : 'false' }}">Refusés</a>
-                <a href="{{ path('quote_index', {status: 'expired'}) }}" class="er-tab-btn{{ activeStatus == 'expired' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'expired' ? 'true' : 'false' }}">Expirés</a>
+            <nav class="er-status-tabs mb-4" aria-label="Filtrer par statut">
+                <a href="{{ path('quote_index') }}" class="er-status-tab{{ not activeStatus ? ' active' : '' }}" aria-pressed="{{ not activeStatus ? 'true' : 'false' }}">Tous</a>
+                <a href="{{ path('quote_index', {status: 'pending'}) }}" class="er-status-tab{{ activeStatus == 'pending' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'pending' ? 'true' : 'false' }}">En attente</a>
+                <a href="{{ path('quote_index', {status: 'approved'}) }}" class="er-status-tab{{ activeStatus == 'approved' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'approved' ? 'true' : 'false' }}">Approuvés</a>
+                <a href="{{ path('quote_index', {status: 'refused'}) }}" class="er-status-tab{{ activeStatus == 'refused' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'refused' ? 'true' : 'false' }}">Refusés</a>
+                <a href="{{ path('quote_index', {status: 'expired'}) }}" class="er-status-tab{{ activeStatus == 'expired' ? ' active' : '' }}" aria-pressed="{{ activeStatus == 'expired' ? 'true' : 'false' }}">Expirés</a>
             </nav>
 
             {% for q in quotes %}
-                {% set badgeClass = q.status == 'approved' ? 'approved' : q.status == 'pending' ? 'pending' : q.status == 'rejected' ? 'refused' : 'expired' %}
-                {% set statusIcon = q.status == 'approved' ? 'check-circle' : q.status == 'pending' ? 'clock' : q.status == 'rejected' ? 'x-circle' : 'hourglass' %}
-                {% set statusLabel = q.status == 'approved' ? 'Approuvé' : q.status == 'pending' ? 'En attente' : q.status == 'rejected' ? 'Refusé' : 'Expiré' %}
-                <article class="er-reservation-card status-{{ badgeClass }}" aria-label="Devis #{{ q.id }}">
-                    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
-                        <div>
-                            <div class="er-res-title">DEVIS-{{ '%04d'|format(q.id) }}</div>
-                            <div class="er-res-meta">
-                                <i class="bi bi-calendar3 me-1" aria-hidden="true"></i> {{ q.requestedStartDate|date('d/m/Y') }} – {{ q.requestedEndDate|date('d/m/Y') }}
-                                {% if q.eventCity %}
-                                    &nbsp;·&nbsp;
-                                    <i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ q.eventCity }}
-                                {% endif %}
-                            </div>
-                            <div class="er-res-equipment">
+                {% set stripeClass = q.status == 'approved' ? 'confirmed' : q.status == 'pending' ? 'pending' : 'cancelled' %}
+                {% set badgeClass = q.status == 'approved' ? 'approved' : q.status == 'pending' ? 'pending' : q.status == 'refused' ? 'refused' : 'expired' %}
+                {% set statusIcon = q.status == 'approved' ? 'check-circle' : q.status == 'pending' ? 'clock' : q.status == 'refused' ? 'x-circle' : 'hourglass' %}
+                {% set statusLabel = q.status == 'approved' ? 'Approuvé' : q.status == 'pending' ? 'En attente' : q.status == 'refused' ? 'Refusé' : 'Expiré' %}
+                <article class="er-res-card" aria-label="Devis #{{ q.id }}">
+                    <div class="er-res-stripe er-res-stripe-{{ stripeClass }}"></div>
+                    <div class="er-res-body">
+                        <div style="flex:1; min-width:240px;">
+                            <div class="er-res-id">DEVIS-{{ '%04d'|format(q.id) }}</div>
+                            <h2 class="er-res-name" style="margin: 4px 0;">
                                 {% for line in q.lines %}
                                     {{ line.equipment.name }} × {{ line.quantity }}{{ not loop.last ? ', ' : '' }}
                                 {% endfor %}
+                            </h2>
+                            <div class="er-res-meta mb-2">
+                                <span><i class="bi bi-calendar3 me-1" aria-hidden="true"></i> {{ q.requestedStartDate|date('d/m/Y') }} – {{ q.requestedEndDate|date('d/m/Y') }}</span>
+                                {% if q.eventCity %}
+                                    <span class="ms-3"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ q.eventCity }}</span>
+                                {% endif %}
                             </div>
-                            <div class="er-res-total">{{ q.estimatedAmount }} € <span style="font-size:.75rem; font-weight:400; color:var(--er-muted-text);">estimé</span></div>
+                            <span class="er-badge er-badge-{{ badgeClass }} d-inline-flex">
+                                <i class="bi bi-{{ statusIcon }}" aria-hidden="true"></i> {{ statusLabel }}
+                            </span>
+                            <div class="d-flex gap-2 mt-3 flex-wrap">
+                                <a href="{{ path('quote_show', {id: q.id}) }}" class="btn-er-primary text-decoration-none" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
+                                    <i class="bi bi-eye" aria-hidden="true"></i> Voir le détail
+                                </a>
+                            </div>
                         </div>
-                        <span class="er-badge er-badge-{{ badgeClass }} flex-shrink-0">
-                            <i class="bi bi-{{ statusIcon }}" aria-hidden="true"></i> {{ statusLabel }}
-                        </span>
-                    </div>
-                    <div class="d-flex gap-2 mt-3 flex-wrap">
-                        <a href="{{ path('quote_show', {id: q.id}) }}" class="btn-er-primary text-decoration-none" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
-                            <i class="bi bi-eye" aria-hidden="true"></i> Voir le détail
-                        </a>
+                        <div class="er-res-price">
+                            {{ q.estimatedAmount }} €
+                            <div style="font-size:.75rem; font-weight:400; color:var(--er-muted-text); text-align:right; margin-top:-4px;">estimé</div>
+                        </div>
                     </div>
                 </article>
             {% else %}

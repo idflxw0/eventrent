@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: EquipmentRepository::class)]
 #[ORM\InheritanceType('JOINED')]
@@ -26,38 +27,49 @@ class Equipment
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['equipment:list', 'equipment:detail'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true)]
+    #[Groups(['equipment:list', 'equipment:detail'])]
     private ?string $reference = null;
 
     #[ORM\Column(length: 150)]
+    #[Groups(['equipment:list', 'equipment:detail'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['equipment:detail'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Groups(['equipment:list', 'equipment:detail'])]
     private ?string $dailyPrice = null;
 
     #[ORM\Column(length: 20)]
+    #[Groups(['equipment:list', 'equipment:detail'])]
     private ?string $availabilityStatus = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['equipment:list', 'equipment:detail'])]
     private ?string $photo = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['equipment:detail'])]
     private ?\DateTimeImmutable $addedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['equipment:list', 'equipment:detail'])]
     private ?Category $category = null;
 
     #[ORM\ManyToOne(inversedBy: 'equipments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['equipment:detail'])]
     private ?Supplier $supplier = null;
 
     #[ORM\ManyToMany(targetEntity: Accessory::class, inversedBy: 'equipments')]
+    #[Groups(['equipment:detail'])]
     private Collection $accessories;
 
     #[ORM\OneToMany(targetEntity: ReservationLine::class, mappedBy: 'equipment')]
@@ -67,6 +79,7 @@ class Equipment
     private Collection $quoteLines;
 
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'equipment')]
+    #[Groups(['equipment:detail'])]
     private Collection $reviews;
 
     #[ORM\OneToMany(targetEntity: Maintenance::class, mappedBy: 'equipment')]
@@ -131,4 +144,9 @@ class Equipment
     public function getQuoteLines(): Collection { return $this->quoteLines; }
     public function getReviews(): Collection { return $this->reviews; }
     public function getMaintenances(): Collection { return $this->maintenances; }
+
+    public function __toString(): string
+    {
+        return sprintf('%s (%s)', $this->name ?? '', $this->reference ?? '');
+    }
 }

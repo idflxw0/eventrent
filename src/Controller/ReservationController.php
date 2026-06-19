@@ -10,15 +10,19 @@ use App\Repository\EquipmentRepository;
 use App\Repository\ReservationRepository;
 use App\Security\Voter\ReservationVoter;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
 class ReservationController extends AbstractController
 {
+    public function __construct(private readonly LoggerInterface $logger) {}
+
     #[Route('/reservations', name: 'reservation_index')]
     public function index(Request $request, ReservationRepository $repo): Response
     {
@@ -36,6 +40,8 @@ class ReservationController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         EquipmentRepository $equipRepo,
+        \App\Service\EmailService $emailService,
+        \App\Service\WeatherService $weatherService,
     ): Response {
         $reservation = new Reservation();
         $reservation->setUser($this->getUser());
@@ -71,6 +77,24 @@ class ReservationController extends AbstractController
             $em->persist($reservation);
             $em->persist($invoice);
             $em->flush();
+
+            $weather = null;
+            if ($reservation->getVenueType() === 'outdoor') {
+                $weather = $weatherService->getForecast(
+                    $reservation->getEventCity(),
+                    $reservation->getStartDate()
+                );
+                if ($weather) {
+                    $reservation->setWeatherForecast($weather);
+                    $em->flush();
+                }
+            }
+
+            try {
+                $emailService->sendReservationConfirmation($reservation, $weather);
+            } catch (TransportExceptionInterface $e) {
+                $this->logger->error('Email confirmation failed: ' . $e->getMessage());
+            }
 
             $this->addFlash('success', 'Réservation créée avec succès.');
 

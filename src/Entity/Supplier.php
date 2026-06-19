@@ -6,6 +6,7 @@ use App\Repository\SupplierRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: SupplierRepository::class)]
 class Supplier
@@ -13,9 +14,11 @@ class Supplier
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['equipment:detail'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 150)]
+    #[Groups(['equipment:detail'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 180, nullable: true)]
@@ -89,4 +92,9 @@ class Supplier
     }
 
     public function getEquipments(): Collection { return $this->equipments; }
+
+    public function __toString(): string
+    {
+        return $this->name ?? 'Fournisseur sans nom';
+    }
 }

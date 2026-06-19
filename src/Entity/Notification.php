@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\NotificationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: NotificationRepository::class)]
 class Notification
@@ -12,22 +13,28 @@ class Notification
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['notification:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['notification:read'])]
     private ?string $message = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Groups(['notification:read'])]
     private ?string $type = null;
 
     #[ORM\Column]
+    #[Groups(['notification:read'])]
     private ?bool $read = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['notification:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['notification:read'])]
     private ?User $user = null;
 
     public function __construct()
