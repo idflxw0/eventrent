@@ -9,21 +9,20 @@
    ========================================================= #}
 <section class="er-hero-home">
     <div class="container">
-        <div class="er-hero-grid">
-
-            <div class="er-hero-text">
-                <div class="er-hero-eyebrow">Location événementielle professionnelle</div>
-                <h1 class="er-hero-headline">
+        <div class="er-hero-wrapper-card er-animate-fade-in-up">
+            <div class="er-hero-centered">
+                <div class="er-hero-eyebrow er-animate-fade-in-up delay-100">Location événementielle professionnelle</div>
+                <h1 class="er-hero-headline er-animate-fade-in-up delay-200">
                     Le matériel<br>
                     événementiel<br>
                     <span class="er-hero-accent">professionnel</span>.
                 </h1>
-                <p class="er-hero-sub">
+                <p class="er-hero-sub er-animate-fade-in-up delay-300">
                     Planifiez, estimez et réservez vos équipements de sonorisation, 
                     éclairage et vidéo en quelques clics. Service complet de livraison 
                     et d'assistance technique pour tous vos événements.
                 </p>
-                <div class="er-hero-actions">
+                <div class="er-hero-actions er-animate-fade-in-up delay-400">
                     <a href="{{ path('catalog_index') }}" class="btn-er-primary">
                         <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i>
                         Voir le catalogue
@@ -33,76 +32,6 @@
                     </a>
                 </div>
             </div>
-
-            <div class="er-hero-visual" aria-hidden="true">
-                <div class="er-hero-card-preview">
-                    <!-- Top subtle header -->
-                    <div class="er-preview-header">
-                        <span class="er-preview-tag"><i class="bi bi-circle-fill text-success spinner-grow-custom"></i> Live Preview</span>
-                        <span class="er-preview-id">#ER-2026</span>
-                    </div>
-                    
-                    <!-- Title & Date -->
-                    <h3 class="er-preview-title">Votre Événement</h3>
-                    <div class="er-preview-meta">
-                        <div class="er-meta-item">
-                            <i class="bi bi-calendar3"></i>
-                            <span>15 Juil - 18 Juil (3j)</span>
-                        </div>
-                        <div class="er-meta-item">
-                            <i class="bi bi-geo-alt-fill"></i>
-                            <span>Paris, FR</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Selected items list -->
-                    <div class="er-preview-items">
-                        <div class="er-preview-item">
-                            <div class="er-item-info">
-                                <span class="er-item-qty">2 ×</span>
-                                <span class="er-item-name">Enceinte Mackie SRM450</span>
-                            </div>
-                            <span class="er-item-price">300 €</span>
-                        </div>
-                        <div class="er-preview-item">
-                            <div class="er-item-info">
-                                <span class="er-item-qty">1 ×</span>
-                                <span class="er-item-name">Micro sans fil Shure BLX24</span>
-                            </div>
-                            <span class="er-item-price">45 €</span>
-                        </div>
-                        <div class="er-preview-item">
-                            <div class="er-item-info">
-                                <span class="er-item-qty">1 ×</span>
-                                <span class="er-item-name">Console de mixage Yamaha</span>
-                            </div>
-                            <span class="er-item-price">35 €</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Delivery Option Box -->
-                    <div class="er-preview-delivery">
-                        <i class="bi bi-truck text-er-primary"></i>
-                        <div>
-                            <div class="er-delivery-title">Livraison & Installation J+1</div>
-                            <div class="er-delivery-sub">Technicien dédié sur place inclus</div>
-                        </div>
-                        <i class="bi bi-check-circle-fill ms-auto text-success"></i>
-                    </div>
-                    
-                    <!-- Price Breakdown & Action -->
-                    <div class="er-preview-footer">
-                        <div class="er-price-summary">
-                            <span class="er-price-label">Estimation Total</span>
-                            <span class="er-price-val">380,00 € <span class="er-price-vat">HT</span></span>
-                        </div>
-                        <div class="er-preview-btn">
-                            Obtenir ce devis <i class="bi bi-arrow-right"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </section>
@@ -151,78 +80,58 @@
             </a>
         </div>
 
-        {# Desktop grid #}
-        <div class="er-cat-row">
-            <a href="{{ path('catalog_index', {cat: 1}) }}" class="er-cat-card">
-                <div class="er-cat-icon"><i class="bi bi-speaker-fill" aria-hidden="true"></i></div>
-                <div>
-                    <div class="er-cat-name">Sonorisation</div>
-                    <div class="er-cat-count">Enceintes, amplis, câbles…</div>
+        {# New Categories Grid #}
+        <div class="er-new-cat-grid">
+            
+            <a href="{{ path('catalog_index', {cat: 1}) }}" class="er-new-cat-card er-animate-fade-in-up delay-100">
+                <h3 class="er-new-cat-title">Sonorisation</h3>
+                <div class="er-new-cat-img-wrapper">
+                    <img src="{{ asset('images/cat_sonorisation.png') }}" alt="Sonorisation" class="er-new-cat-img">
                 </div>
-                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
-            </a>
-            <a href="{{ path('catalog_index', {cat: 2}) }}" class="er-cat-card">
-                <div class="er-cat-icon"><i class="bi bi-camera-video-fill" aria-hidden="true"></i></div>
-                <div>
-                    <div class="er-cat-name">Vidéo &amp; Projection</div>
-                    <div class="er-cat-count">Vidéoprojecteurs, écrans…</div>
+                <div class="er-new-cat-arrow-box">
+                    <div class="er-new-cat-arrow-btn">
+                        <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                    </div>
                 </div>
-                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
             </a>
-            <a href="{{ path('catalog_index', {cat: 3}) }}" class="er-cat-card">
-                <div class="er-cat-icon"><i class="bi bi-mic-fill" aria-hidden="true"></i></div>
-                <div>
-                    <div class="er-cat-name">Micros &amp; Mixage</div>
-                    <div class="er-cat-count">Micros, tables, égaliseurs…</div>
+            
+            <a href="{{ path('catalog_index', {cat: 2}) }}" class="er-new-cat-card er-animate-fade-in-up delay-200">
+                <h3 class="er-new-cat-title">Vidéo</h3>
+                <div class="er-new-cat-img-wrapper">
+                    <img src="{{ asset('images/cat_video.png') }}" alt="Vidéo & Projection" class="er-new-cat-img">
                 </div>
-                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
-            </a>
-            <a href="{{ path('catalog_index') }}" class="er-cat-card">
-                <div class="er-cat-icon"><i class="bi bi-lightbulb-fill" aria-hidden="true"></i></div>
-                <div>
-                    <div class="er-cat-name">Éclairage</div>
-                    <div class="er-cat-count">PAR, LED, jeux de lumières…</div>
+                <div class="er-new-cat-arrow-box">
+                    <div class="er-new-cat-arrow-btn">
+                        <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                    </div>
                 </div>
-                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
             </a>
+            
+            <a href="{{ path('catalog_index', {cat: 3}) }}" class="er-new-cat-card er-animate-fade-in-up delay-300">
+                <h3 class="er-new-cat-title">Micros</h3>
+                <div class="er-new-cat-img-wrapper">
+                    <img src="{{ asset('images/cat_micros.png') }}" alt="Micros & Mixage" class="er-new-cat-img">
+                </div>
+                <div class="er-new-cat-arrow-box">
+                    <div class="er-new-cat-arrow-btn">
+                        <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="{{ path('catalog_index') }}" class="er-new-cat-card er-animate-fade-in-up delay-400">
+                <h3 class="er-new-cat-title">Éclairage</h3>
+                <div class="er-new-cat-img-wrapper">
+                    <img src="{{ asset('images/cat_eclairage.png') }}" alt="Éclairage" class="er-new-cat-img">
+                </div>
+                <div class="er-new-cat-arrow-box">
+                    <div class="er-new-cat-arrow-btn">
+                        <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </a>
+            
         </div>
-
-        {# Mobile scroll #}
-        <div class="er-cat-scroll">
-            <a href="{{ path('catalog_index', {cat: 1}) }}" class="er-cat-card">
-                <div class="er-cat-icon"><i class="bi bi-speaker-fill" aria-hidden="true"></i></div>
-                <div>
-                    <div class="er-cat-name">Sonorisation</div>
-                    <div class="er-cat-count">Enceintes, amplis…</div>
-                </div>
-                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
-            </a>
-            <a href="{{ path('catalog_index', {cat: 2}) }}" class="er-cat-card">
-                <div class="er-cat-icon"><i class="bi bi-camera-video-fill" aria-hidden="true"></i></div>
-                <div>
-                    <div class="er-cat-name">Vidéo &amp; Projection</div>
-                    <div class="er-cat-count">Vidéoprojecteurs…</div>
-                </div>
-                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
-            </a>
-            <a href="{{ path('catalog_index', {cat: 3}) }}" class="er-cat-card">
-                <div class="er-cat-icon"><i class="bi bi-mic-fill" aria-hidden="true"></i></div>
-                <div>
-                    <div class="er-cat-name">Micros &amp; Mixage</div>
-                    <div class="er-cat-count">Micros, tables…</div>
-                </div>
-                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
-            </a>
-            <a href="{{ path('catalog_index') }}" class="er-cat-card">
-                <div class="er-cat-icon"><i class="bi bi-lightbulb-fill" aria-hidden="true"></i></div>
-                <div>
-                    <div class="er-cat-name">Éclairage</div>
-                    <div class="er-cat-count">PAR, LED…</div>
-                </div>
-                <i class="bi bi-arrow-right er-cat-arrow" aria-hidden="true"></i>
-            </a>
-        </div>
-    </div>
 </section>
 
 {# =========================================================
@@ -243,8 +152,9 @@
         <div class="er-equip-grid">
 
             <article class="er-equip-card">
-                <a href="{{ path('catalog_show', {id: 1}) }}" class="text-decoration-none">
-                    <div class="er-equip-img" style="background-image:url('https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80'); background-size:cover; background-position:center;">
+                {% set mackie_url = mackie ? path('catalog_show', {id: mackie.id}) : path('catalog_show', {id: 11}) %}
+                <a href="{{ mackie_url }}" class="text-decoration-none">
+                    <div class="er-equip-img" style="background-image:url('{{ mackie and mackie.photo ? mackie.photo : 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80' }}'); background-size:cover; background-position:center;">
                         <div class="er-equip-img-tag">
                             <span class="er-badge er-badge-available">
                                 <i class="bi bi-circle-fill" style="font-size:.45em" aria-hidden="true"></i> Disponible
@@ -254,19 +164,20 @@
                 </a>
                 <div class="er-equip-body">
                     <h3 class="er-equip-name">
-                        <a href="{{ path('catalog_show', {id: 1}) }}" class="text-decoration-none text-reset">Enceinte active Mackie SRM450</a>
+                        <a href="{{ mackie_url }}" class="text-decoration-none text-reset">{{ mackie ? mackie.name : 'Enceinte active Mackie SRM450' }}</a>
                     </h3>
-                    <p class="er-equip-desc">450W RMS, 12" woofer, tweeter titanium. Idéale pour conférences et concerts en intérieur.</p>
+                    <p class="er-equip-desc">{{ mackie ? mackie.description : '450W RMS, 12" woofer, tweeter titanium. Idéale pour conférences et concerts en intérieur.' }}</p>
                     <div class="er-equip-footer">
-                        <div class="er-equip-price">150 € <span>/ jour</span></div>
-                        <a href="{{ path('catalog_show', {id: 1}) }}" class="btn-er-primary" style="font-size:.8125rem;padding:8px 18px;">Réserver</a>
+                        <div class="er-equip-price">{{ mackie ? mackie.dailyPrice|number_format(0) : '150' }} € <span>/ jour</span></div>
+                        <a href="{{ mackie_url }}" class="btn-er-primary" style="font-size:.8125rem;padding:8px 18px;">Réserver</a>
                     </div>
                 </div>
             </article>
 
             <article class="er-equip-card">
-                <a href="{{ path('catalog_show', {id: 7}) }}" class="text-decoration-none">
-                    <div class="er-equip-img" style="background-image:url('https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&w=600&q=80'); background-size:cover; background-position:center;">
+                {% set epson_url = epson ? path('catalog_show', {id: epson.id}) : path('catalog_show', {id: 17}) %}
+                <a href="{{ epson_url }}" class="text-decoration-none">
+                    <div class="er-equip-img" style="background-image:url('{{ epson and epson.photo ? epson.photo : 'https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&w=600&q=80' }}'); background-size:cover; background-position:center;">
                         <div class="er-equip-img-tag">
                             <span class="er-badge er-badge-available">
                                 <i class="bi bi-circle-fill" style="font-size:.45em" aria-hidden="true"></i> Disponible
@@ -276,19 +187,20 @@
                 </a>
                 <div class="er-equip-body">
                     <h3 class="er-equip-name">
-                        <a href="{{ path('catalog_show', {id: 7}) }}" class="text-decoration-none text-reset">Vidéoprojecteur Epson EB-2250U</a>
+                        <a href="{{ epson_url }}" class="text-decoration-none text-reset">{{ epson ? epson.name : 'Vidéoprojecteur Epson EB-2250U' }}</a>
                     </h3>
-                    <p class="er-equip-desc">5 000 lumens, WUXGA. Projection jusqu'à 8 m de large pour présentations et événements.</p>
+                    <p class="er-equip-desc">{{ epson ? epson.description : '5 000 lumens, WUXGA. Projection jusqu\'à 8 m de large pour présentations et événements.' }}</p>
                     <div class="er-equip-footer">
-                        <div class="er-equip-price">120 € <span>/ jour</span></div>
-                        <a href="{{ path('catalog_show', {id: 7}) }}" class="btn-er-primary" style="font-size:.8125rem;padding:8px 18px;">Réserver</a>
+                        <div class="er-equip-price">{{ epson ? epson.dailyPrice|number_format(0) : '120' }} € <span>/ jour</span></div>
+                        <a href="{{ epson_url }}" class="btn-er-primary" style="font-size:.8125rem;padding:8px 18px;">Réserver</a>
                     </div>
                 </div>
             </article>
 
             <article class="er-equip-card">
-                <a href="{{ path('catalog_show', {id: 2}) }}" class="text-decoration-none">
-                    <div class="er-equip-img" style="background-image:url('https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=600&q=80'); background-size:cover; background-position:center;">
+                {% set shure_url = shure ? path('catalog_show', {id: shure.id}) : path('catalog_show', {id: 12}) %}
+                <a href="{{ shure_url }}" class="text-decoration-none">
+                    <div class="er-equip-img" style="background-image:url('{{ shure and shure.photo ? shure.photo : 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=600&q=80' }}'); background-size:cover; background-position:center;">
                         <div class="er-equip-img-tag">
                             <span class="er-badge er-badge-available">
                                 <i class="bi bi-circle-fill" style="font-size:.45em" aria-hidden="true"></i> Disponible
@@ -298,12 +210,12 @@
                 </a>
                 <div class="er-equip-body">
                     <h3 class="er-equip-name">
-                        <a href="{{ path('catalog_show', {id: 2}) }}" class="text-decoration-none text-reset">Micro sans fil Shure BLX24</a>
+                        <a href="{{ shure_url }}" class="text-decoration-none text-reset">{{ shure ? shure.name : 'Micro sans fil Shure BLX24' }}</a>
                     </h3>
-                    <p class="er-equip-desc">Portée 90 m, autonomie 14 h, accord automatique. Le choix des professionnels de la scène.</p>
+                    <p class="er-equip-desc">{{ shure ? shure.description : 'Portée 90 m, autonomie 14 h, accord automatique. Le choix des professionnels de la scène.' }}</p>
                     <div class="er-equip-footer">
-                        <div class="er-equip-price">45 € <span>/ jour</span></div>
-                        <a href="{{ path('catalog_show', {id: 2}) }}" class="btn-er-primary" style="font-size:.8125rem;padding:8px 18px;">Réserver</a>
+                        <div class="er-equip-price">{{ shure ? shure.dailyPrice|number_format(0) : '45' }} € <span>/ jour</span></div>
+                        <a href="{{ shure_url }}" class="btn-er-primary" style="font-size:.8125rem;padding:8px 18px;">Réserver</a>
                     </div>
                 </div>
             </article>
