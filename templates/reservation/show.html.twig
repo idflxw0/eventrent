@@ -114,12 +114,12 @@
 
                 {% if reservation.weatherForecast %}
                 <div class="col-12">
-                    <div class="er-account-info-card" style="background:#fffbeb; border-color:#fde68a;">
-                        <div class="d-flex align-items-center gap-2" style="color:var(--er-warning);">
+                    <div class="er-account-info-card" style="background: var(--er-warning-bg); border-color: var(--er-warning);">
+                        <div class="d-flex align-items-center gap-2" style="color: var(--er-warning); font-weight: 800; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em;">
                             <i class="bi bi-sun" style="font-size:1.25rem;" aria-hidden="true"></i>
                             <strong>Prévision météo</strong>
                         </div>
-                        <p style="margin:8px 0 0; font-size:.9375rem;">{{ reservation.weatherForecast }}</p>
+                        <p style="margin:8px 0 0; font-size:.95rem; color:#fff;">{{ reservation.weatherForecast }}</p>
                     </div>
                 </div>
                 {% endif %}
