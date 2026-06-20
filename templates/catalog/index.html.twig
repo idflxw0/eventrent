@@ -102,7 +102,7 @@
                     {% if filter.dispo %}<input type="hidden" name="{{ params.dispo }}" value="{{ filter.dispo }}">{% endif %}
                     {% if filter.prixMax %}<input type="hidden" name="{{ params.prix_max }}" value="{{ filter.prixMax }}">{% endif %}
                     <label for="sort-select" class="er-form-label mb-0" style="font-size:.875rem; white-space:nowrap;">Trier par :</label>
-                    <select id="sort-select" name="{{ params.sort }}" class="form-select form-select-sm" style="width:auto; min-height:auto; height:38px;" onchange="this.form.submit()" aria-label="Trier les résultats">
+                    <select id="sort-select" name="{{ params.sort }}" class="er-form-control form-select form-select-sm" style="width:auto; min-height:auto; height:38px; padding-top:0 !important; padding-bottom:0 !important;" onchange="this.form.submit()" aria-label="Trier les résultats">
                         {% for value, label in sortOptions %}
                             <option value="{{ value }}" {{ filter.sort == value ? 'selected' : '' }}>{{ label }}</option>
                         {% endfor %}
