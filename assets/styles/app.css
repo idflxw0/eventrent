@@ -1136,6 +1136,13 @@ select.er-form-control option {
   background-color: var(--er-surface);
   color: #fff;
 }
+.er-form-control.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+  background-size: 16px 12px !important;
+  background-position: right 16px center !important;
+  background-repeat: no-repeat !important;
+  padding-right: 40px !important;
+}
 
 .er-pw-wrap { position: relative; }
 .er-pw-toggle {
@@ -1282,6 +1289,13 @@ select.er-form-control option {
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 24px;
+}
+
+.er-sort-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px; /* Give breathing room to the grid below */
 }
 
 .er-catalog-grid {
@@ -2251,4 +2265,47 @@ body {
 .er-hero-centered .er-hero-actions {
   justify-content: center;
 }
+
+/* ─── PAGINATION ─────────────────────────────────────────── */
+.pagination {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pagination .page-item .page-link {
+  background: #131824 !important;
+  border: none !important;
+  color: var(--er-foreground) !important;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pagination .page-item .page-link:hover {
+  background: #1C2434 !important;
+  color: #fff !important;
+}
+
+.pagination .page-item.active .page-link {
+  background: var(--er-primary) !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+.pagination .page-item.disabled .page-link {
+  background: #090D16 !important;
+  color: var(--er-muted-text) !important;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination .page-item:not(:last-child) .page-link {
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
 
