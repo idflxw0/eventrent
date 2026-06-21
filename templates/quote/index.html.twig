@@ -29,38 +29,41 @@
             </nav>
 
             {% for q in quotes %}
-                {% set stripeClass = q.status == 'approved' ? 'confirmed' : q.status == 'pending' ? 'pending' : 'cancelled' %}
                 {% set badgeClass = q.status == 'approved' ? 'approved' : q.status == 'pending' ? 'pending' : q.status == 'refused' ? 'refused' : 'expired' %}
                 {% set statusIcon = q.status == 'approved' ? 'check-circle' : q.status == 'pending' ? 'clock' : q.status == 'refused' ? 'x-circle' : 'hourglass' %}
                 {% set statusLabel = q.status == 'approved' ? 'Approuvé' : q.status == 'pending' ? 'En attente' : q.status == 'refused' ? 'Refusé' : 'Expiré' %}
-                <article class="er-res-card" aria-label="Devis #{{ q.id }}">
-                    <div class="er-res-stripe er-res-stripe-{{ stripeClass }}"></div>
+                <article class="er-res-card er-res-card-status-{{ badgeClass }}" aria-label="Devis #{{ q.id }}">
                     <div class="er-res-body">
-                        <div style="flex:1; min-width:240px;">
-                            <div class="er-res-id">DEVIS-{{ '%04d'|format(q.id) }}</div>
-                            <h2 class="er-res-name" style="margin: 4px 0;">
+                        <div style="flex:1;">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="er-res-id">DEVIS-{{ '%04d'|format(q.id) }}</span>
+                                <span class="er-badge er-badge-{{ badgeClass }}">
+                                    <i class="bi bi-{{ statusIcon }}" aria-hidden="true"></i> {{ statusLabel }}
+                                </span>
+                            </div>
+                            <h2 class="er-res-name mb-2" style="font-size:1.125rem; font-weight:700; margin: 4px 0;">
                                 {% for line in q.lines %}
-                                    {{ line.equipment.name }} × {{ line.quantity }}{{ not loop.last ? ', ' : '' }}
+                                    {{ line.equipment.name }} <span style="color:var(--er-primary);">× {{ line.quantity }}</span>{{ not loop.last ? ', ' : '' }}
                                 {% endfor %}
                             </h2>
-                            <div class="er-res-meta mb-2">
-                                <span><i class="bi bi-calendar3 me-1" aria-hidden="true"></i> {{ q.requestedStartDate|date('d/m/Y') }} – {{ q.requestedEndDate|date('d/m/Y') }}</span>
+                            <div class="er-res-meta">
+                                <span class="me-3"><i class="bi bi-calendar3 me-1" aria-hidden="true"></i> {{ q.requestedStartDate|date('d/m/Y') }} – {{ q.requestedEndDate|date('d/m/Y') }}</span>
                                 {% if q.eventCity %}
-                                    <span class="ms-3"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ q.eventCity }}</span>
+                                    <span><i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ q.eventCity|upper }}</span>
                                 {% endif %}
                             </div>
-                            <span class="er-badge er-badge-{{ badgeClass }} d-inline-flex">
-                                <i class="bi bi-{{ statusIcon }}" aria-hidden="true"></i> {{ statusLabel }}
-                            </span>
-                            <div class="d-flex gap-2 mt-3 flex-wrap">
-                                <a href="{{ path('quote_show', {id: q.id}) }}" class="btn-er-primary text-decoration-none" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
-                                    <i class="bi bi-eye" aria-hidden="true"></i> Voir le détail
-                                </a>
-                            </div>
                         </div>
-                        <div class="er-res-price">
-                            {{ q.estimatedAmount }} €
-                            <div style="font-size:.75rem; font-weight:400; color:var(--er-muted-text); text-align:right; margin-top:-4px;">estimé</div>
+                        
+                        <div class="er-res-right-side">
+                            <div class="text-md-end">
+                                <div class="er-res-price">
+                                    {{ q.estimatedAmount }} €
+                                </div>
+                                <div style="font-size:.72rem; color:var(--er-muted-text); margin-top:2px;">estimé</div>
+                            </div>
+                            <a href="{{ path('quote_show', {id: q.id}) }}" class="btn-er-outline-dark text-decoration-none" style="padding:8px 16px; font-size:.825rem; display:inline-flex; align-items:center; gap:6px; border-radius:var(--radius-md); height:38px;">
+                                <i class="bi bi-eye" aria-hidden="true"></i> Voir le détail
+                            </a>
                         </div>
                     </div>
                 </article>

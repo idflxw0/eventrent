@@ -33,35 +33,43 @@
                 {% set statusClass = r.status == 'confirmed' ? 'confirmed' : r.status == 'pending' ? 'pending' : r.status == 'cancelled' ? 'cancelled' : r.status == 'in_progress' ? 'in-progress' : 'completed' %}
                 {% set badgeClass = statusClass %}
                 {% set statusLabel = r.status == 'confirmed' ? 'Confirmée' : r.status == 'pending' ? 'En attente' : r.status == 'cancelled' ? 'Annulée' : r.status == 'in_progress' ? 'En cours' : 'Terminée' %}
-                <article class="er-res-card" aria-label="Réservation #{{ r.id }}">
-                    <div class="er-res-stripe er-res-stripe-{{ statusClass }}"></div>
+                <article class="er-res-card er-res-card-status-{{ badgeClass }}" aria-label="Réservation #{{ r.id }}">
                     <div class="er-res-body">
-                        <div style="flex:1; min-width:240px;">
-                            <div class="er-res-id">RES-{{ '%04d'|format(r.id) }}</div>
-                            <h2 class="er-res-name" style="margin: 4px 0;">
+                        <div style="flex:1;">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="er-res-id">RES-{{ '%04d'|format(r.id) }}</span>
+                                <span class="er-badge er-badge-{{ badgeClass }}">
+                                    <i class="bi bi-{{ r.status == 'confirmed' ? 'check-circle' : r.status == 'pending' ? 'clock' : r.status == 'cancelled' ? 'x-circle' : r.status == 'in_progress' ? 'play-circle' : 'check2-all' }}" aria-hidden="true"></i> {{ statusLabel }}
+                                </span>
+                            </div>
+                            <h2 class="er-res-name mb-2" style="font-size:1.125rem; font-weight:700; margin: 4px 0;">
                                 {% for line in r.lines %}
-                                    {{ line.equipment.name }} × {{ line.quantity }}{{ not loop.last ? ', ' : '' }}
+                                    {{ line.equipment.name }} <span style="color:var(--er-primary);">× {{ line.quantity }}</span>{{ not loop.last ? ', ' : '' }}
                                 {% endfor %}
                             </h2>
-                            <div class="er-res-meta mb-2">
-                                <span><i class="bi bi-calendar3 me-1" aria-hidden="true"></i> {{ r.startDate|date('d/m/Y') }} – {{ r.endDate|date('d/m/Y') }}</span>
-                                <span class="ms-3"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ r.eventCity }}</span>
+                            <div class="er-res-meta">
+                                <span class="me-3"><i class="bi bi-calendar3 me-1" aria-hidden="true"></i> {{ r.startDate|date('d/m/Y') }} – {{ r.endDate|date('d/m/Y') }}</span>
+                                <span><i class="bi bi-geo-alt me-1" aria-hidden="true"></i> {{ r.eventCity|upper }}</span>
                             </div>
-                            <span class="er-badge er-badge-{{ badgeClass }} d-inline-flex">
-                                <i class="bi bi-{{ r.status == 'confirmed' ? 'check-circle' : r.status == 'pending' ? 'clock' : r.status == 'cancelled' ? 'x-circle' : r.status == 'in_progress' ? 'play-circle' : 'check2-all' }}" aria-hidden="true"></i> {{ statusLabel }}
-                            </span>
-                            <div class="d-flex gap-2 mt-3 flex-wrap">
-                                <a href="{{ path('reservation_show', {id: r.id}) }}" class="btn-er-primary text-decoration-none" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
+                        </div>
+                        
+                        <div class="er-res-right-side">
+                            <div class="text-md-end">
+                                <div class="er-res-price">
+                                    {{ r.totalAmount }} €
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ path('reservation_show', {id: r.id}) }}" class="btn-er-outline-dark text-decoration-none" style="padding:8px 16px; font-size:.825rem; display:inline-flex; align-items:center; gap:6px; border-radius:var(--radius-md); height:38px;">
                                     <i class="bi bi-eye" aria-hidden="true"></i> Voir le détail
                                 </a>
                                 {% if r.status == 'completed' %}
-                                    <a href="#" class="btn-er-outline text-decoration-none" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-size:.875rem; border-radius:var(--radius-md);">
-                                        <i class="bi bi-star" aria-hidden="true"></i> Laisser un avis
+                                    <a href="#" class="btn-er-outline text-decoration-none" style="padding:8px 16px; font-size:.825rem; display:inline-flex; align-items:center; gap:6px; border-radius:var(--radius-md); height:38px;">
+                                        <i class="bi bi-star" aria-hidden="true"></i> Avis
                                     </a>
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="er-res-price">{{ r.totalAmount }} €</div>
                     </div>
                 </article>
             {% else %}

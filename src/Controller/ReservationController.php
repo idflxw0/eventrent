@@ -40,16 +40,48 @@ class ReservationController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         EquipmentRepository $equipRepo,
+        ReservationRepository $reservationRepo,
         \App\Service\EmailService $emailService,
         \App\Service\WeatherService $weatherService,
     ): Response {
         $reservation = new Reservation();
         $reservation->setUser($this->getUser());
 
+        if ($request->isMethod('GET')) {
+            $equipId = $request->query->getInt('equipment');
+            if ($equipId > 0) {
+                $preselected = $equipRepo->find($equipId);
+                if ($preselected instanceof \App\Entity\Equipment && $preselected->getAvailabilityStatus() === \App\Entity\Equipment::STATUS_AVAILABLE) {
+                    $line = new ReservationLine();
+                    $line->setEquipment($preselected);
+                    $line->setQuantity(1);
+                    $line->setUnitPricePerDay($preselected->getDailyPrice());
+                    $line->setReservation($reservation);
+                    $reservation->addLine($line);
+                }
+            }
+        }
+
         $form = $this->createForm(ReservationType::class, $reservation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $equipmentIds = array_map(
+                fn($line) => $line->getEquipment()->getId(),
+                $reservation->getLines()->toArray()
+            );
+            $conflicts = $reservationRepo->findConflictingEquipment(
+                $equipmentIds,
+                $reservation->getStartDate(),
+                $reservation->getEndDate()
+            );
+
+            if (!empty($conflicts)) {
+                $names = implode(', ', array_map(fn($e) => $e->getName(), $conflicts));
+                $this->addFlash('error', "Équipement(s) déjà réservé(s) sur cette période : {$names}.");
+                return $this->render('reservation/new.html.twig', ['form' => $form]);
+            }
+
             $days = max(1, (int) $reservation->getStartDate()->diff($reservation->getEndDate())->days);
             $total = 0.0;
 
@@ -68,7 +100,7 @@ class ReservationController extends AbstractController
             $invoice = new Invoice();
             $invoice->setReservation($reservation);
             $invoice->setNumber('INV-' . date('Y') . '-' . str_pad((string) random_int(1, 999999), 6, '0', STR_PAD_LEFT));
-            $invoice->setAmount($total);
+            $invoice->setAmount(number_format($total, 2, '.', ''));
             $invoice->setDueDate((new \DateTimeImmutable())->modify('+30 days'));
 
             $em->persist($reservation);

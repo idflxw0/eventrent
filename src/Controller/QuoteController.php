@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Equipment;
+use App\Entity\Invoice;
 use App\Entity\Quote;
 use App\Entity\QuoteLine;
+use App\Entity\Reservation;
+use App\Entity\ReservationLine;
 use App\Form\QuoteType;
 use App\Repository\EquipmentRepository;
 use App\Repository\QuoteRepository;
@@ -39,14 +42,16 @@ class QuoteController extends AbstractController
         $quote = new Quote();
         $quote->setUser($this->getUser());
 
-        $equipId = $request->query->getInt('equipment');
-        if ($equipId > 0) {
-            $preselected = $equipRepo->find($equipId);
-            if ($preselected instanceof Equipment && $preselected->getAvailabilityStatus() === Equipment::STATUS_AVAILABLE) {
-                $line = new QuoteLine();
-                $line->setEquipment($preselected);
-                $line->setQuantity(1);
-                $quote->addLine($line);
+        if ($request->isMethod('GET')) {
+            $equipId = $request->query->getInt('equipment');
+            if ($equipId > 0) {
+                $preselected = $equipRepo->find($equipId);
+                if ($preselected instanceof Equipment && $preselected->getAvailabilityStatus() === Equipment::STATUS_AVAILABLE) {
+                    $line = new QuoteLine();
+                    $line->setEquipment($preselected);
+                    $line->setQuantity(1);
+                    $quote->addLine($line);
+                }
             }
         }
 
@@ -79,6 +84,84 @@ class QuoteController extends AbstractController
         return $this->render('quote/new.html.twig', [
             'form' => $form,
         ]);
+    }
+
+    #[Route('/quotes/{id}/confirm', name: 'quote_confirm', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function confirm(int $id, QuoteRepository $repo, EntityManagerInterface $em, Request $request, \App\Repository\ReservationRepository $reservationRepo): Response
+    {
+        if (!$this->isCsrfTokenValid('confirm_quote_' . $id, $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        $quote = $repo->findOneWithRelations($id);
+
+        if (!$quote) {
+            throw $this->createNotFoundException('Devis introuvable.');
+        }
+
+        if ($quote->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($quote->getStatus() !== 'approved') {
+            $this->addFlash('error', 'Ce devis ne peut pas être confirmé.');
+            return $this->redirectToRoute('quote_show', ['id' => $id]);
+        }
+
+        $equipmentIds = array_map(
+            fn($line) => $line->getEquipment()->getId(),
+            $quote->getLines()->toArray()
+        );
+        $conflicts = $reservationRepo->findConflictingEquipment(
+            $equipmentIds,
+            $quote->getRequestedStartDate(),
+            $quote->getRequestedEndDate()
+        );
+
+        if (!empty($conflicts)) {
+            $names = implode(', ', array_map(fn($e) => $e->getName(), $conflicts));
+            $this->addFlash('error', "Impossible de confirmer : équipement(s) déjà réservé(s) sur cette période : {$names}. Veuillez faire une nouvelle demande.");
+            return $this->redirectToRoute('quote_show', ['id' => $id]);
+        }
+
+        $days = max(1, (int) $quote->getRequestedStartDate()->diff($quote->getRequestedEndDate())->days);
+        $total = 0.0;
+
+        $reservation = new Reservation();
+        $reservation->setUser($this->getUser());
+        $reservation->setStartDate($quote->getRequestedStartDate());
+        $reservation->setEndDate($quote->getRequestedEndDate());
+        $reservation->setEventCity($quote->getEventCity() ?? '');
+        $reservation->setVenueType('indoor');
+        $reservation->setStatus('confirmed');
+
+        foreach ($quote->getLines() as $quoteLine) {
+            $line = new ReservationLine();
+            $line->setEquipment($quoteLine->getEquipment());
+            $line->setQuantity($quoteLine->getQuantity());
+            $line->setUnitPricePerDay($quoteLine->getUnitPricePerDay());
+            $line->setReservation($reservation);
+            $reservation->addLine($line);
+            $total += (float) $quoteLine->getUnitPricePerDay() * $quoteLine->getQuantity() * $days;
+        }
+
+        $reservation->setTotalAmount(number_format($total, 2, '.', ''));
+
+        $invoice = new Invoice();
+        $invoice->setReservation($reservation);
+        $invoice->setNumber('INV-' . date('Y') . '-' . str_pad((string) random_int(1, 999999), 6, '0', STR_PAD_LEFT));
+        $invoice->setAmount(number_format($total, 2, '.', ''));
+        $invoice->setDueDate((new \DateTimeImmutable())->modify('+30 days'));
+
+        $quote->setStatus('completed');
+
+        $em->persist($reservation);
+        $em->persist($invoice);
+        $em->flush();
+
+        $this->addFlash('success', 'Votre réservation a été créée avec succès !');
+
+        return $this->redirectToRoute('reservation_show', ['id' => $reservation->getId()]);
     }
 
     #[Route('/quotes/{id}', name: 'quote_show', requirements: ['id' => '\d+'])]

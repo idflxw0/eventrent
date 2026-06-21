@@ -46,6 +46,32 @@ class ReservationRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * Returns equipment from $equipmentIds that are already booked during [start, end].
+     */
+    public function findConflictingEquipment(array $equipmentIds, \DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        if (empty($equipmentIds)) {
+            return [];
+        }
+
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('e')->distinct()
+            ->from(Equipment::class, 'e')
+            ->join(ReservationLine::class, 'rl', 'WITH', 'rl.equipment = e')
+            ->join('rl.reservation', 'r')
+            ->where('e.id IN (:ids)')
+            ->andWhere('r.status NOT IN (:done)')
+            ->andWhere('r.startDate < :end')
+            ->andWhere('r.endDate > :start')
+            ->setParameter('ids', $equipmentIds)
+            ->setParameter('done', ['cancelled', 'completed'])
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findAvailableEquipment(
         \DateTimeImmutable $start,
         \DateTimeImmutable $end,

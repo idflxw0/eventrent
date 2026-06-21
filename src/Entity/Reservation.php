@@ -52,7 +52,7 @@ class Reservation
 
     public function __construct()
     {
-        $this->status = 'pending';
+        $this->status = 'confirmed';
         $this->totalAmount = '0';
         $this->createdAt = new \DateTimeImmutable();
         $this->lines = new ArrayCollection();

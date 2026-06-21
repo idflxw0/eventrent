@@ -94,6 +94,50 @@
                     </div>
                 </div>
 
+                {% if quote.status == 'refused' and app.user == quote.user %}
+                <div class="col-12">
+                    <div class="er-account-info-card" style="border-color:var(--er-destructive); background:rgba(239,68,68,.06);">
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <div style="flex:1;">
+                                <h2 style="font-family:'Poppins',sans-serif; font-size:1rem; margin-bottom:4px; color:var(--er-destructive);">
+                                    <i class="bi bi-x-circle-fill me-2" aria-hidden="true"></i> Devis refusé
+                                </h2>
+                                <p style="font-size:.875rem; color:var(--er-muted-text); margin:0;">
+                                    Votre demande n'a pas pu être acceptée. Vous pouvez parcourir le catalogue et faire une nouvelle demande.
+                                </p>
+                            </div>
+                            <a href="{{ path('catalog_index') }}" class="btn-er-outline text-decoration-none" style="white-space:nowrap;">
+                                <i class="bi bi-grid me-2" aria-hidden="true"></i> Voir le catalogue
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if quote.status == 'approved' and app.user == quote.user %}
+                <div class="col-12">
+                    <div class="er-account-info-card" style="border-color:var(--er-success, #22c55e); background: rgba(34,197,94,.06);">
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <div style="flex:1;">
+                                <h2 style="font-family:'Poppins',sans-serif; font-size:1rem; margin-bottom:4px; color:var(--er-success,#22c55e);">
+                                    <i class="bi bi-check-circle-fill me-2" aria-hidden="true"></i> Devis approuvé !
+                                </h2>
+                                <p style="font-size:.875rem; color:var(--er-muted-text); margin:0;">
+                                    Votre devis a été accepté. Confirmez pour créer la réservation.
+                                    {% if quote.validUntil %}Offre valable jusqu'au {{ quote.validUntil|date('d/m/Y') }}.{% endif %}
+                                </p>
+                            </div>
+                            <form method="post" action="{{ path('quote_confirm', {id: quote.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('confirm_quote_' ~ quote.id) }}">
+                                <button type="submit" class="btn-er-accent" style="font-size:1rem; white-space:nowrap;">
+                                    <i class="bi bi-calendar-check me-2" aria-hidden="true"></i> Confirmer la réservation
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% if is_granted('ROLE_ADMIN') and quote.status == 'pending' %}
                 <div class="col-md-6">
                     <div class="er-account-info-card h-100" style="border-color:var(--er-primary);">

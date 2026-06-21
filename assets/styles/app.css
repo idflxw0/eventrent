@@ -1519,31 +1519,32 @@ select.er-form-control option {
   background: var(--er-surface);
   border: 1px solid var(--er-border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
   display: flex;
+  flex-direction: column;
   margin-bottom: 16px;
-  transition: all .3s ease;
+  transition: all .25s ease;
+  overflow: hidden;
 }
 .er-res-card:hover {
-  border-color: rgba(255,255,255,0.15);
-  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
 }
 
-.er-res-stripe { width: 4px; flex-shrink: 0; }
-.er-res-stripe-confirmed { background: var(--er-success); }
-.er-res-stripe-pending   { background: var(--er-warning); }
-.er-res-stripe-cancelled { background: var(--er-border); }
-.er-res-stripe-in-progress { background: var(--er-primary); }
-.er-res-stripe-completed { background: var(--er-success); }
 
 .er-res-body {
-  padding: 22px 28px;
+  padding: 24px 28px;
   flex: 1;
   display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .er-res-body {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 .er-res-id {
@@ -1558,7 +1559,7 @@ select.er-form-control option {
 .er-res-name {
   font-family: 'Outfit', 'Poppins', sans-serif;
   font-weight: 700;
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   color: #fff;
   margin: 6px 0;
 }
@@ -1575,10 +1576,28 @@ select.er-form-control option {
 .er-res-price {
   font-family: 'Outfit', 'Poppins', sans-serif;
   font-weight: 800;
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   color: #fff;
-  margin-left: auto;
   white-space: nowrap;
+}
+
+.er-res-right-side {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+  .er-res-right-side {
+    width: auto;
+    padding-top: 0;
+    border-top: none;
+    justify-content: flex-end;
+  }
 }
 
 /* ─── ACCOUNT PAGE ────────────────────────────────────────── */
