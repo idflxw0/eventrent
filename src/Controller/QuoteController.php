@@ -209,6 +209,36 @@ class QuoteController extends AbstractController
         return $this->redirectToRoute('reservation_show', ['id' => $reservation->getId()]);
     }
 
+    #[Route('/quotes/{id}/decline', name: 'quote_decline', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function decline(int $id, QuoteRepository $repo, EntityManagerInterface $em, Request $request): Response
+    {
+        if (!$this->isCsrfTokenValid('decline_quote_' . $id, $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        $quote = $repo->findOneWithRelations($id);
+
+        if (!$quote) {
+            throw $this->createNotFoundException('Devis introuvable.');
+        }
+
+        if ($quote->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($quote->getStatus() !== 'approved') {
+            $this->addFlash('danger', 'Ce devis ne peut pas être décliné.');
+            return $this->redirectToRoute('quote_show', ['id' => $id]);
+        }
+
+        $quote->setStatus('cancelled');
+        $em->flush();
+
+        $this->addFlash('success', 'Vous avez refusé ce devis.');
+
+        return $this->redirectToRoute('quote_index');
+    }
+
     #[Route('/quotes/{id}', name: 'quote_show', requirements: ['id' => '\d+'])]
     public function show(int $id, QuoteRepository $repo): Response
     {

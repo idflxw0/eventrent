@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% set badgeClass = quote.status == 'approved' ? 'er-badge-approved' : (quote.status == 'pending' ? 'er-badge-pending' : (quote.status == 'refused' ? 'er-badge-refused' : 'er-badge-expired')) %}
-{% set statusIcon = quote.status == 'approved' ? 'check-circle' : quote.status == 'pending' ? 'clock' : quote.status == 'refused' ? 'x-circle' : 'hourglass' %}
-{% set statusLabel = quote.status == 'approved' ? 'Approuvé' : quote.status == 'pending' ? 'En attente' : quote.status == 'refused' ? 'Refusé' : 'Expiré' %}
+{% set badgeClass = quote.status == 'approved' ? 'er-badge-approved' : (quote.status == 'pending' ? 'er-badge-pending' : (quote.status in ['refused','cancelled'] ? 'er-badge-refused' : 'er-badge-expired')) %}
+{% set statusIcon = quote.status == 'approved' ? 'check-circle' : (quote.status == 'pending' ? 'clock' : (quote.status in ['refused','cancelled'] ? 'x-circle' : 'hourglass')) %}
+{% set statusLabel = quote.status == 'approved' ? 'Approuvé' : (quote.status == 'pending' ? 'En attente' : (quote.status == 'refused' ? 'Refusé' : (quote.status == 'cancelled' ? 'Refusé' : 'Expiré'))) %}
 
 {% block title %}Devis DEVIS-{{ '%04d'|format(quote.id) }} — EventRent{% endblock %}
 
@@ -127,12 +127,21 @@
                                     {% if quote.validUntil %}Offre valable jusqu'au {{ quote.validUntil|date('d/m/Y') }}.{% endif %}
                                 </p>
                             </div>
-                            <form method="post" action="{{ path('quote_confirm', {id: quote.id}) }}">
-                                <input type="hidden" name="_token" value="{{ csrf_token('confirm_quote_' ~ quote.id) }}">
-                                <button type="submit" class="btn-er-accent" style="font-size:1rem; white-space:nowrap;">
-                                    <i class="bi bi-calendar-check me-2" aria-hidden="true"></i> Confirmer la réservation
-                                </button>
-                            </form>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <form method="post" action="{{ path('quote_confirm', {id: quote.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('confirm_quote_' ~ quote.id) }}">
+                                    <button type="submit" class="btn-er-accent" style="font-size:1rem; white-space:nowrap;">
+                                        <i class="bi bi-calendar-check me-2" aria-hidden="true"></i> Confirmer la réservation
+                                    </button>
+                                </form>
+                                <form method="post" action="{{ path('quote_decline', {id: quote.id}) }}"
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir refuser ce devis ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('decline_quote_' ~ quote.id) }}">
+                                    <button type="submit" class="btn-er-danger-outline" style="font-size:1rem; white-space:nowrap;">
+                                        <i class="bi bi-x-circle me-2" aria-hidden="true"></i> Refuser
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>

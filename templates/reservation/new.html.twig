@@ -147,6 +147,19 @@
         if (container.querySelectorAll('.er-line-row').length === 0) {
             e.preventDefault();
             alert('Veuillez ajouter au moins un équipement.');
+            return;
+        }
+        var start = document.querySelector('input[name="reservation[startDate]"]')?.value;
+        var end   = document.querySelector('input[name="reservation[endDate]"]')?.value;
+        if (start && end && start >= end) {
+            e.preventDefault();
+            alert('La date de début doit être antérieure à la date de fin.');
+            return;
+        }
+        var today = new Date().toISOString().slice(0, 10);
+        if (start && start < today) {
+            e.preventDefault();
+            alert('La date de début ne peut pas être dans le passé.');
         }
     });
 

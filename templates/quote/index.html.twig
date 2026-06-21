@@ -29,9 +29,9 @@
             </nav>
 
             {% for q in quotes %}
-                {% set badgeClass = q.status == 'approved' ? 'approved' : q.status == 'pending' ? 'pending' : q.status == 'refused' ? 'refused' : 'expired' %}
-                {% set statusIcon = q.status == 'approved' ? 'check-circle' : q.status == 'pending' ? 'clock' : q.status == 'refused' ? 'x-circle' : 'hourglass' %}
-                {% set statusLabel = q.status == 'approved' ? 'Approuvé' : q.status == 'pending' ? 'En attente' : q.status == 'refused' ? 'Refusé' : 'Expiré' %}
+                {% set badgeClass = q.status == 'approved' ? 'approved' : (q.status == 'pending' ? 'pending' : (q.status in ['refused','cancelled'] ? 'refused' : 'expired')) %}
+                {% set statusIcon = q.status == 'approved' ? 'check-circle' : (q.status == 'pending' ? 'clock' : (q.status in ['refused','cancelled'] ? 'x-circle' : 'hourglass')) %}
+                {% set statusLabel = q.status == 'approved' ? 'Approuvé' : (q.status == 'pending' ? 'En attente' : (q.status == 'refused' ? 'Refusé' : (q.status == 'cancelled' ? 'Refusé' : 'Expiré'))) %}
                 <article class="er-res-card er-res-card-status-{{ badgeClass }}" aria-label="Devis #{{ q.id }}">
                     <div class="er-res-body">
                         <div style="flex:1;">

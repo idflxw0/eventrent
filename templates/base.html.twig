@@ -246,45 +246,70 @@ flatpickr('input[type="date"]', {
 (function() {
     const token = {{ _mercure_token|json_encode }};
 
+    // Set cookie on localhost — shared across all ports (8089 → 3000)
+    document.cookie = 'mercureAuthorization=' + token + '; path=/; SameSite=strict';
+
     const hubUrl = new URL({{ mercure_public_url|json_encode }});
     hubUrl.searchParams.append('topic', '/users/{{ app.user.id }}/notifications');
-    hubUrl.searchParams.append('authorization', token);
 
-    const es = new EventSource(hubUrl);
+    // withCredentials sends the cookie cross-origin to the Mercure hub
+    const es = new EventSource(hubUrl.toString(), {withCredentials: true});
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'alert er-flash er-flash-info alert-dismissible fade show mb-0 rounded-0';
+        toast.setAttribute('role', 'alert');
+        const body = document.createElement('div');
+        body.className = 'container d-flex align-items-center gap-2';
+        body.innerHTML = '<i class="bi bi-bell-fill"></i> ';
+        body.appendChild(document.createTextNode(message));
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'btn-close';
+        btn.setAttribute('data-bs-dismiss', 'alert');
+        toast.appendChild(body); toast.appendChild(btn);
+        document.querySelector('main')?.prepend(toast);
+    }
+
     es.onmessage = function(e) {
         try {
             const data = JSON.parse(e.data);
-            const bell = document.querySelector('.er-notif-bell');
-            const count = bell?.querySelector('.er-notif-count');
-
-            // Update counter
-            if (count) {
-                const current = parseInt(count.textContent || '0', 10);
-                count.textContent = current + 1;
-                count.style.display = '';
+            const badge = document.querySelector('.er-notif-count');
+            if (badge) {
+                const n = parseInt(badge.textContent || '0', 10) + 1;
+                badge.textContent = n;
+                badge.style.display = '';
             }
-
-            // Show toast
-            const alert = document.createElement('div');
-            alert.className = 'alert er-flash er-flash-info alert-dismissible fade show mb-0 rounded-0';
-            alert.setAttribute('role', 'alert');
-            const safeMsg = document.createTextNode(data.message);
-            const msgContainer = document.createElement('div');
-            msgContainer.className = 'container d-flex align-items-center gap-2';
-            msgContainer.innerHTML = '<i class="bi bi-bell-fill"></i> ';
-            msgContainer.appendChild(safeMsg);
-            const closeBtn = document.createElement('button');
-            closeBtn.type = 'button';
-            closeBtn.className = 'btn-close';
-            closeBtn.setAttribute('data-bs-dismiss', 'alert');
-            alert.appendChild(msgContainer);
-            alert.appendChild(closeBtn);
-            document.querySelector('main')?.prepend(alert);
+            if (data.message) showToast(data.message);
         } catch (_) {}
     };
 })();
 </script>
 {% endif %}
+{% endif %}
+
+{% if app.user %}
+<script>
+(function() {
+    var lastCount = {{ app.user.notifications|filter(n => not n.read)|length }};
+
+    function updateBell(count) {
+        var badge = document.querySelector('.er-notif-count');
+        if (!badge) return;
+        if (count !== lastCount) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? '' : 'none';
+            lastCount = count;
+        }
+    }
+
+    setInterval(function() {
+        fetch('{{ path('api_notification_unread_count') }}')
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(data) { if (data) updateBell(data.count); })
+            .catch(function() {});
+    }, 10000);
+})();
+</script>
 {% endif %}
 </body>
 </html>

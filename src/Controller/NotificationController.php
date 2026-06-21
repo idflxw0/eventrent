@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Notification;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -20,6 +21,16 @@ class NotificationController extends AbstractController
         return $this->render('notification/index.html.twig', [
             'notifications' => $notifications,
         ]);
+    }
+
+    #[Route('/api/notifications/unread-count', name: 'api_notification_unread_count', methods: ['GET'])]
+    public function unreadCount(): JsonResponse
+    {
+        $count = $this->getUser()->getNotifications()
+            ->filter(fn(Notification $n) => !$n->isRead())
+            ->count();
+
+        return new JsonResponse(['count' => $count]);
     }
 
     #[Route('/notifications/{id}/read', name: 'notification_read', requirements: ['id' => '\d+'], methods: ['POST'])]

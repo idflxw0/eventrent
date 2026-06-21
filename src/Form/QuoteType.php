@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class QuoteType extends AbstractType
@@ -47,6 +49,15 @@ class QuoteType extends AbstractType
                 'by_reference' => false,
                 'label' => false,
             ]);
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
+            $data = $event->getData();
+            DateRangeValidator::validate(
+                $data['requestedStartDate'] ?? '',
+                $data['requestedEndDate'] ?? '',
+                $event->getForm()
+            );
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void

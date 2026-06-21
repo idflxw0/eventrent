@@ -81,26 +81,15 @@ class ReservationType extends AbstractType
             $form = $event->getForm();
 
             $categoryId = $data['category'] ?? null;
-            $startStr = $data['startDate'] ?? null;
-            $endStr = $data['endDate'] ?? null;
+            $startStr = $data['startDate'] ?? '';
+            $endStr   = $data['endDate'] ?? '';
 
-            if (!$startStr || !$endStr) {
+            if (!DateRangeValidator::validate($startStr, $endStr, $form)) {
                 return;
             }
 
-            $start = \DateTimeImmutable::createFromFormat('Y-m-d H:i', $startStr . ' 00:00')
-                ?: \DateTimeImmutable::createFromFormat('Y-m-d', $startStr);
-            $end = \DateTimeImmutable::createFromFormat('Y-m-d H:i', $endStr . ' 00:00')
-                ?: \DateTimeImmutable::createFromFormat('Y-m-d', $endStr);
-
-            if (!$start || !$end) {
-                return;
-            }
-
-            if ($start >= $end) {
-                $form->addError(new FormError('La date de début doit être antérieure à la date de fin.'));
-                return;
-            }
+            $start = \DateTimeImmutable::createFromFormat('Y-m-d', $startStr);
+            $end   = \DateTimeImmutable::createFromFormat('Y-m-d', $endStr);
 
             $available = $this->reservationRepo->findAvailableEquipment(
                 $start, $end, $categoryId ? (int) $categoryId : null
