@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Equipment;
 use App\Entity\Quote;
 use App\Entity\QuoteLine;
 use App\Form\QuoteType;
@@ -38,12 +39,23 @@ class QuoteController extends AbstractController
         $quote = new Quote();
         $quote->setUser($this->getUser());
 
+        $equipId = $request->query->getInt('equipment');
+        if ($equipId > 0) {
+            $preselected = $equipRepo->find($equipId);
+            if ($preselected instanceof Equipment && $preselected->getAvailabilityStatus() === Equipment::STATUS_AVAILABLE) {
+                $line = new QuoteLine();
+                $line->setEquipment($preselected);
+                $line->setQuantity(1);
+                $quote->addLine($line);
+            }
+        }
+
         $form = $this->createForm(QuoteType::class, $quote);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $days = max(1, (int) $quote->getRequestedStartDate()->diff($quote->getRequestedEndDate())->days);
-            $total = '0';
+            $total = 0.0;
 
             foreach ($quote->getLines() as $line) {
                 $equip = $equipRepo->find($line->getEquipment()->getId());
@@ -51,13 +63,11 @@ class QuoteController extends AbstractController
                     $line->setEquipment($equip);
                     $line->setUnitPricePerDay($equip->getDailyPrice());
                     $line->setQuote($quote);
-                    $lineTotal = bcmul($line->getUnitPricePerDay(), (string) $line->getQuantity(), 2);
-                    $lineTotal = bcmul($lineTotal, (string) $days, 2);
-                    $total = bcadd($total, $lineTotal, 2);
+                    $total += (float) $line->getUnitPricePerDay() * $line->getQuantity() * $days;
                 }
             }
 
-            $quote->setEstimatedAmount($total);
+            $quote->setEstimatedAmount(number_format($total, 2, '.', ''));
             $em->persist($quote);
             $em->flush();
 

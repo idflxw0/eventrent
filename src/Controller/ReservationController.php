@@ -51,22 +51,19 @@ class ReservationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $days = max(1, (int) $reservation->getStartDate()->diff($reservation->getEndDate())->days);
-            $total = '0';
+            $total = 0.0;
 
             foreach ($reservation->getLines() as $line) {
-                // re-fetch equipment to get current price
                 $equip = $equipRepo->find($line->getEquipment()->getId());
                 if ($equip) {
                     $line->setEquipment($equip);
                     $line->setUnitPricePerDay($equip->getDailyPrice());
                     $line->setReservation($reservation);
-                    $lineTotal = bcmul($line->getUnitPricePerDay(), (string) $line->getQuantity(), 2);
-                    $lineTotal = bcmul($lineTotal, (string) $days, 2);
-                    $total = bcadd($total, $lineTotal, 2);
+                    $total += (float) $line->getUnitPricePerDay() * $line->getQuantity() * $days;
                 }
             }
 
-            $reservation->setTotalAmount($total);
+            $reservation->setTotalAmount(number_format($total, 2, '.', ''));
 
             $invoice = new Invoice();
             $invoice->setReservation($reservation);

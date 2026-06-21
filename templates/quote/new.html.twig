@@ -20,7 +20,7 @@
 <div class="container py-5">
     <div class="er-wizard-card">
 
-        {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+        {{ form_start(form) }}
 
         <p class="mb-4" style="color:var(--er-muted-text); font-size:.9375rem;">
             <i class="bi bi-info-circle me-1" style="color:var(--er-primary);" aria-hidden="true"></i>
@@ -82,7 +82,10 @@
         {{ form_errors(form) }}
 
         <div class="d-flex gap-3 justify-content-between flex-wrap mt-5">
-            <a href="{{ path('quote_index') }}" class="btn-er-ghost text-decoration-none">
+            {% set cancelUrl = app.request.query.get('equipment')
+                ? path('catalog_show', {id: app.request.query.get('equipment')})
+                : path('quote_index') %}
+            <a href="{{ cancelUrl }}" class="btn-er-ghost text-decoration-none">
                 <i class="bi bi-chevron-left me-1" aria-hidden="true"></i> Annuler
             </a>
             <button type="submit" class="btn-er-accent" style="font-size:1rem;">

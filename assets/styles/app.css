@@ -5,6 +5,7 @@
 
 /* ─── TOKENS ─────────────────────────────────────────────── */
 :root {
+  color-scheme: dark;
   --er-primary:          #E55D1E;
   --er-accent:           #E55D1E;
   --er-accent-text:      #E55D1E;
@@ -231,9 +232,9 @@ body {
   cursor: pointer;
   transition: all .2s ease;
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(255,255,255,.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-.btn-er-white:hover { background: #f8fafc; color: var(--er-primary); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,255,255,.2); }
+.btn-er-white:hover { background: #f8fafc; color: var(--er-primary); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
 
 .btn-er-light {
   display: inline-flex;
@@ -1117,7 +1118,7 @@ body {
 .er-form-control:focus, .er-form-control.form-control:focus, .er-form-control.form-select:focus {
   border-color: var(--er-primary) !important;
   background: #161C2C !important;
-  box-shadow: 0 0 0 4px rgba(229, 93, 30, 0.15) !important;
+  box-shadow: none !important;
 }
 .er-form-control::placeholder { color: rgba(255, 255, 255, 0.35) !important; }
 
@@ -1419,7 +1420,7 @@ select.er-form-control option {
   color: var(--er-muted-text);
   transition: all .3s ease;
 }
-.er-wizard-step.active .er-wizard-step-dot { background: var(--er-primary); border-color: var(--er-primary); color: #fff; box-shadow: 0 0 15px rgba(229, 93, 30, 0.4); }
+.er-wizard-step.active .er-wizard-step-dot { background: var(--er-primary); border-color: var(--er-primary); color: #fff; box-shadow: none; }
 .er-wizard-step.done .er-wizard-step-dot   { background: var(--er-success); border-color: var(--er-success); color: #fff; }
 
 .er-wizard-step-label {
@@ -2221,7 +2222,7 @@ body {
   background: #ffffff;
   color: #000000;
   transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
 /* ─── ANIMATIONS ─── */
@@ -2307,5 +2308,72 @@ body {
 .pagination .page-item:not(:last-child) .page-link {
   border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
+
+/* ─── CUSTOM RANGE INPUT ─────────────────────────────────── */
+.er-range {
+  width: 100% !important;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1) !important;
+  outline: none;
+  margin: 16px 0 !important;
+  cursor: pointer;
+}
+
+.er-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--er-primary) !important;
+  cursor: pointer;
+  border: 2px solid #0E131F !important;
+  box-shadow: none !important;
+  transition: transform 0.1s, background-color 0.1s;
+}
+
+.er-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  background: #ff6e24 !important;
+}
+
+.er-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--er-primary) !important;
+  cursor: pointer;
+  border: 2px solid #0E131F !important;
+  box-shadow: none !important;
+  transition: transform 0.1s, background-color 0.1s;
+}
+
+.er-range::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  background: #ff6e24 !important;
+}
+
+/* ─── CUSTOM NUMBER SPINNER & QUANTITY INPUTS ────────────── */
+input[type="number"].er-form-control {
+  padding-right: 6px !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  background: transparent !important;
+  opacity: 0.7;
+  cursor: pointer;
+  height: 24px;
+}
+
+input[type="number"]::-webkit-inner-spin-button:hover,
+input[type="number"]::-webkit-outer-spin-button:hover {
+  opacity: 1;
+}
+
+
 
 

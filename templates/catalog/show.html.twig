@@ -193,7 +193,7 @@
                     <a href="{{ path('reservation_new') }}" class="btn-er-accent w-100 mb-2 text-decoration-none text-center" style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:1rem;">
                         <i class="bi bi-calendar-plus" aria-hidden="true"></i> Réserver
                     </a>
-                    <a href="{{ path('reservation_new') }}" class="btn-er-outline w-100 text-decoration-none text-center" style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:.9375rem;">
+                    <a href="{{ path('quote_new', {equipment: equipment.id}) }}" class="btn-er-outline w-100 text-decoration-none text-center" style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:.9375rem;">
                         <i class="bi bi-file-earmark-text" aria-hidden="true"></i> Demander un devis
                     </a>
                 {% endif %}
