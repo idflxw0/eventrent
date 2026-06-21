@@ -18,11 +18,19 @@
 </div>
 
 <div class="container py-5">
+
+    {% if conflictError is defined %}
+    <div style="background:#7f1d1d; color:#fecaca; border:1px solid #ef4444; border-radius:8px; padding:16px 20px; margin-bottom:24px; display:flex; align-items:center; gap:10px; font-weight:500;">
+        <i class="bi bi-exclamation-circle-fill" style="font-size:1.1rem; flex-shrink:0;"></i>
+        {{ conflictError }}
+    </div>
+    {% endif %}
+
     <div class="er-wizard-card">
 
         {{ form_start(form) }}
 
-        <p class="mb-4" style="color:var(--er-muted-text); font-size:.9375rem;">
+<p class="mb-4" style="color:var(--er-muted-text); font-size:.9375rem;">
             <i class="bi bi-info-circle me-1" style="color:var(--er-primary);" aria-hidden="true"></i>
             Le devis sera examiné par un administrateur sous 48h. Validité : 15 jours.
         </p>
@@ -137,6 +145,11 @@
             alert('Veuillez ajouter au moins un équipement.');
         }
     });
+
+    {% if app.request.query.get('category') %}
+    var catSelect = document.querySelector('select[name="quote[category]"]');
+    if (catSelect) catSelect.value = '{{ app.request.query.get('category')|e('js') }}';
+    {% endif %}
 })();
 </script>
 {% endblock %}

@@ -5,6 +5,27 @@
 {% block content_title %}Devis en attente{% endblock %}
 
 {% block main %}
+<style>
+    /* Force dark theme on this page's table + empty states */
+    .content-panel, .content-panel-body,
+    .table-responsive, .datagrid,
+    .datagrid tbody tr, .datagrid tbody td {
+        background: transparent !important;
+        color: inherit !important;
+    }
+    .datagrid thead th {
+        background: rgba(255,255,255,0.04) !important;
+        border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+        color: inherit !important;
+    }
+    .datagrid tbody tr + tr {
+        border-top: 1px solid rgba(255,255,255,0.05) !important;
+    }
+    .datagrid.datagrid-empty tbody td {
+        background: transparent !important;
+    }
+    .text-center.py-5 { color: var(--body-color, #9CA3AF) !important; }
+</style>
 <div class="content-panel">
     <div class="content-panel-body with-padding no-padding-bottom p-0">
         <div class="table-responsive">

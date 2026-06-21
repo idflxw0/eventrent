@@ -34,7 +34,6 @@ class Notification
 
     #[ORM\ManyToOne(inversedBy: 'notifications')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['notification:read'])]
     private ?User $user = null;
 
     public function __construct()

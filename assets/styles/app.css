@@ -315,7 +315,8 @@ body {
   font-weight: 500;
 }
 .er-flash-success { background: var(--er-success-bg); color: var(--er-success); }
-.er-flash-danger  { background: var(--er-destructive-bg); color: var(--er-destructive); }
+.er-flash-danger,
+.er-flash-error   { background: var(--er-destructive-bg); color: var(--er-destructive); }
 .er-flash-warning { background: var(--er-warning-bg); color: var(--er-warning); }
 .er-flash-info    { background: var(--er-info-bg); color: var(--er-info); }
 

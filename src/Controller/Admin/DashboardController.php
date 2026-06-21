@@ -72,7 +72,10 @@ class DashboardController extends AbstractDashboardController
 
     public function configureDashboard(): Dashboard
     {
-        return Dashboard::new()->setTitle('EventRent Admin');
+        return Dashboard::new()
+            ->setTitle('EventRent Admin')
+            ->renderContentMaximized()
+            ->disableDarkMode(false);
     }
 
     public function configureMenuItems(): iterable

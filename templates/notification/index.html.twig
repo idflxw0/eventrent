@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notifications — EventRent{% endblock %}
+
+{% block body %}
+
+<div class="er-hero-inner">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb er-breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Notifications</li>
+            </ol>
+        </nav>
+        <h1>Notifications</h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            {% for notif in notifications|reverse %}
+                <div class="er-reservation-card mb-3 {{ notif.read ? '' : 'status-pending' }}" style="{{ notif.read ? 'opacity:.7;' : 'border-left:3px solid var(--er-primary);' }}">
+                    <div class="d-flex align-items-start justify-content-between gap-3 p-3">
+                        <div>
+                            <div style="font-weight:{{ notif.read ? '400' : '700' }}; font-size:.9375rem;">
+                                {{ notif.message }}
+                            </div>
+                            <div style="font-size:.8rem; color:var(--er-muted-text); margin-top:4px;">
+                                {% if notif.type %}
+                                    <span class="er-badge er-badge-{{ notif.type == 'reservation_confirmed' ? 'confirmed' : notif.type == 'quote_approved' ? 'approved' : 'devis' }}" style="font-size:.7rem; margin-right:8px;">
+                                        {{ notif.type|replace({'_': ' '}) }}
+                                    </span>
+                                {% endif %}
+                                {{ notif.createdAt|date('d/m/Y H:i') }}
+                            </div>
+                        </div>
+                        {% if not notif.read %}
+                            <form method="post" action="{{ path('notification_read', {id: notif.id}) }}" class="flex-shrink-0">
+                                <input type="hidden" name="_token" value="{{ csrf_token('read' ~ notif.id) }}">
+                                <button type="submit" class="btn-er-ghost" style="font-size:.75rem; padding:4px 10px;">
+                                    <i class="bi bi-check2" aria-hidden="true"></i> Marquer lue
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="er-empty">
+                    <i class="bi bi-bell-slash er-empty-icon" aria-hidden="true"></i>
+                    <div class="er-empty-title">Aucune notification.</div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

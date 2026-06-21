@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Notification;
 use App\Repository\QuoteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
@@ -53,6 +54,13 @@ class QuoteWorkflowController extends AbstractController
             $logger->error('Email quote update failed: ' . $e->getMessage());
         }
 
+        $notif = new Notification();
+        $notif->setUser($quote->getUser());
+        $notif->setMessage(sprintf('Votre devis pour %s a été approuvé.', $quote->getEventCity() ?: 'votre événement'));
+        $notif->setType('quote_approved');
+        $em->persist($notif);
+        $em->flush();
+
         $this->addFlash('success', 'Devis approuvé.');
 
         return $this->redirectToRoute('admin_quote_pending');
@@ -84,6 +92,13 @@ class QuoteWorkflowController extends AbstractController
         } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
             $logger->error('Email quote update failed: ' . $e->getMessage());
         }
+
+        $notif = new Notification();
+        $notif->setUser($quote->getUser());
+        $notif->setMessage(sprintf('Votre devis pour %s a été refusé.', $quote->getEventCity() ?: 'votre événement'));
+        $notif->setType('quote_rejected');
+        $em->persist($notif);
+        $em->flush();
 
         $this->addFlash('success', 'Devis refusé.');
 

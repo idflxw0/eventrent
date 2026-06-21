@@ -15,6 +15,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
     {{ importmap('app') }}
+    <style>
+    .er-notif-bell { color: var(--er-muted-text); transition: color .15s; }
+    .er-notif-bell:hover { color: var(--er-primary); }
+    .er-notif-count {
+        position: absolute; top: 2px; right: 2px;
+        background: var(--er-primary); color: #fff;
+        font-family: 'Poppins', sans-serif; font-size: .65rem; font-weight: 700;
+        min-width: 16px; height: 16px; line-height: 16px; text-align: center;
+        border-radius: 50%; padding: 0 4px; pointer-events: none;
+    }
+    </style>
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
@@ -54,6 +65,15 @@
 
             <ul class="navbar-nav ms-auto align-items-center gap-2">
                 {% if app.user %}
+                    {% set unreadCount = app.user.notifications|filter(n => not n.read)|length %}
+                    <li class="nav-item">
+                        <a class="er-nav-link er-notif-bell position-relative" href="{{ path('notification_index') }}"
+                           style="font-size:1.15rem; padding:4px 10px;" aria-label="{{ unreadCount }} notification{{ unreadCount > 1 ? 's' : '' }} non lue{{ unreadCount > 1 ? 's' : '' }}">
+                            <i class="bi bi-bell" aria-hidden="true"></i>
+                            <span class="er-notif-count" style="{{ unreadCount ? '' : 'display:none;' }}">{{ unreadCount }}</span>
+                        </a>
+                    </li>
+
                     {% if is_granted('ROLE_ADMIN') %}
                         <li class="nav-item">
                             <a class="er-nav-link" href="{{ path('admin') }}">
@@ -220,23 +240,51 @@ flatpickr('input[type="date"]', {
 </script>
 
 {% if app.user and mercure_public_url %}
+{% set _mercure_token = mercure_subscriber_token() %}
+{% if _mercure_token %}
 <script>
 (function() {
+    const token = {{ _mercure_token|json_encode }};
+
     const hubUrl = new URL({{ mercure_public_url|json_encode }});
     hubUrl.searchParams.append('topic', '/users/{{ app.user.id }}/notifications');
+    hubUrl.searchParams.append('authorization', token);
+
     const es = new EventSource(hubUrl);
     es.onmessage = function(e) {
         try {
             const data = JSON.parse(e.data);
+            const bell = document.querySelector('.er-notif-bell');
+            const count = bell?.querySelector('.er-notif-count');
+
+            // Update counter
+            if (count) {
+                const current = parseInt(count.textContent || '0', 10);
+                count.textContent = current + 1;
+                count.style.display = '';
+            }
+
+            // Show toast
             const alert = document.createElement('div');
             alert.className = 'alert er-flash er-flash-info alert-dismissible fade show mb-0 rounded-0';
             alert.setAttribute('role', 'alert');
-            alert.innerHTML = '<div class="container d-flex align-items-center gap-2"><i class="bi bi-bell-fill"></i> ' + data.message + '</div><button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+            const safeMsg = document.createTextNode(data.message);
+            const msgContainer = document.createElement('div');
+            msgContainer.className = 'container d-flex align-items-center gap-2';
+            msgContainer.innerHTML = '<i class="bi bi-bell-fill"></i> ';
+            msgContainer.appendChild(safeMsg);
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.className = 'btn-close';
+            closeBtn.setAttribute('data-bs-dismiss', 'alert');
+            alert.appendChild(msgContainer);
+            alert.appendChild(closeBtn);
             document.querySelector('main')?.prepend(alert);
         } catch (_) {}
     };
 })();
 </script>
+{% endif %}
 {% endif %}
 </body>
 </html>

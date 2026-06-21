@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Invoice;
+use App\Entity\Notification;
 use App\Entity\Reservation;
 use App\Entity\ReservationLine;
 use App\Form\ReservationType;
 use App\Repository\EquipmentRepository;
 use App\Repository\ReservationRepository;
+use App\Repository\UserRepository;
 use App\Security\Voter\ReservationVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -60,6 +62,20 @@ class ReservationController extends AbstractController
                     $reservation->addLine($line);
                 }
             }
+
+            // Restore fields after conflict redirect
+            if ($request->query->get('start')) {
+                try { $reservation->setStartDate(new \DateTimeImmutable($request->query->get('start'))); } catch (\Exception) {}
+            }
+            if ($request->query->get('end')) {
+                try { $reservation->setEndDate(new \DateTimeImmutable($request->query->get('end'))); } catch (\Exception) {}
+            }
+            if ($request->query->get('city')) {
+                $reservation->setEventCity($request->query->get('city'));
+            }
+            if ($request->query->get('venue')) {
+                $reservation->setVenueType($request->query->get('venue'));
+            }
         }
 
         $form = $this->createForm(ReservationType::class, $reservation);
@@ -78,8 +94,24 @@ class ReservationController extends AbstractController
 
             if (!empty($conflicts)) {
                 $names = implode(', ', array_map(fn($e) => $e->getName(), $conflicts));
-                $this->addFlash('error', "Équipement(s) déjà réservé(s) sur cette période : {$names}.");
-                return $this->render('reservation/new.html.twig', ['form' => $form]);
+                $this->addFlash('danger', "Équipement(s) déjà réservé(s) sur cette période : {$names}.");
+
+                $params = [
+                    'start' => $reservation->getStartDate()?->format('Y-m-d'),
+                    'end'   => $reservation->getEndDate()?->format('Y-m-d'),
+                    'city'  => $reservation->getEventCity(),
+                    'venue' => $reservation->getVenueType(),
+                ];
+                $firstEquip = $reservation->getLines()->first()?->getEquipment();
+                if ($firstEquip) {
+                    $params['equipment'] = $firstEquip->getId();
+                }
+                $category = $form->get('category')->getData();
+                if ($category) {
+                    $params['category'] = $category->getId();
+                }
+
+                return $this->redirectToRoute('reservation_new', array_filter($params));
             }
 
             $days = max(1, (int) $reservation->getStartDate()->diff($reservation->getEndDate())->days);
@@ -124,6 +156,13 @@ class ReservationController extends AbstractController
             } catch (TransportExceptionInterface $e) {
                 $this->logger->error('Email confirmation failed: ' . $e->getMessage());
             }
+
+            $notif = new Notification();
+            $notif->setUser($reservation->getUser());
+            $notif->setMessage(sprintf('Votre réservation à %s (%s – %s) est confirmée.', $reservation->getEventCity(), $reservation->getStartDate()->format('d/m/Y'), $reservation->getEndDate()->format('d/m/Y')));
+            $notif->setType('reservation_confirmed');
+            $em->persist($notif);
+            $em->flush();
 
             $this->addFlash('success', 'Réservation créée avec succès.');
 
@@ -173,6 +212,13 @@ class ReservationController extends AbstractController
         $this->denyAccessUnlessGranted(ReservationVoter::CANCEL, $reservation);
 
         $reservation->setStatus('cancelled');
+        $em->flush();
+
+        $notif = new Notification();
+        $notif->setUser($reservation->getUser());
+        $notif->setMessage(sprintf('Votre réservation à %s a été annulée.', $reservation->getEventCity()));
+        $notif->setType('reservation_cancelled');
+        $em->persist($notif);
         $em->flush();
 
         $this->addFlash('success', 'Réservation annulée.');

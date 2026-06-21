@@ -11,6 +11,7 @@ use App\Entity\ReservationLine;
 use App\Form\QuoteType;
 use App\Repository\EquipmentRepository;
 use App\Repository\QuoteRepository;
+use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,6 +39,7 @@ class QuoteController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         EquipmentRepository $equipRepo,
+        ReservationRepository $reservationRepo,
     ): Response {
         $quote = new Quote();
         $quote->setUser($this->getUser());
@@ -53,12 +55,55 @@ class QuoteController extends AbstractController
                     $quote->addLine($line);
                 }
             }
+
+            // Restore fields after conflict redirect
+            if ($request->query->get('start')) {
+                try { $quote->setRequestedStartDate(new \DateTimeImmutable($request->query->get('start'))); } catch (\Exception) {}
+            }
+            if ($request->query->get('end')) {
+                try { $quote->setRequestedEndDate(new \DateTimeImmutable($request->query->get('end'))); } catch (\Exception) {}
+            }
+            if ($request->query->get('city')) {
+                $quote->setEventCity($request->query->get('city'));
+            }
         }
 
         $form = $this->createForm(QuoteType::class, $quote);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $equipmentIds = array_filter(array_map(
+                fn($line) => $line->getEquipment()?->getId(),
+                $quote->getLines()->toArray()
+            ));
+
+            $conflicts = $reservationRepo->findConflictingEquipment(
+                array_values($equipmentIds),
+                $quote->getRequestedStartDate(),
+                $quote->getRequestedEndDate()
+            );
+
+            if (!empty($conflicts)) {
+                $names = implode(', ', array_map(fn($e) => $e->getName(), $conflicts));
+                $this->addFlash('danger', "Équipement(s) déjà réservé(s) sur cette période : {$names}.");
+
+                $params = [
+                    'start' => $quote->getRequestedStartDate()?->format('Y-m-d'),
+                    'end'   => $quote->getRequestedEndDate()?->format('Y-m-d'),
+                    'city'  => $quote->getEventCity(),
+                ];
+                $firstEquip = $quote->getLines()->first()?->getEquipment();
+                if ($firstEquip) {
+                    $params['equipment'] = $firstEquip->getId();
+                }
+                $category = $form->get('category')->getData();
+                if ($category) {
+                    $params['category'] = $category->getId();
+                }
+
+                return $this->redirectToRoute('quote_new', array_filter($params));
+            }
+
             $days = max(1, (int) $quote->getRequestedStartDate()->diff($quote->getRequestedEndDate())->days);
             $total = 0.0;
 
@@ -104,7 +149,7 @@ class QuoteController extends AbstractController
         }
 
         if ($quote->getStatus() !== 'approved') {
-            $this->addFlash('error', 'Ce devis ne peut pas être confirmé.');
+            $this->addFlash('danger', 'Ce devis ne peut pas être confirmé.');
             return $this->redirectToRoute('quote_show', ['id' => $id]);
         }
 
@@ -120,7 +165,7 @@ class QuoteController extends AbstractController
 
         if (!empty($conflicts)) {
             $names = implode(', ', array_map(fn($e) => $e->getName(), $conflicts));
-            $this->addFlash('error', "Impossible de confirmer : équipement(s) déjà réservé(s) sur cette période : {$names}. Veuillez faire une nouvelle demande.");
+            $this->addFlash('danger', "Impossible de confirmer : équipement(s) déjà réservé(s) sur cette période : {$names}. Veuillez faire une nouvelle demande.");
             return $this->redirectToRoute('quote_show', ['id' => $id]);
         }
 
