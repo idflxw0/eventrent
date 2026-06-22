@@ -32,6 +32,12 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-scripts
 
+      - name: Create .env for CI
+        run: |
+          cp .env.example .env
+          echo "APP_ENV=test" >> .env
+          echo "DATABASE_URL=postgresql://eventrent:eventrent@localhost:5432/eventrent_test?serverVersion=16&charset=utf8" >> .env
+
       - name: Lint
         run: php bin/console lint:twig templates/ && php bin/console lint:yaml config/ && php bin/console lint:container
 
