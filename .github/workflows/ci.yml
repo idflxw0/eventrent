@@ -43,8 +43,10 @@ jobs:
 
       - name: PHPStan
         run: |
-          composer require --dev phpstan/phpstan --no-interaction
-          vendor/bin/phpstan analyse src/ --level=5
+          composer require --dev phpstan/phpstan phpstan/phpstan-doctrine --no-interaction
+          vendor/bin/phpstan analyse --configuration=phpstan.neon
+        env:
+          DATABASE_URL: postgresql://eventrent:eventrent@localhost:5432/eventrent_test?serverVersion=16&charset=utf8
 
       - name: Create test database
         run: php bin/console doctrine:database:create --env=test --if-not-exists

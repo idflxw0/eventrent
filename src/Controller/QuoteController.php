@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Equipment;
 use App\Entity\Invoice;
+use App\Entity\User;
 use App\Entity\Quote;
 use App\Entity\QuoteLine;
 use App\Entity\Reservation;
@@ -25,8 +26,10 @@ class QuoteController extends AbstractController
     #[Route('/quotes', name: 'quote_index')]
     public function index(Request $request, QuoteRepository $repo): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $status = $request->query->get('status');
-        $quotes = $repo->findByUser($this->getUser()->getId(), $status);
+        $quotes = $repo->findByUser($user->getId(), $status);
 
         return $this->render('quote/index.html.twig', [
             'quotes' => $quotes,
@@ -42,8 +45,10 @@ class QuoteController extends AbstractController
         ReservationRepository $reservationRepo,
         QuoteRepository $quoteRepo,
     ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
         $quote = new Quote();
-        $quote->setUser($this->getUser());
+        $quote->setUser($user);
 
         if ($request->isMethod('GET')) {
             $equipId = $request->query->getInt('equipment');
@@ -107,7 +112,7 @@ class QuoteController extends AbstractController
                 array_values($equipmentIds),
                 $quote->getRequestedStartDate(),
                 $quote->getRequestedEndDate(),
-                $this->getUser()->getId()
+                $user->getId()
             );
 
             if (!empty($duplicates)) {

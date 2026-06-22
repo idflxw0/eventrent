@@ -17,7 +17,7 @@ class MercureCookieSubscriber implements EventSubscriberInterface
     public function onLoginSuccess(LoginSuccessEvent $event): void
     {
         $user = $event->getUser();
-        if (!$user || !method_exists($user, 'getId')) {
+        if (!method_exists($user, 'getId')) {
             return;
         }
 
@@ -26,7 +26,7 @@ class MercureCookieSubscriber implements EventSubscriberInterface
         $cookie = Cookie::create('mercure_token', $token)
             ->withHttpOnly(false)
             ->withSecure(false)
-            ->withSameSite('Lax')
+            ->withSameSite('lax')
             ->withPath('/');
 
         $event->getResponse()->headers->setCookie($cookie);
