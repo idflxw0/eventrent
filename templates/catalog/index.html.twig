@@ -110,6 +110,23 @@
                 </form>
             </div>
 
+            {% if activeCategory and activeCategory.suppliers|length > 0 %}
+            <div class="er-account-info-card mb-4" style="padding:16px 20px;">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <span style="font-size:.8125rem; font-weight:600; color:var(--er-muted-text); white-space:nowrap;">
+                        <i class="bi bi-building me-1" aria-hidden="true"></i> Fournisseurs partenaires :
+                    </span>
+                    <div class="d-flex gap-2 flex-wrap">
+                        {% for supplier in activeCategory.suppliers %}
+                            <span class="er-badge er-badge-pending" style="font-size:.8rem; font-weight:500;">
+                                {{ supplier.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="er-catalog-grid">
                 {% for e in equipment %}
                     {% set rating = avgRatings[e.id] %}

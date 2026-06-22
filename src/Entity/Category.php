@@ -29,9 +29,14 @@ class Category
     #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'category')]
     private Collection $equipments;
 
+    #[ORM\ManyToMany(targetEntity: Supplier::class, inversedBy: 'categories')]
+    #[ORM\JoinTable(name: 'category_supplier')]
+    private Collection $suppliers;
+
     public function __construct()
     {
         $this->equipments = new ArrayCollection();
+        $this->suppliers  = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -64,6 +69,22 @@ class Category
     }
 
     public function getEquipments(): Collection { return $this->equipments; }
+
+    public function getSuppliers(): Collection { return $this->suppliers; }
+
+    public function addSupplier(Supplier $supplier): static
+    {
+        if (!$this->suppliers->contains($supplier)) {
+            $this->suppliers->add($supplier);
+        }
+        return $this;
+    }
+
+    public function removeSupplier(Supplier $supplier): static
+    {
+        $this->suppliers->removeElement($supplier);
+        return $this;
+    }
 
     public function __toString(): string
     {

@@ -34,6 +34,7 @@ class CatalogController extends AbstractController
         $pages     = (int) ceil($total / EquipmentRepository::DEFAULT_LIMIT);
 
         $categories     = $catRepo->findAll();
+        $activeCategory = $categoryId ? $catRepo->findWithSuppliers($categoryId) : null;
         $categoryCounts = $repo->countByCategory();
         $countMap = [];
         foreach ($categoryCounts as $row) {
@@ -53,7 +54,8 @@ class CatalogController extends AbstractController
             'total'       => $total,
             'page'        => $page,
             'pages'       => $pages,
-            'categories'  => $categories,
+            'categories'     => $categories,
+            'activeCategory' => $activeCategory,
             'countMap'    => $countMap,
             'avgRatings'  => $avgRatings,
             'filter'      => [

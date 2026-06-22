@@ -2,15 +2,22 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Category;
 use App\Entity\Supplier;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class SupplierFixtures extends Fixture
+class SupplierFixtures extends Fixture implements DependentFixtureInterface
 {
     public const SUP_0 = 'supplier_0';
     public const SUP_1 = 'supplier_1';
     public const SUP_2 = 'supplier_2';
+
+    public function getDependencies(): array
+    {
+        return [CategoryFixtures::class];
+    }
 
     public function load(ObjectManager $manager): void
     {
@@ -29,6 +36,33 @@ class SupplierFixtures extends Fixture
             $manager->persist($s);
             $this->addReference($ref, $s);
         }
+
+        // Supplier ↔ Category ManyToMany: link each supplier to the categories they cover
+        /** @var Category $audio */
+        $audio = $this->getReference(CategoryFixtures::CAT_0, Category::class);
+        $video = $this->getReference(CategoryFixtures::CAT_1, Category::class);
+        $micro = $this->getReference(CategoryFixtures::CAT_2, Category::class);
+        $ampli = $this->getReference(CategoryFixtures::CAT_3, Category::class);
+        $mixer = $this->getReference(CategoryFixtures::CAT_4, Category::class);
+
+        /** @var Supplier $sup0 */
+        $sup0 = $this->getReference(self::SUP_0, Supplier::class);
+        $sup1 = $this->getReference(self::SUP_1, Supplier::class);
+        $sup2 = $this->getReference(self::SUP_2, Supplier::class);
+
+        // AudioPro covers audio categories
+        $audio->addSupplier($sup0);
+        $micro->addSupplier($sup0);
+        $ampli->addSupplier($sup0);
+        $mixer->addSupplier($sup0);
+
+        // VisionTech covers video
+        $video->addSupplier($sup1);
+
+        // EventPlus covers everything
+        $audio->addSupplier($sup2);
+        $video->addSupplier($sup2);
+        $micro->addSupplier($sup2);
 
         $manager->flush();
     }

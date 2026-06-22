@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Equipment;
 use App\Entity\Quote;
+use App\Entity\QuoteLine;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,6 +42,31 @@ class QuoteRepository extends ServiceEntityRepository
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function findConflictingActiveQuotes(array $equipmentIds, \DateTimeImmutable $start, \DateTimeImmutable $end, int $userId): array
+    {
+        if (empty($equipmentIds)) {
+            return [];
+        }
+
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('e')->distinct()
+            ->from(Equipment::class, 'e')
+            ->join(QuoteLine::class, 'ql', 'WITH', 'ql.equipment = e')
+            ->join('ql.quote', 'q')
+            ->where('e.id IN (:ids)')
+            ->andWhere('q.user = :user')
+            ->andWhere('q.status IN (:active)')
+            ->andWhere('q.requestedStartDate < :end')
+            ->andWhere('q.requestedEndDate > :start')
+            ->setParameter('ids', $equipmentIds)
+            ->setParameter('user', $userId)
+            ->setParameter('active', ['pending', 'approved'])
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
     }
 
     public function findPending(): array

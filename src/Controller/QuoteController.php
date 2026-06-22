@@ -40,6 +40,7 @@ class QuoteController extends AbstractController
         EntityManagerInterface $em,
         EquipmentRepository $equipRepo,
         ReservationRepository $reservationRepo,
+        QuoteRepository $quoteRepo,
     ): Response {
         $quote = new Quote();
         $quote->setUser($this->getUser());
@@ -83,25 +84,36 @@ class QuoteController extends AbstractController
                 $quote->getRequestedEndDate()
             );
 
-            if (!empty($conflicts)) {
-                $names = implode(', ', array_map(fn($e) => $e->getName(), $conflicts));
-                $this->addFlash('danger', "Équipement(s) déjà réservé(s) sur cette période : {$names}.");
-
+            $redirectParams = static function () use ($quote, $form): array {
                 $params = [
                     'start' => $quote->getRequestedStartDate()?->format('Y-m-d'),
                     'end'   => $quote->getRequestedEndDate()?->format('Y-m-d'),
                     'city'  => $quote->getEventCity(),
                 ];
-                $firstEquip = $quote->getLines()->first()?->getEquipment();
-                if ($firstEquip) {
-                    $params['equipment'] = $firstEquip->getId();
-                }
-                $category = $form->get('category')->getData();
-                if ($category) {
-                    $params['category'] = $category->getId();
-                }
+                $equip = $quote->getLines()->first()?->getEquipment();
+                if ($equip) { $params['equipment'] = $equip->getId(); }
+                $cat = $form->get('category')->getData();
+                if ($cat) { $params['category'] = $cat->getId(); }
+                return array_filter($params);
+            };
 
-                return $this->redirectToRoute('quote_new', array_filter($params));
+            if (!empty($conflicts)) {
+                $names = implode(', ', array_map(fn($e) => $e->getName(), $conflicts));
+                $this->addFlash('danger', "Équipement(s) déjà réservé(s) sur cette période : {$names}.");
+                return $this->redirectToRoute('quote_new', $redirectParams());
+            }
+
+            $duplicates = $quoteRepo->findConflictingActiveQuotes(
+                array_values($equipmentIds),
+                $quote->getRequestedStartDate(),
+                $quote->getRequestedEndDate(),
+                $this->getUser()->getId()
+            );
+
+            if (!empty($duplicates)) {
+                $names = implode(', ', array_map(fn($e) => $e->getName(), $duplicates));
+                $this->addFlash('danger', "Vous avez déjà un devis en cours pour cet équipement sur cette période : {$names}.");
+                return $this->redirectToRoute('quote_new', $redirectParams());
             }
 
             $days = max(1, (int) $quote->getRequestedStartDate()->diff($quote->getRequestedEndDate())->days);

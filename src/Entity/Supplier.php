@@ -86,12 +86,18 @@ class Supplier
     #[ORM\OneToMany(targetEntity: Equipment::class, mappedBy: 'supplier')]
     private Collection $equipments;
 
+    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'suppliers')]
+    private Collection $categories;
+
     public function __construct()
     {
         $this->equipments = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getEquipments(): Collection { return $this->equipments; }
+
+    public function getCategories(): Collection { return $this->categories; }
 
     public function __toString(): string
     {
