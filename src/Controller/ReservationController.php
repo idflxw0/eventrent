@@ -9,6 +9,7 @@ use App\Entity\ReservationLine;
 use App\Form\ReservationType;
 use App\Repository\EquipmentRepository;
 use App\Repository\ReservationRepository;
+use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Security\Voter\ReservationVoter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,8 +29,10 @@ class ReservationController extends AbstractController
     #[Route('/reservations', name: 'reservation_index')]
     public function index(Request $request, ReservationRepository $repo): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $status = $request->query->get('status');
-        $reservations = $repo->findByUser($this->getUser()->getId(), $status);
+        $reservations = $repo->findByUser($user->getId(), $status);
 
         return $this->render('reservation/index.html.twig', [
             'reservations' => $reservations,
@@ -46,8 +49,10 @@ class ReservationController extends AbstractController
         \App\Service\EmailService $emailService,
         \App\Service\WeatherService $weatherService,
     ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
         $reservation = new Reservation();
-        $reservation->setUser($this->getUser());
+        $reservation->setUser($user);
 
         if ($request->isMethod('GET')) {
             $equipId = $request->query->getInt('equipment');

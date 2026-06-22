@@ -60,9 +60,7 @@ class EquipmentFixtures extends Fixture implements DependentFixtureInterface
             $e->setPowerWatts($watts);
             $e->setConnectorType($conn);
             $e->setChannelCount($ch);
-            if (isset($photos[$code])) {
-                $e->setPhoto($photos[$code]);
-            }
+            $e->setPhoto($photos[$code]);
             foreach ($accRefs as $ar) {
                 $e->addAccessory($this->getReference($ar, Accessory::class));
             }
@@ -88,9 +86,7 @@ class EquipmentFixtures extends Fixture implements DependentFixtureInterface
             $e->setResolution($res);
             $e->setBrightnessLumens($lum);
             $e->setProjectionType($proj);
-            if (isset($photos[$code])) {
-                $e->setPhoto($photos[$code]);
-            }
+            $e->setPhoto($photos[$code]);
             foreach ($accRefs as $ar) {
                 $e->addAccessory($this->getReference($ar, Accessory::class));
             }
