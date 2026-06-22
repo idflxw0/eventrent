@@ -78,7 +78,7 @@ docker compose exec php php bin/console doctrine:fixtures:load --no-interaction
 docker exec eventrent-database-1 pg_dump -U eventrent -d eventrent --data-only \
   --exclude-table=doctrine_migration_versions \
   --exclude-table=messenger_messages \
-  > docker/seed.sql
+  2>/dev/null > docker/seed.sql
 
 # 3. Committer
 git add docker/seed.sql

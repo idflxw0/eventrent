@@ -2,12 +2,11 @@
 -- PostgreSQL database dump
 --
 
-\restrict BxuXqkBYWnp6ZQt7jGU8Q28CFdjWAFKmnBKl56MZKTcMz2kHjA84BnHjhcpPbiZ
-
 -- Dumped from database version 16.14
 -- Dumped by pg_dump version 16.14
 
 SET statement_timeout = 0;
+
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
