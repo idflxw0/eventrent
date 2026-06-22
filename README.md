@@ -75,7 +75,7 @@ Le fichier `docker/seed.sql` contient un dump des données de test (catalogue, u
 docker compose exec php php bin/console doctrine:fixtures:load --no-interaction
 
 # 2. Régénérer le dump
-docker exec eventrent-database-1 pg_dump -U eventrent -d eventrent --data-only \
+docker exec eventrent-database-1 pg_dump -U eventrent -d eventrent --data-only --clean \
   --exclude-table=doctrine_migration_versions \
   --exclude-table=messenger_messages \
   2>/dev/null > docker/seed.sql

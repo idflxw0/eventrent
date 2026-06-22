@@ -3,6 +3,18 @@
 --
 
 -- Dumped from database version 16.14
+-- Clear existing data before seeding (order respects foreign keys)
+TRUNCATE public.review, public.notification, public.invoice,
+         public.quote_line, public.quote,
+         public.reservation_line, public.reservation,
+         public.maintenance,
+         public.equipment_accessory, public.category_supplier,
+         public.audio_equipment, public.video_equipment, public.equipment,
+         public.accessory, public.category, public.supplier,
+         public."user"
+CASCADE;
+
+-- Dumped from database version 16.14
 -- Dumped by pg_dump version 16.14
 
 SET statement_timeout = 0;
@@ -354,5 +366,4 @@ SELECT pg_catalog.setval('public.user_id_seq', 13, true);
 -- PostgreSQL database dump complete
 --
 
-\unrestrict BxuXqkBYWnp6ZQt7jGU8Q28CFdjWAFKmnBKl56MZKTcMz2kHjA84BnHjhcpPbiZ
 
