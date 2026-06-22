@@ -65,14 +65,36 @@ docker compose exec php php bin/phpunit
 docker compose exec php vendor/bin/phpstan analyse --level=5 src/
 ```
 
-## Déploiement en production
+## Mettre à jour le seed de production
+
+Le fichier `docker/seed.sql` contient un dump des données de test (catalogue, utilisateurs, réservations…).
+**À chaque fois que vous modifiez les fixtures**, régénérez-le et committez-le :
 
 ```bash
-# Construire et démarrer les conteneurs de production
-docker compose -f compose.prod.yaml up -d --build
+# 1. Recharger les fixtures en local
+docker compose exec php php bin/console doctrine:fixtures:load --no-interaction
 
-# Charger les fixtures (première mise en production uniquement)
-docker compose -f compose.prod.yaml exec php php bin/console doctrine:fixtures:load --no-interaction
+# 2. Régénérer le dump
+docker exec eventrent-database-1 pg_dump -U eventrent -d eventrent --data-only \
+  --exclude-table=doctrine_migration_versions \
+  --exclude-table=messenger_messages \
+  > docker/seed.sql
+
+# 3. Committer
+git add docker/seed.sql
+git commit -m "chore: update seed data"
+git push
+```
+
+## Déploiement en production (VPS Hetzner)
+
+```bash
+# Sur le VPS, depuis /var/www/eventrent :
+git pull origin main
+composer install --no-dev --optimize-autoloader --no-interaction
+php bin/console doctrine:migrations:migrate --no-interaction --env=prod
+psql -U eventrent -d eventrent < docker/seed.sql
+php bin/console cache:clear --env=prod
 ```
 
 Variables d'environnement à configurer en production (voir `.env.example`) :
