@@ -208,7 +208,7 @@
                                     <div class="text-muted small">{{ q.user.firstName }} {{ q.user.lastName }}</div>
                                 </div>
                                 <div class="text-end">
-                                    <div class="fw-bold text-orange">{{ q.estimatedAmount }} €</div>
+                                    <div class="fw-bold text-orange">{{ q.estimatedAmount | price_eur }}</div>
                                     <div class="text-muted small">{{ q.requestedStartDate|date('d/m/Y') }}</div>
                                 </div>
                             </div>

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Maintenance;
 use App\Entity\Quote;
 use App\Entity\Reservation;
 use App\Entity\User;
@@ -80,6 +81,36 @@ class EmailService
                 $lines,
                 htmlspecialchars((string) $reservation->getTotalAmount(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                 $weatherBlock
+            ));
+
+        $this->mailer->send($email);
+    }
+
+    public function sendMaintenanceAssignment(Maintenance $maintenance): void
+    {
+        $technician = $maintenance->getTechnician();
+        $equipment = $maintenance->getEquipment();
+
+        $email = (new Email())
+            ->from(self::SENDER)
+            ->to($technician->getEmail())
+            ->subject(sprintf('Nouvelle intervention assignée — %s', $equipment->getName()))
+            ->html(sprintf(
+                '<h1>Intervention assignée 🔧</h1>
+                <p>Bonjour %s,</p>
+                <p>Une nouvelle intervention vous a été assignée :</p>
+                <ul>
+                    <li><strong>Équipement :</strong> %s</li>
+                    <li><strong>Type :</strong> %s</li>
+                    <li><strong>Date :</strong> %s</li>
+                    <li><strong>Description :</strong> %s</li>
+                </ul>
+                <p>Merci de vous en occuper dans les meilleurs délais.</p>',
+                htmlspecialchars($technician->getFirstName(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                htmlspecialchars($equipment->getName(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                htmlspecialchars($maintenance->getInterventionType(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                $maintenance->getInterventionDate()->format('d/m/Y'),
+                htmlspecialchars($maintenance->getDescription(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ));
 
         $this->mailer->send($email);

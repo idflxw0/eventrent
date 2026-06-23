@@ -72,6 +72,17 @@ class ReservationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findConfirmedPastEndDate(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->where('r.status = :status')
+            ->andWhere('r.endDate < :now')
+            ->setParameter('status', 'confirmed')
+            ->setParameter('now', new \DateTimeImmutable())
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findAvailableEquipment(
         \DateTimeImmutable $start,
         \DateTimeImmutable $end,

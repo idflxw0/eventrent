@@ -93,6 +93,18 @@ class ReservationFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($res5);
         $this->addReference(self::RES_EXTRA_COMPLETED, $res5);
 
+        // Test fixture for app:reservations:close — confirmed, ended last week
+        $resClose = new Reservation();
+        $resClose->setUser($client);
+        $resClose->setStartDate(new \DateTimeImmutable('-10 days'));
+        $resClose->setEndDate(new \DateTimeImmutable('-3 days'));
+        $resClose->setEventCity('Rennes');
+        $resClose->setVenueType('indoor');
+        $resClose->setStatus('confirmed');
+        $resClose->addLine($this->makeLine($resClose, EquipmentFixtures::MACKIE, self::A, 1));
+        $resClose->setTotalAmount('450.00');
+        $manager->persist($resClose);
+
         $manager->flush();
     }
 

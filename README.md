@@ -107,7 +107,7 @@ Variables d'environnement à configurer en production (voir `.env.example`) :
 
 ## URL de déploiement
 
-> À compléter après le déploiement.
+**https://eventrent.pnzcorp.me/**
 
 ## Architecture technique
 

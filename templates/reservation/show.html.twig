@@ -2,7 +2,7 @@
 
 {% set statusBadge = reservation.status == 'confirmed' ? 'er-badge-confirmed' : (reservation.status == 'pending' ? 'er-badge-pending' : (reservation.status == 'cancelled' ? 'er-badge-cancelled' : (reservation.status == 'in_progress' ? 'er-badge-in-progress' : 'er-badge-completed'))) %}
 {% set statusIcon = reservation.status == 'confirmed' ? 'check-circle' : (reservation.status == 'pending' ? 'clock' : (reservation.status == 'cancelled' ? 'x-circle' : (reservation.status == 'in_progress' ? 'play-circle' : 'check2-all'))) %}
-{% set statusLabel = reservation.status == 'confirmed' ? 'Confirmée' : (reservation.status == 'pending' ? 'En attente' : (reservation.status == 'cancelled' ? 'Annulée' : (reservation.status == 'in_progress' ? 'En cours' : 'Terminée'))) %}
+{% set statusLabel = reservation.status | status_label %}
 
 {% block title %}Réservation RES-{{ '%04d'|format(reservation.id) }} — EventRent{% endblock %}
 
@@ -59,7 +59,7 @@
                                                 <span style="display:block; font-size:.8125rem; color:var(--er-muted-text);">Réf : {{ line.equipment.reference }}</span>
                                             </td>
                                             <td class="text-center">{{ line.quantity }}</td>
-                                            <td class="text-end">{{ line.unitPricePerDay }} €</td>
+                                            <td class="text-end">{{ line.unitPricePerDay | price_eur }}</td>
                                             <td class="text-end">{{ (line.quantity * line.unitPricePerDay * days)|number_format(0, ',', ' ') }} €</td>
                                         </tr>
                                     {% endfor %}
@@ -67,7 +67,7 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="3" class="text-end">Total TTC ({{ days }} jour{{ days > 1 ? 's' : '' }})</td>
-                                        <td class="text-end er-invoice-total">{{ reservation.totalAmount }} €</td>
+                                        <td class="text-end er-invoice-total">{{ reservation.totalAmount | price_eur }}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -88,7 +88,7 @@
                             </span>
                         </div>
                         <p style="font-size:.9rem; color:var(--er-muted-text); margin:0;">
-                            Émise le {{ reservation.invoice.issuedAt|date('d/m/Y') }} · Montant : <strong style="color:var(--er-foreground);">{{ reservation.totalAmount }} €</strong>
+                            Émise le {{ reservation.invoice.issuedAt|date('d/m/Y') }} · Montant : <strong style="color:var(--er-foreground);">{{ reservation.totalAmount | price_eur }}</strong>
                         </p>
                     </div>
                 </div>

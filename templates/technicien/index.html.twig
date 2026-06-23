@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes interventions — EventRent{% endblock %}
+
+{% block body %}
+
+<div class="er-hero-inner">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb er-breadcrumb mb-2">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Mes interventions</li>
+            </ol>
+        </nav>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <h1 style="margin:0;">Mes interventions</h1>
+            <span class="er-badge er-badge-confirmed" style="font-size:.875rem; padding:6px 14px;">
+                <i class="bi bi-wrench me-1" aria-hidden="true"></i> Technicien
+            </span>
+        </div>
+        <p class="er-breadcrumb mt-2 mb-0" style="color:rgba(255,255,255,.7);">
+            {{ tasks|length }} intervention{{ tasks|length != 1 ? 's' : '' }} assignée{{ tasks|length != 1 ? 's' : '' }}
+        </p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            {# Summary cards #}
+            <div class="row g-3 mb-5">
+                <div class="col-sm-4">
+                    <div class="er-account-info-card text-center">
+                        <div style="font-size:2rem; font-weight:800; color:var(--er-primary);">{{ byType['repair']|default([])|length }}</div>
+                        <div style="font-size:.875rem; color:var(--er-muted-text); margin-top:4px;">
+                            <i class="bi bi-tools me-1" aria-hidden="true"></i> Réparations
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="er-account-info-card text-center">
+                        <div style="font-size:2rem; font-weight:800; color:#3b82f6;">{{ byType['inspection']|default([])|length }}</div>
+                        <div style="font-size:.875rem; color:var(--er-muted-text); margin-top:4px;">
+                            <i class="bi bi-clipboard-check me-1" aria-hidden="true"></i> Inspections
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="er-account-info-card text-center">
+                        <div style="font-size:2rem; font-weight:800; color:#ef4444;">{{ byType['breakdown']|default([])|length }}</div>
+                        <div style="font-size:.875rem; color:var(--er-muted-text); margin-top:4px;">
+                            <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i> Pannes
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Task list #}
+            {% for task in tasks %}
+                {% set typeColor = task.interventionType == 'repair' ? 'primary' : (task.interventionType == 'inspection' ? 'info' : 'danger') %}
+                {% set typeLabel = task.interventionType == 'repair' ? 'Réparation' : (task.interventionType == 'inspection' ? 'Inspection' : 'Panne') %}
+                {% set typeIcon  = task.interventionType == 'repair' ? 'tools' : (task.interventionType == 'inspection' ? 'clipboard-check' : 'exclamation-triangle') %}
+
+                <article class="er-account-info-card mb-3" aria-label="Intervention {{ task.equipment.name }}">
+                    <div class="d-flex align-items-start gap-3 flex-wrap">
+                        <div style="flex:1; min-width:0;">
+                            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                <span class="er-badge er-badge-{{ typeColor == 'primary' ? 'confirmed' : (typeColor == 'info' ? 'pending' : 'refused') }}"
+                                      style="font-size:.8rem;">
+                                    <i class="bi bi-{{ typeIcon }} me-1" aria-hidden="true"></i> {{ typeLabel }}
+                                </span>
+                                <span class="er-badge er-badge-{{ task.statusAfterIntervention == 'available' ? 'confirmed' : (task.statusAfterIntervention == 'maintenance' ? 'pending' : 'refused') }}"
+                                      style="font-size:.8rem;">
+                                    {{ task.statusAfterIntervention | status_label }}
+                                </span>
+                            </div>
+
+                            <h2 style="font-family:'Poppins',sans-serif; font-size:1.05rem; font-weight:700; margin:0 0 4px;">
+                                <i class="bi bi-box-seam me-2" style="color:var(--er-primary);" aria-hidden="true"></i>
+                                {{ task.equipment.name }}
+                                <span style="font-size:.8rem; font-weight:400; color:var(--er-muted-text);">
+                                    — Réf. {{ task.equipment.reference }}
+                                </span>
+                            </h2>
+
+                            <p style="font-size:.9rem; color:var(--er-muted-text); margin:8px 0 0;">
+                                {{ task.description }}
+                            </p>
+                        </div>
+
+                        <div style="text-align:right; white-space:nowrap; flex-shrink:0;">
+                            <div style="font-size:.8125rem; color:var(--er-muted-text);">
+                                <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
+                                {{ task.interventionDate|date('d/m/Y') }}
+                            </div>
+                            <div style="font-size:.75rem; color:var(--er-muted-text); margin-top:2px;">
+                                {{ task.interventionDate|date('H:i') }}
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            {% else %}
+                <div class="er-empty" aria-live="polite">
+                    <i class="bi bi-wrench er-empty-icon" aria-hidden="true"></i>
+                    <div class="er-empty-title">Aucune intervention assignée.</div>
+                    <p class="er-empty-sub">L'administrateur vous assignera des tâches de maintenance.</p>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

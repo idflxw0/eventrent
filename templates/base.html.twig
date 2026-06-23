@@ -74,6 +74,14 @@
                         </a>
                     </li>
 
+                    {% if is_granted('ROLE_TECHNICIEN') and not is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item">
+                            <a class="er-nav-link" href="{{ path('technicien_dashboard') }}">
+                                <i class="bi bi-wrench me-1" aria-hidden="true"></i>Mes interventions
+                            </a>
+                        </li>
+                    {% endif %}
+
                     {% if is_granted('ROLE_ADMIN') %}
                         <li class="nav-item">
                             <a class="er-nav-link" href="{{ path('admin') }}">

@@ -53,6 +53,17 @@ class QuoteFixtures extends Fixture implements DependentFixtureInterface
         $qt3->addLine($this->makeLine($qt3, EquipmentFixtures::SHURE, self::A, 3));
         $manager->persist($qt3);
 
+        // Test fixture for app:quotes:expire — pending, created 20 days ago
+        $qtExpire = new Quote();
+        $qtExpire->setUser($client);
+        $qtExpire->setRequestedStartDate(new \DateTimeImmutable('2026-07-15'));
+        $qtExpire->setRequestedEndDate(new \DateTimeImmutable('2026-07-16'));
+        $qtExpire->setEventCity('Strasbourg');
+        $qtExpire->setEstimatedAmount('300.00');
+        $qtExpire->setCreatedAt(new \DateTimeImmutable('-20 days'));
+        $qtExpire->addLine($this->makeLine($qtExpire, EquipmentFixtures::SHURE, self::A, 2));
+        $manager->persist($qtExpire);
+
         $manager->flush();
     }
 

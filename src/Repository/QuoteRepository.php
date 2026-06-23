@@ -81,4 +81,15 @@ class QuoteRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findExpired(): array
+    {
+        return $this->createQueryBuilder('q')
+            ->where('q.status = :status')
+            ->andWhere('q.createdAt < :limit')
+            ->setParameter('status', 'pending')
+            ->setParameter('limit', new \DateTimeImmutable('-15 days'))
+            ->getQuery()
+            ->getResult();
+    }
 }

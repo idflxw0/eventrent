@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\Equipment;
 use App\Entity\Maintenance;
+use App\Service\EmailService;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -17,12 +19,33 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+use Psr\Log\LoggerInterface;
 
 class MaintenanceCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private readonly EmailService $emailService,
+        private readonly LoggerInterface $logger,
+    ) {}
+
     public static function getEntityFqcn(): string
     {
         return Maintenance::class;
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
+    {
+        parent::persistEntity($entityManager, $entityInstance);
+
+        if (!$entityInstance instanceof Maintenance) {
+            return;
+        }
+
+        try {
+            $this->emailService->sendMaintenanceAssignment($entityInstance);
+        } catch (\Throwable $e) {
+            $this->logger->error('Maintenance email failed: ' . $e->getMessage());
+        }
     }
 
     public function configureCrud(Crud $crud): Crud

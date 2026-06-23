@@ -2,7 +2,7 @@
 
 {% set badgeClass = quote.status == 'approved' ? 'er-badge-approved' : (quote.status == 'pending' ? 'er-badge-pending' : (quote.status in ['refused','cancelled'] ? 'er-badge-refused' : 'er-badge-expired')) %}
 {% set statusIcon = quote.status == 'approved' ? 'check-circle' : (quote.status == 'pending' ? 'clock' : (quote.status in ['refused','cancelled'] ? 'x-circle' : 'hourglass')) %}
-{% set statusLabel = quote.status == 'approved' ? 'Approuvé' : (quote.status == 'pending' ? 'En attente' : (quote.status == 'refused' ? 'Refusé' : (quote.status == 'cancelled' ? 'Refusé' : 'Expiré'))) %}
+{% set statusLabel = quote.status | status_label %}
 
 {% block title %}Devis DEVIS-{{ '%04d'|format(quote.id) }} — EventRent{% endblock %}
 
@@ -62,7 +62,7 @@
                                                 <span style="display:block; font-size:.8125rem; color:var(--er-muted-text);">Réf : {{ line.equipment.reference }}</span>
                                             </td>
                                             <td class="text-center">{{ line.quantity }}</td>
-                                            <td class="text-end">{{ line.unitPricePerDay }} €</td>
+                                            <td class="text-end">{{ line.unitPricePerDay | price_eur }}</td>
                                             <td class="text-end">{{ (line.quantity * line.unitPricePerDay * days)|number_format(0, ',', ' ') }} €</td>
                                         </tr>
                                     {% endfor %}
@@ -70,7 +70,7 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="3" class="text-end">Total estimé ({{ days }} jour{{ days > 1 ? 's' : '' }})</td>
-                                        <td class="text-end er-invoice-total">{{ quote.estimatedAmount }} €</td>
+                                        <td class="text-end er-invoice-total">{{ quote.estimatedAmount | price_eur }}</td>
                                     </tr>
                                 </tfoot>
                             </table>

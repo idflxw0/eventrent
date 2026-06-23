@@ -32,7 +32,7 @@
             {% for r in reservations %}
                 {% set statusClass = r.status == 'confirmed' ? 'confirmed' : r.status == 'pending' ? 'pending' : r.status == 'cancelled' ? 'cancelled' : r.status == 'in_progress' ? 'in-progress' : 'completed' %}
                 {% set badgeClass = statusClass %}
-                {% set statusLabel = r.status == 'confirmed' ? 'Confirmée' : r.status == 'pending' ? 'En attente' : r.status == 'cancelled' ? 'Annulée' : r.status == 'in_progress' ? 'En cours' : 'Terminée' %}
+                {% set statusLabel = r.status | status_label %}
                 <article class="er-res-card er-res-card-status-{{ badgeClass }}" aria-label="Réservation #{{ r.id }}">
                     <div class="er-res-body">
                         <div style="flex:1;">
@@ -56,7 +56,7 @@
                         <div class="er-res-right-side">
                             <div class="text-md-end">
                                 <div class="er-res-price">
-                                    {{ r.totalAmount }} €
+                                    {{ r.totalAmount | price_eur }}
                                 </div>
                             </div>
                             <div class="d-flex gap-2">

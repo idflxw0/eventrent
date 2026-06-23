@@ -195,25 +195,11 @@
                                                 <td>{{ r.eventCity }}</td>
                                                 <td>{{ r.venueType == 'indoor' ? 'Intérieur' : 'Extérieur' }}</td>
                                                 <td class="text-end" style="font-variant-numeric:tabular-nums; font-weight:700; color:var(--er-accent-text);">
-                                                    {{ r.totalAmount }} €
+                                                    {{ r.totalAmount | price_eur }}
                                                 </td>
                                                 <td>
-                                                    {% set statusMap = {
-                                                        'pending': 'pending',
-                                                        'confirmed': 'confirmed',
-                                                        'in_progress': 'in-progress',
-                                                        'completed': 'completed',
-                                                        'cancelled': 'cancelled'
-                                                    } %}
-                                                    {% set statusLabel = {
-                                                        'pending': 'En attente',
-                                                        'confirmed': 'Confirmée',
-                                                        'in_progress': 'En cours',
-                                                        'completed': 'Terminée',
-                                                        'cancelled': 'Annulée'
-                                                    } %}
-                                                    <span class="er-badge er-badge-{{ statusMap[r.status] ?? 'completed' }}">
-                                                        {{ statusLabel[r.status] ?? r.status }}
+                                                    <span class="er-badge er-badge-{{ r.status == 'in_progress' ? 'in-progress' : r.status }}">
+                                                        {{ r.status | status_label }}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -254,13 +240,11 @@
                                                 </td>
                                                 <td>{{ q.eventCity }}</td>
                                                 <td class="text-end" style="font-variant-numeric:tabular-nums; font-weight:700; color:var(--er-accent-text);">
-                                                    {{ q.estimatedAmount }} €
+                                                    {{ q.estimatedAmount | price_eur }}
                                                 </td>
                                                 <td>
-                                                    {% set qStatusMap = {'pending':'pending','approved':'approved','refused':'refused','expired':'expired'} %}
-                                                    {% set qStatusLabel = {'pending':'En attente','approved':'Approuvé','refused':'Refusé','expired':'Expiré'} %}
-                                                    <span class="er-badge er-badge-{{ qStatusMap[q.status] ?? 'pending' }}">
-                                                        {{ qStatusLabel[q.status] ?? q.status }}
+                                                    <span class="er-badge er-badge-{{ q.status }}">
+                                                        {{ q.status | status_label }}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -303,7 +287,7 @@
                                                 <td><strong>{{ inv.number }}</strong></td>
                                                 <td>{{ inv.issuedAt ? inv.issuedAt|date('d/m/Y') : '—' }}</td>
                                                 <td class="text-end" style="font-variant-numeric:tabular-nums; font-weight:700; color:var(--er-accent-text);">
-                                                    {{ inv.amount }} €
+                                                    {{ inv.amount | price_eur }}
                                                 </td>
                                                 <td>
                                                     <span class="er-badge {{ inv.paymentStatus == 'paid' ? 'er-badge-approved' : 'er-badge-pending' }}">

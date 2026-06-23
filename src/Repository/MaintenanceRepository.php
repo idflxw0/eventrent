@@ -12,4 +12,15 @@ class MaintenanceRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Maintenance::class);
     }
+
+    public function findByTechnician(int $userId): array
+    {
+        return $this->createQueryBuilder('m')
+            ->join('m.equipment', 'e')->addSelect('e')
+            ->where('m.technician = :userId')
+            ->setParameter('userId', $userId)
+            ->orderBy('m.interventionDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
