@@ -26,6 +26,7 @@ ENV APP_ENV=prod APP_DEBUG=0
 
 RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
     --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts \
+    && php bin/console assets:install \
     && php bin/console importmap:install \
     && php bin/console asset-map:compile
 
