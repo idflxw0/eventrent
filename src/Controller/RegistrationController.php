@@ -54,10 +54,6 @@ class RegistrationController extends AbstractController
 
             $this->addFlash('success', 'Bienvenue sur EventRent ! Votre compte a été créé avec succès.');
 
-            // Clear any saved target path (e.g. from unauthenticated AJAX calls) so
-            // the authenticator falls back to default_target_path (app_home).
-            $request->getSession()->remove('_security.main.target_path');
-
             return $userAuthenticator->authenticateUser(
                 $user,
                 $formLoginAuthenticator,

@@ -1,10 +1,11 @@
 import './stimulus_bootstrap.js';
-/*
- * Welcome to your app's main JavaScript file!
- *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
- */
 import './styles/app.css';
+import { Turbo } from '@hotwired/turbo';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+// Disable Turbo Drive globally — it breaks Bootstrap dropdowns,
+// inline scripts with HTML entities, and Symfony form_login redirects.
+// Turbo Streams (real-time updates via Mercure) are unaffected.
+Turbo.session.drive = false;
+
+// Belt-and-suspenders: cancel any visit that slips through (e.g. cached snapshots).
+document.addEventListener('turbo:before-visit', (e) => e.preventDefault());

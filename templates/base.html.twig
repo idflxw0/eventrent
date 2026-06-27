@@ -28,7 +28,7 @@
     </style>
     {% block stylesheets %}{% endblock %}
 </head>
-<body>
+<body data-turbo="false">
 
 {# ===== NAVBAR ===== #}
 <nav class="er-navbar navbar navbar-expand-lg" aria-label="Navigation principale">
@@ -65,7 +65,7 @@
 
             <ul class="navbar-nav ms-auto align-items-center gap-2">
                 {% if app.user %}
-                    {% set unreadCount = app.user.notifications|filter(n => not n.read)|length %}
+                    {% set unreadCount = unread_notification_count(app.user) %}
                     <li class="nav-item">
                         <a class="er-nav-link er-notif-bell position-relative" href="{{ path('notification_index') }}"
                            style="font-size:1.15rem; padding:4px 10px;" aria-label="{{ unreadCount }} notification{{ unreadCount > 1 ? 's' : '' }} non lue{{ unreadCount > 1 ? 's' : '' }}">
@@ -298,7 +298,7 @@ flatpickr('input[type="date"]', {
 {% if app.user %}
 <script>
 (function() {
-    var lastCount = {{ app.user.notifications|filter(n => not n.read)|length }};
+    var lastCount = {{ unreadCount }};
 
     function updateBell(count) {
         var badge = document.querySelector('.er-notif-count');
@@ -310,12 +310,14 @@ flatpickr('input[type="date"]', {
         }
     }
 
-    setInterval(function() {
+    function poll() {
         fetch('{{ path('api_notification_unread_count') }}')
             .then(function(r) { return r.ok ? r.json() : null; })
             .then(function(data) { if (data) updateBell(data.count); })
             .catch(function() {});
-    }, 10000);
+    }
+
+    setInterval(poll, 30000);
 })();
 </script>
 {% endif %}
