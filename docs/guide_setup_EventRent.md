@@ -124,7 +124,13 @@ php bin/console make:entity Category
 | name        | string        | longueur 100 (+ `unique: true` à la main) | non      |
 | description | text          | —                                         | oui      |
 
-**Relations à ajouter ici** : aucune. La relation avec `Equipment` sera créée depuis `Equipment` (étape 11) — accepte la proposition d'ajouter le côté inverse à ce moment-là.
+**Relations à ajouter ici** :
+
+| Champ relation | Entité cible | Type       | Nullable | Côté inverse                                   |
+| -------------- | ------------ | ---------- | -------- | ---------------------------------------------- |
+| suppliers      | Supplier     | ManyToMany | —        | oui → propriété `categories` sur `Supplier`    |
+
+La relation avec `Equipment` sera créée depuis `Equipment` (étape 11) — accepte la proposition d'ajouter le côté inverse à ce moment-là.
 
 ---
 
@@ -141,7 +147,7 @@ php bin/console make:entity Supplier
 | phone   | string        | longueur 20  | oui      |
 | address | string        | longueur 255 | oui      |
 
-**Relations à ajouter ici** : aucune (idem Category, côté inverse ajouté depuis `Equipment`).
+**Relations à ajouter ici** : le côté inverse `categories` de la ManyToMany avec `Category` est automatiquement ajouté à l'étape 8. La relation avec `Equipment` sera ajoutée côté inverse depuis `Equipment` (étape 11).
 
 ---
 

@@ -410,13 +410,13 @@ _Ce diagramme est une vue simplifiée à des fins de cahier des charges. Le MCD/
 
 ### Bonus ciblés
 
-| Bonus du barème               | Statut                                                                                      |
-| ----------------------------- | ------------------------------------------------------------------------------------------- |
-| Temps réel (Mercure)          | **Visé** — notifications poussées en direct (cf. 3.7)                                       |
-| Asynchronisme (Messenger)     | À évaluer selon le temps restant                                                            |
-| Commandes CLI                 | À évaluer (candidats naturels : expiration des devis RG05, passage auto en "Terminée" RG09) |
-| Tests de mutation (Infection) | À évaluer                                                                                   |
-| DDD / TDD                     | Non visé en l'état                                                                          |
+| Bonus du barème               | Statut                                                                                                               |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Temps réel (Mercure)          | **Implémenté** — notifications poussées en direct via SSE (cf. 3.7)                                                  |
+| Asynchronisme (Messenger)     | **Implémenté** — envois d'emails asynchrones via Messenger (transport Doctrine, worker dédié dans Docker)            |
+| Commandes CLI                 | **Implémenté** — `app:quotes:expire` (expiration RG05) et `app:reservations:close` (passage auto en "Terminée" RG09) |
+| Tests de mutation (Infection) | Non visé                                                                                                             |
+| DDD / TDD                     | Non visé                                                                                                             |
 
 ---
 

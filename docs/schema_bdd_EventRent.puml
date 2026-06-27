@@ -1,0 +1,189 @@
+@startuml EventRent - Modele de donnees
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam defaultFontSize 11
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor White
+  BorderColor #333333
+  ArrowColor #333333
+}
+hide empty methods
+
+' ===========================
+' UTILISATEUR
+' ===========================
+class User {
+  +id : int <<PK>>
+  +email : string
+  +roles : array
+  +password : string
+  +lastName : string
+  +firstName : string
+  +phone : string [0..1]
+  +registeredAt : DateTimeImmutable
+  +active : bool
+}
+
+' ===========================
+' EQUIPEMENT (héritage JOINED)
+' ===========================
+abstract class Equipment <<JOINED inheritance>> {
+  +id : int <<PK>>
+  +reference : string
+  +name : string
+  +description : string [0..1]
+  +dailyPrice : decimal(10,2)
+  +availabilityStatus : string
+  +photo : string [0..1]
+  +addedAt : DateTimeImmutable
+}
+
+class AudioEquipment {
+  +powerWatts : int
+  +connectorType : string
+  +channelCount : int
+}
+
+class VideoEquipment {
+  +resolution : string
+  +brightnessLumens : int
+  +projectionType : string
+}
+
+Equipment <|-- AudioEquipment
+Equipment <|-- VideoEquipment
+
+' ===========================
+' CATALOGUE
+' ===========================
+class Category {
+  +id : int <<PK>>
+  +name : string
+  +description : string [0..1]
+}
+
+class Supplier {
+  +id : int <<PK>>
+  +name : string
+  +email : string [0..1]
+  +phone : string [0..1]
+  +address : string [0..1]
+}
+
+class Accessory {
+  +id : int <<PK>>
+  +name : string
+  +description : string [0..1]
+}
+
+' ===========================
+' RESERVATION
+' ===========================
+class Reservation {
+  +id : int <<PK>>
+  +startDate : date
+  +endDate : date
+  +eventCity : string
+  +venueType : string
+  +status : string
+  +totalAmount : decimal(10,2)
+  +weatherForecast : string [0..1]
+  +createdAt : DateTimeImmutable
+}
+
+class ReservationLine {
+  +id : int <<PK>>
+  +quantity : int
+  +unitPricePerDay : decimal(10,2)
+}
+
+class Invoice {
+  +id : int <<PK>>
+  +number : string
+  +amount : decimal(10,2)
+  +paymentStatus : string
+  +issuedAt : DateTimeImmutable
+  +dueDate : date
+}
+
+' ===========================
+' DEVIS
+' ===========================
+class Quote {
+  +id : int <<PK>>
+  +requestedStartDate : date
+  +requestedEndDate : date
+  +eventCity : string [0..1]
+  +estimatedAmount : decimal(10,2)
+  +status : string
+  +createdAt : DateTimeImmutable
+  +validUntil : date
+}
+
+class QuoteLine {
+  +id : int <<PK>>
+  +quantity : int
+  +unitPricePerDay : decimal(10,2)
+}
+
+' ===========================
+' AUTRES
+' ===========================
+class Review {
+  +id : int <<PK>>
+  +rating : int
+  +comment : string [0..1]
+  +createdAt : DateTimeImmutable
+}
+
+class Maintenance {
+  +id : int <<PK>>
+  +interventionType : string
+  +description : string
+  +interventionDate : DateTimeImmutable
+  +statusAfterIntervention : string
+}
+
+class Notification {
+  +id : int <<PK>>
+  +message : string
+  +type : string [0..1]
+  +read : bool
+  +createdAt : DateTimeImmutable
+}
+
+' ===========================
+' RELATIONS
+' ===========================
+
+' Catalogue
+Category "1" --o "0..*" Equipment : classifies >
+Supplier "1" --o "0..*" Equipment : supplies >
+Equipment "0..*" --o "0..*" Accessory : compatible with >
+Category "0..*" --o "0..*" Supplier : linked to >
+
+' Réservation
+User "1" --o "0..*" Reservation : makes >
+Reservation "1" *-- "1..*" ReservationLine : contains >
+Equipment "1" --o "0..*" ReservationLine : concerns >
+Reservation "1" -- "1" Invoice : generates >
+
+' Devis
+User "1" --o "0..*" Quote : requests >
+Quote "1" *-- "1..*" QuoteLine : contains >
+Equipment "1" --o "0..*" QuoteLine : concerns >
+
+' Avis
+User "1" --o "0..*" Review : writes >
+Equipment "1" --o "0..*" Review : rated by >
+
+' Maintenance
+Equipment "1" --o "0..*" Maintenance : undergoes >
+User "1" --o "0..*" Maintenance : performs (technician) >
+
+' Notifications
+User "1" --o "0..*" Notification : receives >
+
+@enduml

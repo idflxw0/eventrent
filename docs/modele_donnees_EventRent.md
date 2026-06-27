@@ -84,7 +84,7 @@ _Document complémentaire au cahier des charges. Détaille chaque entité (table
 | name        | string(100) | unique, not null |
 | description | text        | nullable         |
 
-**Relations** : 1‑N `Equipment`.
+**Relations** : 1‑N `Equipment`, N‑N `Supplier` (table de jonction `category_supplier`).
 
 ---
 
@@ -98,7 +98,7 @@ _Document complémentaire au cahier des charges. Détaille chaque entité (table
 | phone   | string(20)  | nullable    |
 | address | string(255) | nullable    |
 
-**Relations** : 1‑N `Equipment`.
+**Relations** : 1‑N `Equipment`, N‑N `Category` (côté inverse de `category_supplier`).
 
 ---
 
@@ -255,7 +255,8 @@ _Document complémentaire au cahier des charges. Détaille chaque entité (table
 | Equipment ↔ AudioEquipment / VideoEquipment       | Héritage (CTI) | tronc commun, 2 sous-types                                                   |
 | Category ↔ Equipment                              | 1‑N            | une catégorie regroupe plusieurs équipements                                 |
 | Supplier ↔ Equipment                              | 1‑N            | un fournisseur fournit plusieurs équipements                                 |
-| **Equipment ↔ Accessory**                         | **N‑N**        | sans attributs (ManyToMany simple)                                           |
+| **Category ↔ Supplier**                           | **N‑N**        | sans attributs (table de jonction `category_supplier`)                       |
+| **Equipment ↔ Accessory**                         | **N‑N**        | sans attributs (table de jonction `equipment_accessory`)                     |
 | **Reservation ↔ Equipment** (via ReservationLine) | **N‑N**        | avec attributs : quantité, prix unitaire (ManyToMany avec table de jonction) |
 | Quote ↔ Equipment (via QuoteLine)                 | N‑N            | avec attributs                                                               |
 | Reservation ↔ Invoice                             | 1‑1            | une réservation génère une facture                                           |
@@ -417,6 +418,7 @@ erDiagram
     EQUIPMENT ||--|| VIDEO_EQUIPMENT : hérite
     CATEGORY ||--o{ EQUIPMENT : classe
     SUPPLIER ||--o{ EQUIPMENT : fournit
+    CATEGORY }o--o{ SUPPLIER : category_supplier
     EQUIPMENT }o--o{ ACCESSORY : compatible_avec
 
     RESERVATION ||--o{ RESERVATION_LINE : contient
