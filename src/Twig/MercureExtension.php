@@ -49,6 +49,7 @@ class MercureExtension extends AbstractExtension
             Equipment::STATUS_OUT_OF_SERVICE   => 'Hors service',
             'pending'                          => 'En attente',
             'confirmed'                        => 'Confirmée',
+            'in_progress'                      => 'En cours',
             'completed'                        => 'Terminée',
             'cancelled'                        => 'Annulée',
             'approved'                         => 'Approuvé',

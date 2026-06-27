@@ -106,11 +106,11 @@ class EmailService
                     <li><strong>Description :</strong> %s</li>
                 </ul>
                 <p>Merci de vous en occuper dans les meilleurs délais.</p>',
-                htmlspecialchars($technician->getFirstName(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                htmlspecialchars($technician->getFirstName() ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                 htmlspecialchars($equipment->getName(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-                htmlspecialchars($maintenance->getInterventionType(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-                $maintenance->getInterventionDate()->format('d/m/Y'),
-                htmlspecialchars($maintenance->getDescription(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+                htmlspecialchars($maintenance->getInterventionType() ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                ($maintenance->getInterventionDate() ?? new \DateTimeImmutable())->format('d/m/Y'),
+                htmlspecialchars($maintenance->getDescription() ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
             ));
 
         $this->mailer->send($email);

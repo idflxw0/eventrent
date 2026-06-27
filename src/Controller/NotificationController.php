@@ -27,13 +27,11 @@ class NotificationController extends AbstractController
     }
 
     #[Route('/api/notifications/unread-count', name: 'api_notification_unread_count', methods: ['GET'])]
-    public function unreadCount(): JsonResponse
+    public function unreadCount(EntityManagerInterface $em): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
-        $count = $user->getNotifications()
-            ->filter(fn(Notification $n) => !$n->isRead())
-            ->count();
+        $count = $em->getRepository(Notification::class)->count(['user' => $user, 'read' => false]);
 
         return new JsonResponse(['count' => $count]);
     }
