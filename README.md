@@ -122,7 +122,7 @@ L'application est prête sur **http://localhost:8089**.
 
 > Hiérarchie des rôles : `ROLE_ADMIN` > `ROLE_TECHNICIEN` > `ROLE_USER`.
 
-Ces comptes sont également disponibles sur l'environnement de production : **https://eventrent.pnzcorp.me/**
+Ces comptes sont également disponibles sur l'environnement de production (voir section **Accès à l'environnement de production** ci-dessous).
 
 ---
 
@@ -224,11 +224,34 @@ Le pipeline GitHub Actions (`.github/workflows/ci.yml`) s'exécute à chaque pus
 
 ---
 
+## Accès à l'environnement de production
+
+### Application
+
+| URL | Description |
+|---|---|
+| https://eventrent.pnzcorp.me/ | Application principale |
+| https://eventrent.pnzcorp.me/admin | Back-office EasyAdmin |
+
+### Comptes de test (production)
+
+| Email | Mot de passe | Rôle |
+|---|---|---|
+| admin@eventrent.com | admin123 | `ROLE_ADMIN` — back-office complet |
+| tech@eventrent.com | tech123 | `ROLE_TECHNICIEN` — espace technicien |
+| user@eventrent.com | user123 | `ROLE_USER` — espace client |
+
+### Base de données
+
+L'interface d'administration de la base de données (Adminer) est accessible uniquement depuis le réseau privé du serveur (pas d'accès public). Pour toute consultation de la base en production, contacter le développeur.
+
+---
+
 ## Déploiement
 
 **URL de production : https://eventrent.pnzcorp.me/**
 
-Hébergé sur un VPS Hetzner. Variables d'environnement requises en production :
+Hébergé sur un homelab avec Cloudflare Tunnel + Traefik comme reverse proxy. Variables d'environnement requises en production :
 
 | Variable | Description |
 |---|---|
