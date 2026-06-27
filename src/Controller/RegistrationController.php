@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\Authenticator\FormLoginAuthenticator;
 
 class RegistrationController extends AbstractController
 {
@@ -23,6 +26,9 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
         \App\Service\EmailService $emailService,
+        UserAuthenticatorInterface $userAuthenticator,
+        #[Autowire(service: 'security.authenticator.form_login.main')]
+        FormLoginAuthenticator $formLoginAuthenticator,
     ): Response {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_home');
@@ -46,9 +52,17 @@ class RegistrationController extends AbstractController
                 $this->logger->error('Registration email failed: ' . $e->getMessage());
             }
 
-            $this->addFlash('success', 'Votre compte a été créé. Vous pouvez maintenant vous connecter.');
+            $this->addFlash('success', 'Bienvenue sur EventRent ! Votre compte a été créé avec succès.');
 
-            return $this->redirectToRoute('app_login');
+            // Clear any saved target path (e.g. from unauthenticated AJAX calls) so
+            // the authenticator falls back to default_target_path (app_home).
+            $request->getSession()->remove('_security.main.target_path');
+
+            return $userAuthenticator->authenticateUser(
+                $user,
+                $formLoginAuthenticator,
+                $request,
+            );
         }
 
         return $this->render('registration/register.html.twig', [

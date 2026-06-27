@@ -32,8 +32,7 @@ class DashboardController extends AbstractDashboardController
         private readonly UserRepository $userRepo,
         private readonly QuoteRepository $quoteRepo,
         private readonly \App\Repository\ReviewRepository $reviewRepo,
-    ) {
-    }
+    ) {}
 
     public function index(): Response
     {
@@ -96,5 +95,8 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(InvoiceCrudController::class, 'Factures', 'fas fa-receipt');
         yield MenuItem::linkTo(ReviewCrudController::class, 'Avis', 'fas fa-star');
         yield MenuItem::linkTo(MaintenanceCrudController::class, 'Maintenance', 'fas fa-wrench');
+
+        yield MenuItem::section('');
+        yield MenuItem::linkToRoute('Retour au site', 'fas fa-arrow-left', 'app_home');
     }
 }

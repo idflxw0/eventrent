@@ -10,39 +10,39 @@ EventRent est une application web de location d'équipements audiovisuels et év
 
 ## Fonctionnalités
 
-| Fonctionnalité | Détail |
-|---|---|
-| Catalogue | Filtres par catégorie, disponibilité, prix — pagination — fiches détaillées |
-| Réservations | Formulaire dynamique (Form Events), vérification de disponibilité, calcul du prix |
-| Devis | Demande en ligne, validation/refus par l'admin, conversion en réservation |
-| Factures | Générées automatiquement à chaque réservation confirmée |
-| Avis clients | Notation des équipements après une réservation terminée |
-| Météo | Intégration OpenWeatherMap pour les événements en extérieur |
-| Emails | Confirmation d'inscription, réservation, devis, assignation technicien (asynchrones via Messenger) |
-| Notifications temps réel | Mercure — cloche de notification dans la navbar, mise à jour sans rechargement |
-| Back-office | EasyAdmin — gestion complète du catalogue, utilisateurs, réservations, devis, factures, avis, maintenance |
-| Espace technicien | Tableau de bord `/technicien` listant les interventions assignées |
-| API REST | `GET /api/v1/equipments` et `GET /api/v1/equipments/{id}` avec groupes de sérialisation |
-| CLI | `app:quotes:expire` et `app:reservations:close` (tâches de maintenance planifiées) |
+| Fonctionnalité           | Détail                                                                                                    |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- |
+| Catalogue                | Filtres par catégorie, disponibilité, prix — pagination — fiches détaillées                               |
+| Réservations             | Formulaire dynamique (Form Events), vérification de disponibilité, calcul du prix                         |
+| Devis                    | Demande en ligne, validation/refus par l'admin, conversion en réservation                                 |
+| Factures                 | Générées automatiquement à chaque réservation confirmée                                                   |
+| Avis clients             | Notation des équipements après une réservation terminée                                                   |
+| Météo                    | Intégration OpenWeatherMap pour les événements en extérieur                                               |
+| Emails                   | Confirmation d'inscription, réservation, devis, assignation technicien (asynchrones via Messenger)        |
+| Notifications temps réel | Mercure — cloche de notification dans la navbar, mise à jour sans rechargement                            |
+| Back-office              | EasyAdmin — gestion complète du catalogue, utilisateurs, réservations, devis, factures, avis, maintenance |
+| Espace technicien        | Tableau de bord `/technicien` listant les interventions assignées                                         |
+| API REST                 | `GET /api/v1/equipments` et `GET /api/v1/equipments/{id}` avec groupes de sérialisation                   |
+| CLI                      | `app:quotes:expire` et `app:reservations:close` (tâches de maintenance planifiées)                        |
 
 ---
 
 ## Stack technique
 
-| Composant | Technologie |
-|---|---|
-| Framework | Symfony 7.x / PHP 8.4 |
-| Base de données | PostgreSQL 16 — Doctrine ORM (JOINED inheritance) |
-| Templates | Twig (héritage de templates, filtres personnalisés `\|status_label`, `\|price_eur`) |
-| Back-office | EasyAdminBundle 5 |
-| Emails | Symfony Mailer + Messenger (transport Doctrine, worker asynchrone) |
-| Temps réel | Mercure (SSE — Server-Sent Events) |
-| API externe | OpenWeatherMap via Symfony HttpClient |
-| Sécurité | Security Component — 3 rôles, Voter personnalisé (`ReservationVoter`) |
-| Tests | PHPUnit — tests unitaires + tests fonctionnels (WebTestCase) |
-| Analyse statique | PHPStan niveau 5 |
-| CI | GitHub Actions — lint + PHPStan + tests automatisés |
-| Conteneurs | Docker Compose (6 services : PHP, PostgreSQL, Mercure, Mailpit, Messenger worker, Adminer) |
+| Composant        | Technologie                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------ |
+| Framework        | Symfony 7.x / PHP 8.4                                                                      |
+| Base de données  | PostgreSQL 16 — Doctrine ORM (JOINED inheritance)                                          |
+| Templates        | Twig (héritage de templates, filtres personnalisés `\|status_label`, `\|price_eur`)        |
+| Back-office      | EasyAdminBundle 5                                                                          |
+| Emails           | Symfony Mailer + Messenger (transport Doctrine, worker asynchrone)                         |
+| Temps réel       | Mercure (SSE — Server-Sent Events)                                                         |
+| API externe      | OpenWeatherMap via Symfony HttpClient                                                      |
+| Sécurité         | Security Component — 3 rôles, Voter personnalisé (`ReservationVoter`)                      |
+| Tests            | PHPUnit — tests unitaires + tests fonctionnels (WebTestCase)                               |
+| Analyse statique | PHPStan niveau 5                                                                           |
+| CI               | GitHub Actions — lint + PHPStan + tests automatisés                                        |
+| Conteneurs       | Docker Compose (6 services : PHP, PostgreSQL, Mercure, Mailpit, Messenger worker, Adminer) |
 
 ---
 
@@ -77,6 +77,7 @@ docker compose up -d
 ```
 
 Au premier démarrage, le conteneur `php` exécute automatiquement :
+
 - `composer install`
 - `doctrine:migrations:migrate`
 - `cache:warmup`
@@ -101,24 +102,24 @@ L'application est prête sur **http://localhost:8089**.
 
 ## Services Docker
 
-| Service | URL locale | Description |
-|---|---|---|
-| `php` | http://localhost:8089 | Application Symfony (PHP 8.4 + FrankenPHP) |
-| `database` | `localhost:5439` | PostgreSQL 16 |
-| `adminer` | http://localhost:8088 | Explorateur de base de données |
-| `mailer` | http://localhost:8025 | Mailpit — visualisation des emails envoyés |
-| `mercure` | http://localhost:3000 | Hub Mercure (temps réel) |
-| `messenger-worker` | — | Worker asynchrone Messenger (emails en file d'attente) |
+| Service            | URL locale            | Description                                            |
+| ------------------ | --------------------- | ------------------------------------------------------ |
+| `php`              | http://localhost:8089 | Application Symfony (PHP 8.4 + FrankenPHP)             |
+| `database`         | `localhost:5439`      | PostgreSQL 16                                          |
+| `adminer`          | http://localhost:8088 | Explorateur de base de données                         |
+| `mailer`           | http://localhost:8025 | Mailpit — visualisation des emails envoyés             |
+| `mercure`          | http://localhost:3000 | Hub Mercure (temps réel)                               |
+| `messenger-worker` | —                     | Worker asynchrone Messenger (emails en file d'attente) |
 
 ---
 
 ## Comptes de test
 
-| Email | Mot de passe | Rôle | Accès |
-|---|---|---|---|
-| admin@eventrent.com | admin123 | `ROLE_ADMIN` | Back-office `/admin`, toutes les fonctionnalités |
-| tech@eventrent.com | tech123 | `ROLE_TECHNICIEN` | Espace technicien `/technicien` + fonctionnalités client |
-| user@eventrent.com | user123 | `ROLE_USER` | Catalogue, réservations, devis, espace personnel |
+| Email               | Mot de passe | Rôle              | Accès                                                    |
+| ------------------- | ------------ | ----------------- | -------------------------------------------------------- |
+| admin@eventrent.com | admin123     | `ROLE_ADMIN`      | Back-office `/admin`, toutes les fonctionnalités         |
+| tech@eventrent.com  | tech123      | `ROLE_TECHNICIEN` | Espace technicien `/technicien` + fonctionnalités client |
+| user@eventrent.com  | user123      | `ROLE_USER`       | Catalogue, réservations, devis, espace personnel         |
 
 > Hiérarchie des rôles : `ROLE_ADMIN` > `ROLE_TECHNICIEN` > `ROLE_USER`.
 
@@ -144,10 +145,10 @@ docker compose exec php sh -c "
 docker compose exec php php bin/phpunit
 ```
 
-| Fichier | Type | Description |
-|---|---|---|
-| `tests/Unit/EquipmentTypeTest.php` | Unitaire | Logique d'héritage CTI et calcul de prix journalier |
-| `tests/Functional/LoginTest.php` | Fonctionnel (WebTestCase) | Scénarios de connexion, accès public/protégé |
+| Fichier                            | Type                      | Description                                         |
+| ---------------------------------- | ------------------------- | --------------------------------------------------- |
+| `tests/Unit/EquipmentTypeTest.php` | Unitaire                  | Logique d'héritage CTI et calcul de prix journalier |
+| `tests/Functional/LoginTest.php`   | Fonctionnel (WebTestCase) | Scénarios de connexion, accès public/protégé        |
 
 ---
 
@@ -228,18 +229,18 @@ Le pipeline GitHub Actions (`.github/workflows/ci.yml`) s'exécute à chaque pus
 
 ### Application
 
-| URL | Description |
-|---|---|
-| https://eventrent.pnzcorp.me/ | Application principale |
-| https://eventrent.pnzcorp.me/admin | Back-office EasyAdmin |
+| URL                                | Description            |
+| ---------------------------------- | ---------------------- |
+| https://eventrent.pnzcorp.me/      | Application principale |
+| https://eventrent.pnzcorp.me/admin | Back-office EasyAdmin  |
 
 ### Comptes de test (production)
 
-| Email | Mot de passe | Rôle |
-|---|---|---|
-| admin@eventrent.com | admin123 | `ROLE_ADMIN` — back-office complet |
-| tech@eventrent.com | tech123 | `ROLE_TECHNICIEN` — espace technicien |
-| user@eventrent.com | user123 | `ROLE_USER` — espace client |
+| Email               | Mot de passe | Rôle                                  |
+| ------------------- | ------------ | ------------------------------------- |
+| admin@eventrent.com | admin123     | `ROLE_ADMIN` — back-office complet    |
+| tech@eventrent.com  | tech123      | `ROLE_TECHNICIEN` — espace technicien |
+| user@eventrent.com  | user123      | `ROLE_USER` — espace client           |
 
 ### Base de données
 
@@ -253,15 +254,15 @@ L'interface d'administration de la base de données (Adminer) est accessible uni
 
 Hébergé sur un homelab avec Cloudflare Tunnel + Traefik comme reverse proxy. Variables d'environnement requises en production :
 
-| Variable | Description |
-|---|---|
-| `APP_ENV` | `prod` |
-| `APP_SECRET` | Clé secrète Symfony (32 caractères aléatoires) |
-| `DATABASE_URL` | DSN PostgreSQL (`postgresql://user:pass@host:5432/db`) |
-| `MAILER_DSN` | DSN SMTP (`smtp://user:pass@host:587`) |
-| `MESSENGER_TRANSPORT_DSN` | Transport Messenger (`doctrine://default`) |
-| `MERCURE_URL` | URL interne du hub Mercure (pour publication) |
-| `MERCURE_PUBLIC_URL` | URL publique du hub Mercure (pour le navigateur) |
-| `MERCURE_JWT_SECRET` | Secret JWT partagé avec le hub Mercure |
-| `OPENWEATHER_API_KEY` | Clé API OpenWeatherMap (optionnel — désactive la météo si absent) |
-| `DEFAULT_URI` | URL de base pour la génération d'URLs en CLI (`https://eventrent.pnzcorp.me`) |
+| Variable                  | Description                                                                   |
+| ------------------------- | ----------------------------------------------------------------------------- |
+| `APP_ENV`                 | `prod`                                                                        |
+| `APP_SECRET`              | Clé secrète Symfony (32 caractères aléatoires)                                |
+| `DATABASE_URL`            | DSN PostgreSQL (`postgresql://user:pass@host:5432/db`)                        |
+| `MAILER_DSN`              | DSN SMTP (`smtp://user:pass@host:587`)                                        |
+| `MESSENGER_TRANSPORT_DSN` | Transport Messenger (`doctrine://default`)                                    |
+| `MERCURE_URL`             | URL interne du hub Mercure (pour publication)                                 |
+| `MERCURE_PUBLIC_URL`      | URL publique du hub Mercure (pour le navigateur)                              |
+| `MERCURE_JWT_SECRET`      | Secret JWT partagé avec le hub Mercure                                        |
+| `OPENWEATHER_API_KEY`     | Clé API OpenWeatherMap (optionnel — désactive la météo si absent)             |
+| `DEFAULT_URI`             | URL de base pour la génération d'URLs en CLI (`https://eventrent.pnzcorp.me`) |
