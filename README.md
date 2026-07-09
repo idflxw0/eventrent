@@ -9,11 +9,40 @@
 
 ---
 
-EventRent est une application web de location d'équipements audiovisuels et événementiels développée avec **Symfony 7.x**. Elle permet aux clients de parcourir un catalogue, de faire des demandes de devis ou de réserver directement du matériel (micros, enceintes, projecteurs, écrans…), pendant qu'un back-office d'administration et un espace technicien gèrent le parc et la maintenance.
+<div align="center">
 
-**Application déployée : https://eventrent.pnzcorp.me/**
+**Application web de location d'équipements audiovisuels et événementiels — Symfony 7.x**
 
-**Dépôt GitHub : https://github.com/idflxw0/eventrent**
+[![Symfony](https://img.shields.io/badge/Symfony-7.x-000000?style=flat-square&logo=symfony&logoColor=white)](https://symfony.com)
+[![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?style=flat-square&logo=php&logoColor=white)](https://php.net)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![CI](https://img.shields.io/github/actions/workflow/status/idflxw0/eventrent/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/idflxw0/eventrent/actions)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%205-brightgreen?style=flat-square)](phpstan.neon)
+
+[Démo en ligne](https://eventrent.pnzcorp.me/) &nbsp;·&nbsp; [Documentation](docs/) &nbsp;·&nbsp; [Dépôt GitHub](https://github.com/idflxw0/eventrent)
+
+</div>
+
+EventRent permet aux clients de parcourir un catalogue, de faire des demandes de devis ou de réserver directement du matériel (micros, enceintes, projecteurs, écrans…), pendant qu'un back-office d'administration et un espace technicien gèrent le parc et la maintenance.
+
+## Sommaire
+
+- [Fonctionnalités](#fonctionnalités)
+- [Stack technique](#stack-technique)
+- [Modèle de données](#modèle-de-données)
+- [Prérequis](#prérequis)
+- [Installation locale](#installation-locale)
+- [Services Docker](#services-docker)
+- [Comptes de test](#comptes-de-test)
+- [Réinitialiser la base de données](#réinitialiser-la-base-de-données)
+- [Exécuter les tests](#exécuter-les-tests)
+- [Analyse statique](#analyse-statique)
+- [Commandes CLI](#commandes-cli)
+- [API REST](#api-rest)
+- [Intégration continue (CI)](#intégration-continue-ci)
+- [Accès à l'environnement de production](#accès-à-lenvironnement-de-production)
+- [Déploiement](#déploiement)
 
 ---
 
@@ -34,8 +63,6 @@ EventRent est une application web de location d'équipements audiovisuels et év
 | API REST                 | `GET /api/v1/equipments` et `GET /api/v1/equipments/{id}` avec groupes de sérialisation                   |
 | CLI                      | `app:quotes:expire` et `app:reservations:close` (tâches de maintenance planifiées)                        |
 
----
-
 ## Stack technique
 
 | Composant        | Technologie                                                                                |
@@ -53,25 +80,31 @@ EventRent est une application web de location d'équipements audiovisuels et év
 | CI               | GitHub Actions — lint + PHPStan + tests automatisés                                        |
 | Conteneurs       | Docker Compose (6 services : PHP, PostgreSQL, Mercure, Mailpit, Messenger worker, Adminer) |
 
----
+## Modèle de données
+
+Héritage CTI (`Equipment` → `AudioEquipment` / `VideoEquipment`), relations ManyToMany (`Equipment` ↔ `Accessory`, `Category` ↔ `Supplier`) et relation OneToOne (`Reservation` ↔ `Invoice`).
+
+<p align="center">
+  <img src="docs/uml.png" alt="Schéma UML EventRent" width="850">
+</p>
+
+Détails complets : [`docs/modele_donnees_EventRent.md`](docs/modele_donnees_EventRent.md) · [`docs/schema_bdd_EventRent.puml`](docs/schema_bdd_EventRent.puml) · [`docs/cahier_des_charges_EventRent.md`](docs/cahier_des_charges_EventRent.md)
 
 ## Prérequis
 
 - [Docker](https://docs.docker.com/get-docker/) ≥ 24
 - [Docker Compose](https://docs.docker.com/compose/) v2 (`docker compose` — sans tiret)
 
----
-
 ## Installation locale
 
-### 1. Cloner le dépôt
+**1. Cloner le dépôt**
 
 ```bash
 git clone https://github.com/idflxw0/eventrent.git
 cd eventrent
 ```
 
-### 2. Configurer l'environnement
+**2. Configurer l'environnement**
 
 ```bash
 cp .env.example .env
@@ -79,19 +112,13 @@ cp .env.example .env
 
 Les valeurs par défaut dans `.env.example` fonctionnent sans modification pour un environnement local Docker. Optionnellement, renseigner `OPENWEATHER_API_KEY` pour activer les prévisions météo (clé gratuite sur [openweathermap.org](https://openweathermap.org/api)).
 
-### 3. Démarrer les conteneurs
+**3. Démarrer les conteneurs**
 
 ```bash
 docker compose up -d
 ```
 
-Au premier démarrage, le conteneur `php` exécute automatiquement :
-
-- `composer install`
-- `doctrine:migrations:migrate`
-- `cache:warmup`
-
-Attendre environ 30 secondes que la base de données soit prête, puis vérifier :
+Au premier démarrage, le conteneur `php` exécute automatiquement `composer install`, `doctrine:migrations:migrate` et `cache:warmup`. Attendre environ 30 secondes que la base de données soit prête, puis vérifier :
 
 ```bash
 docker compose ps
@@ -99,7 +126,7 @@ docker compose ps
 
 Tous les services doivent afficher le statut `running` (ou `healthy` pour `database`).
 
-### 4. Charger les fixtures
+**4. Charger les fixtures**
 
 ```bash
 docker compose exec php php bin/console doctrine:fixtures:load --no-interaction
@@ -107,9 +134,10 @@ docker compose exec php php bin/console doctrine:fixtures:load --no-interaction
 
 L'application est prête sur **http://localhost:8089**.
 
----
-
 ## Services Docker
+
+<details>
+<summary>Voir les 6 services (PHP, PostgreSQL, Mercure, Mailpit, Adminer, Messenger)</summary>
 
 | Service            | URL locale            | Description                                            |
 | ------------------ | --------------------- | ------------------------------------------------------ |
@@ -120,7 +148,7 @@ L'application est prête sur **http://localhost:8089**.
 | `mercure`          | http://localhost:3000 | Hub Mercure (temps réel)                               |
 | `messenger-worker` | —                     | Worker asynchrone Messenger (emails en file d'attente) |
 
----
+</details>
 
 ## Comptes de test
 
@@ -132,9 +160,7 @@ L'application est prête sur **http://localhost:8089**.
 
 > Hiérarchie des rôles : `ROLE_ADMIN` > `ROLE_TECHNICIEN` > `ROLE_USER`.
 
-Ces comptes sont également disponibles sur l'environnement de production (voir section **Accès à l'environnement de production** ci-dessous).
-
----
+Ces comptes sont également disponibles sur l'environnement de production (voir [Accès à l'environnement de production](#accès-à-lenvironnement-de-production)).
 
 ## Réinitialiser la base de données
 
@@ -145,8 +171,6 @@ docker compose exec php sh -c "
   php bin/console doctrine:fixtures:load --no-interaction
 "
 ```
-
----
 
 ## Exécuter les tests
 
@@ -159,8 +183,6 @@ docker compose exec php php bin/phpunit
 | `tests/Unit/EquipmentTypeTest.php` | Unitaire                  | Logique d'héritage CTI et calcul de prix journalier |
 | `tests/Functional/LoginTest.php`   | Fonctionnel (WebTestCase) | Scénarios de connexion, accès public/protégé        |
 
----
-
 ## Analyse statique
 
 ```bash
@@ -169,11 +191,9 @@ docker compose exec php vendor/bin/phpstan analyse --level=5 src/
 
 Configuration : `phpstan.neon` (niveau 5, extension `phpstan-doctrine`).
 
----
-
 ## Commandes CLI
 
-### Expirer les devis en attente depuis plus de 15 jours
+**Expirer les devis en attente depuis plus de 15 jours**
 
 ```bash
 docker compose exec php php bin/console app:quotes:expire
@@ -182,7 +202,7 @@ docker compose exec php php bin/console app:quotes:expire
 docker compose exec php php bin/console app:quotes:expire --dry-run
 ```
 
-### Clôturer les réservations confirmées dont la date de fin est passée
+**Clôturer les réservations confirmées dont la date de fin est passée**
 
 ```bash
 docker compose exec php php bin/console app:reservations:close
@@ -191,48 +211,29 @@ docker compose exec php php bin/console app:reservations:close
 docker compose exec php php bin/console app:reservations:close --dry-run
 ```
 
----
-
 ## API REST
 
 Base URL : `https://eventrent.pnzcorp.me/api/v1` (production) ou `http://localhost:8089/api/v1` (local)
 
-### Liste des équipements
-
-```
-GET /api/v1/equipments
-```
-
-Retourne un tableau JSON avec le groupe de sérialisation `equipment:list` (id, référence, nom, prix/jour, statut, catégorie).
-
-### Détail d'un équipement
-
-```
-GET /api/v1/equipments/{id}
-```
-
-Retourne le détail complet avec le groupe `equipment:detail` (description, fournisseur, accessoires, avis clients, spécifications audio ou vidéo).
-
-Exemple de requête :
+| Endpoint                      | Description                                                                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/v1/equipments`      | Liste des équipements — groupe `equipment:list` (id, référence, nom, prix/jour, statut, catégorie)                              |
+| `GET /api/v1/equipments/{id}` | Détail d'un équipement — groupe `equipment:detail` (description, fournisseur, accessoires, avis, spécifications audio ou vidéo) |
 
 ```bash
 curl https://eventrent.pnzcorp.me/api/v1/equipments
 curl https://eventrent.pnzcorp.me/api/v1/equipments/1
 ```
 
----
-
 ## Intégration continue (CI)
 
-Le pipeline GitHub Actions (`.github/workflows/ci.yml`) s'exécute à chaque push sur `main` :
+Le pipeline GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) s'exécute à chaque push sur `main` :
 
 1. **Lint** — `lint:twig`, `lint:yaml`, `lint:container`
 2. **PHPStan** — analyse statique niveau 5
 3. **Base de données** — création + migrations
 4. **Fixtures** — chargement du jeu de données de test
 5. **Tests** — PHPUnit (unitaires + fonctionnels)
-
----
 
 ## Accès à l'environnement de production
 
@@ -243,7 +244,8 @@ Le pipeline GitHub Actions (`.github/workflows/ci.yml`) s'exécute à chaque pus
 | https://eventrent.pnzcorp.me/      | Application principale |
 | https://eventrent.pnzcorp.me/admin | Back-office EasyAdmin  |
 
-### Comptes de test (production)
+<details>
+<summary>Comptes de test (production)</summary>
 
 | Email               | Mot de passe | Rôle                                  |
 | ------------------- | ------------ | ------------------------------------- |
@@ -251,17 +253,20 @@ Le pipeline GitHub Actions (`.github/workflows/ci.yml`) s'exécute à chaque pus
 | tech@eventrent.com  | tech123      | `ROLE_TECHNICIEN` — espace technicien |
 | user@eventrent.com  | user123      | `ROLE_USER` — espace client           |
 
+</details>
+
 ### Base de données
 
 L'interface d'administration de la base de données (Adminer) est accessible uniquement depuis le réseau privé du serveur (pas d'accès public). Pour toute consultation de la base en production, contacter le développeur.
-
----
 
 ## Déploiement
 
 **URL de production : https://eventrent.pnzcorp.me/**
 
-Hébergé sur un homelab avec Cloudflare Tunnel + Traefik comme reverse proxy. Variables d'environnement requises en production :
+Hébergé sur un homelab avec Cloudflare Tunnel + Traefik comme reverse proxy.
+
+<details>
+<summary>Variables d'environnement requises en production</summary>
 
 | Variable                  | Description                                                                   |
 | ------------------------- | ----------------------------------------------------------------------------- |
@@ -275,3 +280,5 @@ Hébergé sur un homelab avec Cloudflare Tunnel + Traefik comme reverse proxy. V
 | `MERCURE_JWT_SECRET`      | Secret JWT partagé avec le hub Mercure                                        |
 | `OPENWEATHER_API_KEY`     | Clé API OpenWeatherMap (optionnel — désactive la météo si absent)             |
 | `DEFAULT_URI`             | URL de base pour la génération d'URLs en CLI (`https://eventrent.pnzcorp.me`) |
+
+</details>
