@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: QuoteRepository::class)]
 class Quote
@@ -17,18 +18,27 @@ class Quote
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Assert\NotNull(message: 'La date de début est obligatoire.')]
     private ?\DateTimeImmutable $requestedStartDate = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Assert\NotNull(message: 'La date de fin est obligatoire.')]
+    #[Assert\GreaterThan(propertyPath: 'requestedStartDate', message: 'La date de fin doit être postérieure à la date de début.')]
     private ?\DateTimeImmutable $requestedEndDate = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, maxMessage: 'La ville ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $eventCity = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\PositiveOrZero(message: 'Le montant estimé doit être positif ou nul.')]
     private ?string $estimatedAmount = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Choice(
+        choices: ['pending', 'approved', 'refused', 'expired', 'completed', 'cancelled'],
+        message: 'Statut de devis invalide.'
+    )]
     private ?string $status = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]

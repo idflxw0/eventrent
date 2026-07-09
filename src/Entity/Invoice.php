@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\InvoiceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 class Invoice
@@ -15,12 +16,17 @@ class Invoice
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true)]
+    #[Assert\NotBlank(message: 'Le numéro de facture est obligatoire.')]
+    #[Assert\Length(max: 50, maxMessage: 'Le numéro ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $number = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: 'Le montant est obligatoire.')]
+    #[Assert\Positive(message: 'Le montant doit être un nombre positif.')]
     private ?string $amount = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Choice(choices: ['pending', 'paid'], message: 'Statut de paiement invalide.')]
     private ?string $paymentStatus = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]

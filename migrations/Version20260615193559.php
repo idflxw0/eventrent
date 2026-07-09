@@ -11,7 +11,7 @@ final class Version20260615193559 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Création du schéma initial de l\'application : catalogue (accessory, category, supplier, equipment en héritage JOINED avec audio_equipment/video_equipment), gestion locative (reservation, reservation_line, quote, quote_line, invoice), suivi qualité/parc (review, maintenance, notification), utilisateurs (user) et file d\'attente Messenger (messenger_messages).';
     }
 
     public function up(Schema $schema): void

@@ -1,5 +1,14 @@
 # EventRent — Plateforme de location de matériel audiovisuel
 
+## Équipe
+
+| Pseudo GitHub | Nom Prénom          |
+| ------------- | ------------------- |
+| idflxw0       | MATHIALAHAN Gobigan |
+| RiadFarouzi   | FAROUZI Ryadh       |
+
+---
+
 EventRent est une application web de location d'équipements audiovisuels et événementiels développée avec **Symfony 7.x**. Elle permet aux clients de parcourir un catalogue, de faire des demandes de devis ou de réserver directement du matériel (micros, enceintes, projecteurs, écrans…), pendant qu'un back-office d'administration et un espace technicien gèrent le parc et la maintenance.
 
 **Application déployée : https://eventrent.pnzcorp.me/**

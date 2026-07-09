@@ -11,7 +11,7 @@ final class Version20260621191709 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Ajout de la table de jointure category_supplier (relation ManyToMany entre catégories et fournisseurs) avec suppression en cascade.';
     }
 
     public function up(Schema $schema): void

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\MaintenanceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MaintenanceRepository::class)]
 class Maintenance
@@ -15,15 +16,22 @@ class Maintenance
     private ?int $id = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Choice(choices: ['repair', 'inspection', 'breakdown'], message: 'Type d\'intervention invalide.')]
     private ?string $interventionType = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'La description est obligatoire.')]
+    #[Assert\Length(max: 5000, maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $interventionDate = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Choice(
+        choices: [Equipment::STATUS_AVAILABLE, Equipment::STATUS_MAINTENANCE, Equipment::STATUS_OUT_OF_SERVICE],
+        message: 'Statut invalide.'
+    )]
     private ?string $statusAfterIntervention = null;
 
     #[ORM\ManyToOne(inversedBy: 'maintenances')]

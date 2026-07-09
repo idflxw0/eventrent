@@ -6,6 +6,7 @@ use App\Repository\NotificationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: NotificationRepository::class)]
 class Notification
@@ -18,10 +19,12 @@ class Notification
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['notification:read'])]
+    #[Assert\NotBlank(message: 'Le message est obligatoire.')]
     private ?string $message = null;
 
     #[ORM\Column(length: 50, nullable: true)]
     #[Groups(['notification:read'])]
+    #[Assert\Length(max: 50, maxMessage: 'Le type ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $type = null;
 
     #[ORM\Column]

@@ -6,6 +6,7 @@ use App\Repository\ReviewRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 class Review
@@ -18,10 +19,13 @@ class Review
 
     #[ORM\Column]
     #[Groups(['equipment:detail'])]
+    #[Assert\NotNull(message: 'La note est obligatoire.')]
+    #[Assert\Range(min: 1, max: 5, notInRangeMessage: 'La note doit être comprise entre {{ min }} et {{ max }}.')]
     private ?int $rating = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['equipment:detail'])]
+    #[Assert\Length(max: 2000, maxMessage: 'Le commentaire ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $comment = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]

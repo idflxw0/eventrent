@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 class Reservation
@@ -17,24 +18,33 @@ class Reservation
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Assert\NotNull(message: 'La date de début est obligatoire.')]
     private ?\DateTimeImmutable $startDate = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Assert\NotNull(message: 'La date de fin est obligatoire.')]
+    #[Assert\GreaterThan(propertyPath: 'startDate', message: 'La date de fin doit être postérieure à la date de début.')]
     private ?\DateTimeImmutable $endDate = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'La ville de l\'événement est obligatoire.')]
+    #[Assert\Length(max: 100, maxMessage: 'La ville ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $eventCity = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Choice(choices: ['indoor', 'outdoor'], message: 'Type de lieu invalide.')]
     private ?string $venueType = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Choice(choices: ['confirmed', 'completed', 'cancelled'], message: 'Statut de réservation invalide.')]
     private ?string $status = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\PositiveOrZero(message: 'Le montant total doit être positif ou nul.')]
     private ?string $totalAmount = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: 'Les prévisions météo ne peuvent pas dépasser {{ limit }} caractères.')]
     private ?string $weatherForecast = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
