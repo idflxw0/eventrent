@@ -1,4 +1,4 @@
-# EventRent — Plateforme de location de matériel audiovisuel
+# EventRent - Plateforme de location de matériel audiovisuel
 
 ## Équipe
 
